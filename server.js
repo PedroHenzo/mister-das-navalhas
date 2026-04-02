@@ -7,13 +7,16 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── POSTGRES POOL ─────────────────────────────────────────────────────────
-// O Railway injeta DATABASE_URL automaticamente quando você adiciona um
-// PostgreSQL plugin. Localmente, crie um .env com DATABASE_URL.
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL não definida. Configure a variável de ambiente.');
+  process.exit(1);
+}
+
+console.log('🔌 Conectando ao banco:', process.env.DATABASE_URL.replace(/:\/\/.*@/, '://***@'));
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('railway')
-    ? { rejectUnauthorized: false }
-    : false,
+  ssl: { rejectUnauthorized: false },
 });
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
