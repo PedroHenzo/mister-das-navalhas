@@ -7,17 +7,37 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── POSTGRES POOL ─────────────────────────────────────────────────────────
-if (!process.env.DATABASE_URL) {
-  console.error('❌ DATABASE_URL não definida. Configure a variável de ambiente.');
+// Railway pode injetar DATABASE_URL, DATABASE_PUBLIC_URL ou variáveis PG* separadas
+const connectionString =
+  process.env.DATABASE_URL ||
+  process.env.DATABASE_PUBLIC_URL ||
+  process.env.POSTGRES_URL ||
+  process.env.PGURL;
+
+// Log todas as vars disponíveis para debug (sem expor senhas)
+console.log('📋 Variáveis de ambiente detectadas:', Object.keys(process.env).filter(k =>
+  k.includes('DATABASE') || k.includes('POSTGRES') || k.includes('PG')
+).join(', ') || 'nenhuma');
+
+let pool;
+if (connectionString) {
+  console.log('🔌 Conectando via connection string:', connectionString.replace(/:\/\/.*@/, '://***@'));
+  pool = new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
+} else if (process.env.PGHOST) {
+  console.log('🔌 Conectando via variáveis PG* — host:', process.env.PGHOST);
+  pool = new Pool({
+    host:     process.env.PGHOST,
+    port:     parseInt(process.env.PGPORT || '5432'),
+    database: process.env.PGDATABASE,
+    user:     process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    ssl: { rejectUnauthorized: false },
+  });
+} else {
+  console.error('❌ Nenhuma variável de conexão PostgreSQL encontrada.');
+  console.error('   Esperado: DATABASE_URL ou PGHOST/PGPORT/PGUSER/PGPASSWORD/PGDATABASE');
   process.exit(1);
 }
-
-console.log('🔌 Conectando ao banco:', process.env.DATABASE_URL.replace(/:\/\/.*@/, '://***@'));
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function uuid() {
