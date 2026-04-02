@@ -3,1206 +3,1648 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<!-- SEO PRIMARY -->
-<title>Mister das Navalhas — Barbearia em Jurujuba | Wesley Barbeiro</title>
-<meta name="description" content="Barbearia Mister das Navalhas em Jurujuba, RJ, Niterói. Wesley, barbeiro especialista em corte, degradê e barba desde 2019. Agende online com facilidade!"/>
-<meta name="keywords" content="barbearia, barbeiro, Jurujuba, Wesley, Mister das Navalhas, corte de cabelo, degradê, barba, agendamento online"/>
-<meta name="robots" content="index, follow"/>
-<meta name="author" content="Wesley — Mister das Navalhas"/>
-<link rel="canonical" href="https://misterdosnavalhas.com.br/"/>
-
-<!-- OPEN GRAPH (WhatsApp / Facebook) -->
-<meta property="og:type" content="business.business"/>
-<meta property="og:title" content="Mister das Navalhas — Barbearia em Jurujuba"/>
-<meta property="og:description" content="Especialista em corte, degradê e barba. Agende seu horário online!"/>
-<meta property="og:locale" content="pt_BR"/>
-<meta property="og:site_name" content="Mister das Navalhas"/>
-<meta property="business:contact_data:locality" content="Jurujuba"/>
-<meta property="business:contact_data:region" content="RJ"/>
-<meta property="business:contact_data:country_name" content="Brasil"/>
-
-<!-- TWITTER CARD -->
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Mister das Navalhas — Barbearia"/>
-<meta name="twitter:description" content="Barbearia em Jurujuba, RJ. Agende online!"/>
-
-<!-- SCHEMA.ORG STRUCTURED DATA -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "HairSalon",
-  "name": "Mister das Navalhas",
-  "description": "Barbearia especializada em corte masculino, degradê e barba em Jurujuba, RJ. Atendimento desde 2019.",
-  "url": "https://misterdosnavalhas.com.br",
-  "telephone": "",
-  "priceRange": "R$40 – R$75",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Jurujuba",
-    "addressRegion": "RJ",
-    "addressCountry": "BR"
-  },
-  "openingHoursSpecification": [
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "18:00" },
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "17:00" }
-  ],
-  "employee": {
-    "@type": "Person",
-    "name": "Wesley",
-    "jobTitle": "Barbeiro Especialista"
-  },
-  "foundingDate": "2019",
-  "sameAs": []
-}
-</script>
-
+<title>Mister das Navalhas — Área do Barbeiro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Crimson+Pro:ital,wght@1,300;1,400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
 <style>
-:root{
-  --black:#080808;--dark2:#101010;--dark3:#181818;--dark4:#222222;
-  --silver:#C8C8C8;--silver-l:#E8E8E8;--silver-d:#888888;
-  --white:#F2F2F2;--muted:#666666;--border:rgba(200,200,200,0.12);
-}
+:root{--black:#080808;--dark2:#101010;--dark3:#181818;--dark4:#222222;--silver:#C8C8C8;--silver-l:#E8E8E8;--silver-d:#888888;--white:#F2F2F2;--muted:#666666;--border:rgba(200,200,200,0.12);--ok:#4ade80;--warn:#facc15;--danger:#f87171;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;}
+body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;min-height:100vh;}
 
-/* ── SCROLL REVEAL BASE ─────────────────────────────────── */
-.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);}
-.reveal.from-left{transform:translateX(-36px);}
-.reveal.from-right{transform:translateX(36px);}
-.reveal.visible{opacity:1;transform:none;}
-.reveal-delay-1{transition-delay:.1s;}
-.reveal-delay-2{transition-delay:.2s;}
-.reveal-delay-3{transition-delay:.3s;}
-.reveal-delay-4{transition-delay:.4s;}
-.reveal-delay-5{transition-delay:.5s;}
+/* LOGIN */
+#login-screen{position:fixed;inset:0;z-index:999;background:var(--black);display:flex;align-items:center;justify-content:center;padding:2rem;}
+.login-box{background:var(--dark2);border:1px solid var(--border);padding:3rem;width:100%;max-width:380px;}
+.login-logo{height:60px;width:auto;display:block;margin:0 auto 1.5rem;}
+.login-sub{text-align:center;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem;}
+.login-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-d);display:block;margin-bottom:.5rem;}
+.login-input{width:100%;background:var(--dark3);border:1px solid rgba(200,200,200,.15);color:var(--white);padding:.85rem 1rem;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s;margin-bottom:1.25rem;}
+.login-input:focus{border-color:var(--silver);}
+.login-btn{width:100%;background:var(--white);color:var(--black);border:none;padding:1rem;font-family:'Barlow',sans-serif;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .3s;}
+.login-btn:hover{background:var(--silver);}
+.login-err{color:var(--danger);font-size:.78rem;text-align:center;margin-top:.75rem;display:none;}
 
-/* ── NAV ─────────────────────────────────────────────────── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  padding:0 5vw;
-  transition:background .4s, box-shadow .4s;
-  overflow:visible;
-}
-nav.nav-expanded{ background:transparent; }
-nav.nav-scrolled{
-  background:rgba(8,8,8,0.97);
-  backdrop-filter:blur(12px);
-  box-shadow:0 2px 20px rgba(0,0,0,.55);
-}
-.nav-inner{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  max-width:1200px;
-  margin:0 auto;
-  transition:padding .4s cubic-bezier(.4,0,.2,1);
-}
-nav.nav-expanded .nav-inner{ padding:1.2rem 0 0.5rem; }
-nav.nav-scrolled .nav-inner{ padding:.25rem 0; }
+/* LAYOUT */
+#app{display:none;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--dark2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;}
+.sb-logo{padding:1.4rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;}
+.sb-logo-img{height:36px;width:auto;}
+.sb-logo-txt{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.04em;color:var(--white);}
+.sb-logo-sub{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.sb-nav{flex:1;padding:1rem 0;}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.85rem 1.5rem;color:var(--muted);font-size:.78rem;cursor:pointer;transition:all .2s;border-left:2px solid transparent;font-weight:400;}
+.sb-item:hover{color:var(--white);background:rgba(200,200,200,.03);}
+.sb-item.active{color:var(--white);border-left-color:var(--white);background:rgba(200,200,200,.05);}
+.sb-icon{width:16px;text-align:center;font-size:.9rem;}
+.sb-foot{padding:1rem 1.5rem;border-top:1px solid var(--border);}
+.sb-logout{background:transparent;border:1px solid var(--border);color:var(--muted);width:100%;padding:.6rem;font-family:'Barlow',sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.sb-logout:hover{border-color:var(--danger);color:var(--danger);}
+.main{margin-left:220px;padding:2rem;}
+.page{display:none;}
+.page.on{display:block;}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;color:var(--white);margin-bottom:.3rem;}
+.page-sub{font-size:.75rem;color:var(--muted);margin-bottom:2rem;letter-spacing:.02em;}
 
-/* Brand: logo + links juntos */
-.nav-brand{ display:flex;align-items:center;gap:1.8rem; }
-.nav-links{ display:flex;gap:1.8rem;list-style:none;align-items:center; }
-.nav-links a{color:var(--muted);text-decoration:none;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;transition:color .3s;font-weight:400;}
-.nav-links a:hover{color:var(--white);}
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;}
+.stat-card{background:var(--dark2);border:1px solid var(--border);padding:1.25rem 1.5rem;}
+.stat-lbl{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.03em;color:var(--white);}
+.stat-val.silver{color:var(--silver-l);}
+.stat-sub{font-size:.7rem;color:var(--muted);margin-top:.2rem;}
 
-/* Ações à direita */
-.nav-actions{ display:flex;align-items:center;gap:.9rem; }
+/* TABLE */
+.tbl-wrap{background:var(--dark2);border:1px solid var(--border);overflow:hidden;}
+.tbl-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:.75rem;}
+.tbl-head-title{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.04em;color:var(--white);}
+.tbl-filters{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;}
+.tbl-filter{background:var(--dark3);border:1px solid var(--border);color:var(--white);padding:.45rem .9rem;font-family:'Barlow',sans-serif;font-size:.75rem;outline:none;cursor:pointer;appearance:none;}
+.tbl-filter:focus{border-color:var(--silver-d);}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{text-align:left;padding:.75rem 1.25rem;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);font-weight:400;}
+td{padding:.75rem 1.25rem;border-bottom:1px solid rgba(200,200,200,.04);color:var(--white);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(200,200,200,.02);}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:2px;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;}
+.badge-pending{background:rgba(250,204,21,.12);color:var(--warn);}
+.badge-confirmed{background:rgba(74,222,128,.12);color:var(--ok);}
+.badge-cancelled{background:rgba(248,113,113,.12);color:var(--danger);}
+.badge-done{background:rgba(200,200,200,.1);color:var(--silver-l);}
+.badge-zap{background:rgba(74,222,128,.1);color:#4ade80;}
+.badge-online{background:rgba(200,200,200,.08);color:var(--silver-d);}
+.act-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.3rem .7rem;font-size:.7rem;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;}
+.act-btn:hover{border-color:var(--white);color:var(--white);}
+.act-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
+.act-btn.ok:hover{border-color:var(--ok);color:var(--ok);}
+.empty-row td{text-align:center;padding:3rem;color:var(--muted);}
 
-/* Logo */
-.nav-logo-wrap{ flex-shrink:0; transition:opacity .3s ease; }
-/* ── LOGO SIZE: ajuste height abaixo para mudar o tamanho inicial da logo ── */
-.logo-img{
-  height:130px;width:auto;object-fit:contain;display:block;
-  filter:drop-shadow(0 0 30px rgba(200,200,200,.15));
-  transition:height .4s cubic-bezier(.4,0,.2,1), filter .4s;
-}
-nav.nav-scrolled .logo-img{ height:34px; filter:drop-shadow(0 0 12px rgba(200,200,200,.1)); }
+/* TODAY CARDS */
+.today-appts{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+.appt-card{background:var(--dark2);border:1px solid var(--border);padding:1.25rem;}
+.appt-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;}
+.appt-time{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;color:var(--silver-l);}
+.appt-name{font-size:.9rem;color:var(--white);margin-bottom:.2rem;font-weight:400;}
+.appt-info{font-size:.75rem;color:var(--muted);}
+.appt-footer{display:flex;gap:.5rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--border);flex-wrap:wrap;}
 
-.nav-cta{background:transparent;border:1px solid var(--silver-d);color:var(--silver);padding:.45rem 1.3rem;font-family:'Barlow',sans-serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:all .3s;font-weight:400;}
-.nav-cta:hover{background:var(--white);color:var(--black);border-color:var(--white);}
+/* FORMS */
+.add-form{background:var(--dark2);border:1px solid var(--border);padding:1.75rem;}
+.add-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+.fg{display:flex;flex-direction:column;gap:.4rem;}
+.fg.full{grid-column:1/-1;}
+.flabel{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-d);}
+.fi{background:var(--dark3);border:1px solid rgba(200,200,200,.15);color:var(--white);padding:.75rem 1rem;font-family:'Barlow',sans-serif;font-size:.83rem;font-weight:300;outline:none;transition:border-color .3s;width:100%;appearance:none;}
+.fi:focus{border-color:var(--silver-d);}
+.fi option{background:var(--dark3);}
+.sel-wrap{position:relative;}
+.sel-wrap::after{content:'▾';position:absolute;right:.9rem;top:50%;transform:translateY(-50%);color:var(--silver-d);pointer-events:none;font-size:.75rem;}
+.add-actions{margin-top:1.25rem;display:flex;gap:.75rem;}
+.btn-primary{background:var(--white);color:var(--black);border:none;padding:.85rem 2rem;font-family:'Barlow',sans-serif;font-size:.73rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-primary:hover{background:var(--silver);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+.btn-sec{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.85rem 1.5rem;font-family:'Barlow',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-sec:hover{border-color:var(--white);color:var(--white);}
+.form-ok{color:var(--ok);font-size:.8rem;padding:.6rem 0;display:none;}
+.form-err{color:var(--danger);font-size:.8rem;padding:.6rem 0;display:none;}
 
-/* Mobile menu */
-.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
-.nav-hamburger span{display:block;width:22px;height:1.5px;background:var(--silver);transition:all .3s;}
-.nav-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
-.nav-hamburger.open span:nth-child(2){opacity:0;}
-.nav-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
-.nav-mobile{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(8,8,8,.98);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;}
-.nav-mobile.open{display:flex;animation:fadeIn .25s ease;}
-.nav-mobile a{color:var(--silver);text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:.08em;transition:color .3s;}
-.nav-mobile a:hover{color:var(--white);}
-.nav-mobile .nav-cta-mob{background:var(--white);color:var(--black);border:none;padding:.9rem 3rem;font-family:'Barlow',sans-serif;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;margin-top:1rem;}
+/* AVAILABILITY */
+.avail-controls{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;}
+.avail-grid-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;}
+.mcal{background:var(--dark2);border:1px solid var(--border);}
+.mcal-top{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);}
+.mcal-nav{background:transparent;border:1px solid var(--border);color:var(--silver-d);width:28px;height:28px;font-size:.9rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.mcal-nav:hover{background:rgba(200,200,200,.06);}
+.mcal-lbl{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.06em;color:var(--white);text-transform:capitalize;}
+.mcal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
+.mcal-dn{padding:.55rem 0;text-align:center;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid rgba(200,200,200,.04);}
+.mcal-d{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.78rem;cursor:default;position:relative;transition:all .2s;border:.5px solid rgba(200,200,200,.02);}
+.mcal-d.other{color:rgba(100,100,100,.2);}
+.mcal-d.past{color:rgba(100,100,100,.2);}
+.mcal-d.has-slots{color:var(--white);cursor:pointer;}
+.mcal-d.has-slots::before{content:'';position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:rgba(200,200,200,.4);}
+.mcal-d.has-slots:hover{background:rgba(200,200,200,.06);color:var(--silver-l);}
+.mcal-d.sel{background:var(--white);color:var(--black);font-weight:500;}
+.mcal-d.sel::before{background:var(--black);}
+.mcal-d.today{color:var(--silver-l);}
+.mcal-d.today::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--silver);}
+.mcal-d.sel.today::after{background:var(--black);}
+.slot-editor{background:var(--dark2);border:1px solid var(--border);padding:1.5rem;margin-top:1rem;}
+.slot-ed-title{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-d);margin-bottom:1rem;}
+.slot-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.5rem;margin-bottom:1.25rem;}
+.slot-chk{display:flex;align-items:center;gap:.5rem;}
+.slot-chk input[type=checkbox]{accent-color:var(--white);width:14px;height:14px;cursor:pointer;}
+.slot-chk label{font-size:.78rem;color:var(--white);cursor:pointer;}
+.slot-chk.occupied input{opacity:.4;}
+.slot-chk.occupied label{color:rgba(248,113,113,.7);cursor:not-allowed;}
+.occ-note{font-size:.7rem;color:var(--danger);margin-bottom:.75rem;display:none;}
+.slot-day-btns{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;}
+.quick-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.35rem .75rem;font-family:'Barlow',sans-serif;font-size:.68rem;cursor:pointer;transition:all .2s;}
+.quick-btn:hover{border-color:var(--white);color:var(--white);}
 
-/* ── HERO ─────────────────────────────────────────────────── */
-#hero{min-height:100vh;padding-top:140px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 55% 70% at 50% 50%,rgba(200,200,200,.04) 0%,transparent 65%);}
-.hero-noise{position:absolute;inset:0;opacity:.018;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px;}
-.hero-lines{position:absolute;inset:0;opacity:.022;background-image:repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(200,200,200,1) 80px,rgba(200,200,200,1) 81px),repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(200,200,200,1) 80px,rgba(200,200,200,1) 81px);}
-.hero-content{position:relative;text-align:center;padding:0 2rem;animation:heroIn 1.3s cubic-bezier(.22,1,.36,1) forwards;}
-.hero-logo{max-width:240px;width:50vw;margin:0 auto 2.5rem;display:block;filter:drop-shadow(0 0 50px rgba(200,200,200,.18));animation:logoPulse 4s ease-in-out infinite;}
-.eyebrow{font-size:.62rem;letter-spacing:.38em;text-transform:uppercase;color:var(--silver-d);margin-bottom:1.2rem;}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,9vw,7rem);letter-spacing:.06em;color:var(--white);line-height:.95;margin-bottom:.4rem;}
-.hero-title span{color:var(--silver);}
-.hero-sub{font-family:'Crimson Pro',serif;font-size:clamp(1rem,2.5vw,1.3rem);font-style:italic;color:var(--muted);margin:1.5rem 0 2.8rem;letter-spacing:.04em;}
-.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
-.btn-primary{background:var(--white);color:var(--black);border:none;padding:.9rem 2.5rem;font-family:'Barlow',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .3s;}
-.btn-primary:hover{background:var(--silver);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
-.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
-.btn-outline{background:transparent;color:var(--silver);border:1px solid rgba(200,200,200,.3);padding:.9rem 2.5rem;font-family:'Barlow',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
-.btn-outline:hover{border-color:var(--white);color:var(--white);transform:translateY(-2px);}
-.btn-wpp{display:inline-flex;align-items:center;text-decoration:none;}
-.btn-wpp:hover{border-color:#25D366;color:#25D366;box-shadow:0 0 18px rgba(37,211,102,.12);}
-.btn-insta{display:inline-flex;align-items:center;text-decoration:none;}
-.btn-insta:hover{border-color:#E1306C;color:#E1306C;box-shadow:0 0 18px rgba(225,48,108,.12);}
-.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--muted);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;animation:bounce 2.2s infinite;}
-.scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--silver-d),transparent);}
+/* SERVICES MANAGEMENT */
+.svc-mgmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;}
+.svc-list{background:var(--dark2);border:1px solid var(--border);}
+.svc-list-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;color:var(--white);}
+.svc-item{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid rgba(200,200,200,.04);transition:background .2s;}
+.svc-item:last-child{border-bottom:none;}
+.svc-item:hover{background:rgba(200,200,200,.02);}
+.svc-item-info{flex:1;}
+.svc-item-name{font-size:.9rem;color:var(--white);font-weight:400;margin-bottom:.2rem;}
+.svc-item-meta{font-size:.72rem;color:var(--muted);}
+.svc-item-price{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--silver-l);margin:0 1.5rem;letter-spacing:.03em;}
+.svc-item-acts{display:flex;gap:.4rem;}
+.svc-form{background:var(--dark2);border:1px solid var(--border);padding:1.5rem;}
+.svc-form-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.04em;color:var(--white);margin-bottom:1.25rem;}
+.svc-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 
-/* ── SECTIONS ─────────────────────────────────────────────── */
-section{padding:6rem 5vw;}
-.sec-header{text-align:center;margin-bottom:4rem;}
-.sec-eye{font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;color:var(--silver-d);margin-bottom:.9rem;display:block;}
-.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.8rem);letter-spacing:.06em;color:var(--white);line-height:1.1;}
-.sec-title em{font-style:normal;color:var(--silver);}
-.sec-desc{font-family:'Crimson Pro',serif;font-size:1.1rem;font-style:italic;color:var(--muted);margin-top:.8rem;}
+/* LOADING */
+.ring{display:inline-block;width:18px;height:18px;border:2px solid rgba(200,200,200,.1);border-top-color:var(--silver);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:.4rem;}
+.loading-row td{text-align:center;padding:2.5rem;color:var(--muted);}
 
-/* ── SERVICES ─────────────────────────────────────────────── */
-#services{background:var(--black);}
-.svc-list{display:flex;flex-wrap:wrap;justify-content:center;gap:0;max-width:900px;margin:0 auto;}
-.svc-item{
-  display:flex;align-items:center;gap:.75rem;
-  padding:.85rem 1.8rem;
-  border-bottom:1px solid rgba(200,200,200,.06);
-  color:var(--muted);
-  font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
-  transition:color .3s;
-  white-space:nowrap;
-}
-.svc-item:hover{color:var(--silver-l);}
-.svc-item-dot{width:4px;height:4px;border-radius:50%;background:rgba(200,200,200,.2);flex-shrink:0;transition:background .3s;}
-.svc-item:hover .svc-item-dot{background:var(--silver);}
-.svc-divider{width:100%;height:1px;background:rgba(200,200,200,.06);}
-/* svc-grid — usado pelo JS do agendamento (oculto visualmente na seção) */
-.svc-grid{display:none;}
-.svc-card{background:var(--dark2);padding:2.5rem 2rem;position:relative;overflow:hidden;transition:background .3s,transform .3s;}
-.svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--silver),transparent);transform:scaleX(0);transition:transform .45s;}
-.svc-card:hover{background:var(--dark3);transform:translateY(-4px);}
-.svc-card:hover::before{transform:scaleX(1);}
-.svc-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:rgba(200,200,200,.06);line-height:1;margin-bottom:.8rem;}
-.svc-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;color:var(--white);margin-bottom:.5rem;}
-.svc-desc{font-size:.78rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
-.svc-meta{display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid var(--border);}
-.svc-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.03em;color:var(--silver-l);}
-.svc-dur{font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
-
-/* ── ABOUT ─────────────────────────────────────────────────── */
-#about{background:var(--dark2);}
-.about-wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:420px 1fr;gap:5rem;align-items:center;}
-.about-photo-frame{position:relative;flex-shrink:0;}
-.about-photo-deco{position:absolute;bottom:-16px;right:-16px;width:100%;height:100%;border:1px solid rgba(200,200,200,.12);z-index:0;pointer-events:none;}
-.about-photo{width:100%;display:block;object-fit:cover;object-position:top center;filter:grayscale(15%) contrast(1.06);border:1px solid var(--border);position:relative;z-index:1;max-height:560px;}
-.about-text .sec-eye{text-align:left;}
-.about-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,4.5vw,3.6rem);letter-spacing:.04em;color:var(--white);line-height:1;margin-bottom:.6rem;}
-.about-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,3.5vw,2.6rem);letter-spacing:.04em;color:var(--silver);display:block;margin-bottom:1.4rem;}
-.about-body{font-size:.9rem;color:var(--muted);line-height:1.95;margin-bottom:2rem;}
-.about-stats{display:flex;gap:2.5rem;flex-wrap:wrap;}
-.about-stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--white);line-height:1;letter-spacing:.03em;}
-.about-stat-lbl{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.2rem;}
-.about-divider{width:40px;height:1px;background:var(--border);margin-bottom:1.5rem;}
-
-/* ── BOOKING ─────────────────────────────────────────────── */
-#booking{background:var(--black);}
-.booking-wrap{max-width:740px;margin:0 auto;}
-.bk-steps{display:flex;border:1px solid var(--border);overflow:hidden;margin-bottom:2.5rem;}
-.bk-step{flex:1;padding:1rem;text-align:center;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--border);transition:all .3s;font-weight:400;}
-.bk-step:last-child{border-right:none;}
-.bk-step.active{color:var(--white);background:rgba(200,200,200,.05);}
-.bk-step.done{color:var(--silver-d);}
-.bk-step-num{display:block;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;margin-bottom:.1rem;}
-.sp{display:none;}.sp.on{display:block;}
-.sv-picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
-.sv-pick{background:var(--dark2);border:1px solid var(--border);padding:1.25rem 1.5rem;cursor:pointer;transition:all .25s;}
-.sv-pick:hover,.sv-pick.sel{border-color:var(--silver);background:var(--dark3);transform:translateY(-2px);}
-.sv-pick.sel{box-shadow:0 0 0 1px var(--silver-d);}
-.sv-pick-name{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.04em;color:var(--white);margin-bottom:.3rem;}
-.sv-pick-info{font-size:.72rem;color:var(--muted);}
-.sv-pick-price{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--silver-l);margin-top:.5rem;letter-spacing:.03em;}
-/* Calendar */
-.cal-box{background:var(--dark2);border:1px solid var(--border);}
-.cal-top{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);}
-.cal-nav-btn{background:transparent;border:1px solid rgba(200,200,200,.18);color:var(--silver);width:32px;height:32px;font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
-.cal-nav-btn:hover{background:rgba(200,200,200,.08);}
-.cal-month-lbl{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:var(--white);text-transform:capitalize;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
-.cal-dn{padding:.7rem 0;text-align:center;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid rgba(200,200,200,.05);}
-.cal-d{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.82rem;cursor:default;position:relative;transition:all .2s;border:.5px solid rgba(200,200,200,.02);}
-.cal-d.other{color:rgba(100,100,100,.25);}.cal-d.past{color:rgba(100,100,100,.2);}
-.cal-d.today{color:var(--silver-l);font-weight:500;}
-.cal-d.today::after{content:'';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--silver);}
-.cal-d.avail{color:var(--white);cursor:pointer;}
-.cal-d.avail:hover{background:rgba(200,200,200,.08);color:var(--silver-l);}
-.cal-d.avail::before{content:'';position:absolute;top:5px;right:5px;width:5px;height:5px;border-radius:50%;background:rgba(200,200,200,.4);}
-.cal-d.sel{background:var(--white);color:var(--black);font-weight:500;}
-.cal-d.sel::before{background:var(--black);}.cal-d.sel.today::after{display:none;}
-.cal-leg{display:flex;gap:1.5rem;padding:.7rem 1.5rem;border-top:1px solid rgba(200,200,200,.05);flex-wrap:wrap;}
-.cal-leg-i{display:flex;align-items:center;gap:.4rem;font-size:.62rem;color:var(--muted);}
-.ld{width:6px;height:6px;border-radius:50%;}.ld-a{background:rgba(200,200,200,.4);}.ld-s{background:var(--white);}.ld-n{background:rgba(100,100,100,.25);}
-/* Slots */
-.slots-top{padding:1.2rem 0 .6rem;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--silver-d);}
-.slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:.4rem;}
-.slot{background:var(--dark3);border:1px solid var(--border);color:var(--muted);padding:.6rem .4rem;font-family:'Barlow',sans-serif;font-size:.78rem;text-align:center;cursor:pointer;transition:all .2s;line-height:1.3;}
-.slot:hover{border-color:var(--silver-d);color:var(--white);transform:translateY(-1px);}
-.slot.sel{background:var(--white);color:var(--black);border-color:var(--white);font-weight:500;}
-.slot.booked{background:var(--dark2);color:rgba(100,100,100,.18);border-color:rgba(200,200,200,.04);cursor:not-allowed;text-decoration:line-through;font-size:.7rem;}
-.no-avail{padding:2rem;text-align:center;color:var(--muted);font-size:.84rem;background:var(--dark3);border:1px solid var(--border);}
-.no-avail strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--white);margin-bottom:.4rem;}
-/* Form */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.5rem;}
-.fg{display:flex;flex-direction:column;gap:.45rem;}.fg.full{grid-column:1/-1;}
-.flabel{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-d);}
-.fi{background:var(--dark3);border:1px solid rgba(200,200,200,.15);color:var(--white);padding:.8rem 1rem;font-family:'Barlow',sans-serif;font-size:.84rem;font-weight:300;outline:none;transition:border-color .3s;width:100%;}
-.fi:focus{border-color:var(--silver);}
-.summary-box{background:var(--dark3);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem;}
-.sum-title{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-d);margin-bottom:1rem;}
-.sum-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(200,200,200,.05);font-size:.82rem;}
-.sum-row:last-child{border-bottom:none;padding-top:.6rem;}.sum-k{color:var(--muted);}.sum-v{color:var(--white);}
-.sum-total .sum-v{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--silver-l);letter-spacing:.03em;}
-.step-acts{margin-top:1.5rem;display:flex;align-items:center;gap:.75rem;}
-.btn-back{background:transparent;border:1px solid rgba(200,200,200,.15);color:var(--muted);padding:.75rem 1.75rem;font-family:'Barlow',sans-serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
-.btn-back:hover{border-color:var(--white);color:var(--white);}
-.form-err{padding:.8rem 1rem;font-size:.8rem;background:rgba(239,68,68,.08);border-left:3px solid #ef4444;color:#f87171;display:none;margin-top:.75rem;}
-.cal-loading{padding:3rem;text-align:center;color:var(--muted);font-size:.8rem;}
-.ring{display:inline-block;width:22px;height:22px;border:2px solid rgba(200,200,200,.1);border-top-color:var(--silver);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:.5rem;}
-/* Modal */
-.overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:2rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+/* OVERLAY */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:2rem;opacity:0;pointer-events:none;transition:opacity .3s;}
 .overlay.on{opacity:1;pointer-events:all;}
-.modal{background:var(--dark2);border:1px solid rgba(200,200,200,.18);padding:2.5rem;max-width:400px;width:100%;transform:scale(.96);transition:transform .3s;}
+.modal{background:var(--dark2);border:1px solid rgba(200,200,200,.2);padding:2rem;max-width:360px;width:100%;transform:scale(.96);transition:transform .3s;}
 .overlay.on .modal{transform:scale(1);}
-.modal-icon{font-size:2rem;margin-bottom:1rem;text-align:center;color:var(--silver);}
-.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;color:var(--white);margin-bottom:.5rem;text-align:center;}
-.modal-body{color:var(--muted);font-size:.82rem;line-height:1.7;text-align:center;}.modal-body strong{color:var(--silver-l);}
-.modal-close{margin-top:2rem;width:100%;background:transparent;border:1px solid var(--silver-d);color:var(--silver);padding:.75rem;font-family:'Barlow',sans-serif;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
-.modal-close:hover{background:var(--white);color:var(--black);border-color:var(--white);}
-/* ── LOCATION MAP ────────────────────────────────────────── */
-#location{background:var(--black);padding:0;}
-.location-wrap{display:grid;grid-template-columns:1fr 420px;max-width:1200px;margin:0 auto;}
-.location-info{padding:5rem 4rem;display:flex;flex-direction:column;justify-content:center;gap:1.8rem;}
-.location-label{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);}
-.location-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3rem);letter-spacing:.04em;color:var(--white);line-height:1.1;}
-.location-title em{color:var(--silver);font-style:normal;}
-.location-details{display:flex;flex-direction:column;gap:1rem;}
-.location-row{display:flex;align-items:flex-start;gap:.9rem;}
-.location-icon{font-size:.9rem;color:var(--silver-d);margin-top:.1rem;flex-shrink:0;}
-.location-text{font-size:.82rem;color:var(--muted);line-height:1.7;}
-.location-text strong{color:var(--silver-l);font-weight:400;}
-.map-frame{position:relative;min-height:420px;}
-.map-frame iframe{width:100%;height:100%;min-height:420px;border:0;display:block;filter:grayscale(60%) contrast(1.1) brightness(.85);}
-.map-frame::after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset -40px 0 60px rgba(8,8,8,.6);}
-@media(max-width:860px){
-  .location-wrap{grid-template-columns:1fr;}
-  .location-info{padding:3.5rem 2rem 2rem;}
-  .map-frame{min-height:300px;}
-  .map-frame iframe{min-height:300px;}
-  .map-frame::after{box-shadow:inset 0 -40px 60px rgba(8,8,8,.6);}
-}
-/* Footer */
-footer{background:var(--black);border-top:1px solid var(--border);padding:2.5rem 5vw;display:grid;grid-template-columns:1fr auto 1fr;gap:2rem;align-items:center;}
-.f-logo{height:42px;width:auto;object-fit:contain;margin-bottom:.5rem;display:block;}
-.f-copy{font-size:.7rem;color:var(--muted);}
-.f-credit{text-align:center;}
-.f-credit-txt{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,200,200,.4);}
-.f-credit-link{color:var(--silver-l);text-decoration:none;letter-spacing:.14em;transition:color .3s;}
-.f-credit-link:hover{color:var(--white);}
-.f-links{display:flex;gap:2rem;list-style:none;flex-wrap:wrap;justify-content:flex-end;}
-.f-links a{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;}
-.f-links a:hover{color:var(--white);}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;color:var(--white);margin-bottom:.5rem;}
+.modal-body{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;}
+.modal-acts{display:flex;gap:.75rem;}
 
-/* ── PAGE LOADER ─────────────────────────────────────────── */
-#page-loader{
-  position:fixed;inset:0;z-index:9999;
-  background:var(--black);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2rem;
-  /* fades out after logo flies away */
-  transition:opacity .5s ease .1s, visibility .5s ease .1s;
-}
-#page-loader.fly-out{opacity:0;visibility:hidden;pointer-events:none;}
-
-/* the flying logo — starts centered, flies to nav */
-#loader-logo-flying{
-  position:fixed;
-  z-index:10000;
-  pointer-events:none;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:clamp(140px,28vw,220px);
-  filter:drop-shadow(0 0 50px rgba(200,200,200,.3));
-  object-fit:contain;
-  transition:none; /* JS will add transition when flying */
-  transform-style:preserve-3d;
-  perspective:600px;
-}
-#loader-logo-flying.pulse{
-  /* gira como moeda/pião (1.8s) e para — em seguida voa */
-  animation:loaderSpin 1.1s cubic-bezier(.25,.46,.45,.94) forwards;
-}
-#loader-logo-flying.flying{
-  /* JS sets top/left/width/height to match nav logo position */
-  transition:
-    top .75s cubic-bezier(.7,0,.3,1),
-    left .75s cubic-bezier(.7,0,.3,1),
-    width .75s cubic-bezier(.7,0,.3,1),
-    height .75s cubic-bezier(.7,0,.3,1),
-    filter .75s ease,
-    opacity .2s ease .6s;
-}
-#loader-logo-flying.gone{opacity:0;}
-
-.loader-bar-wrap{
-  width:clamp(100px,20vw,160px);
-  height:1px;
-  background:rgba(200,200,200,.1);
-  overflow:hidden;
-}
-.loader-bar{
-  height:100%;
-  background:linear-gradient(90deg,transparent,var(--silver),transparent);
-  width:40%;
-  animation:loaderSlide 1.2s ease-in-out infinite;
-}
-.loader-txt{
-  font-size:.56rem;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);
-}
-
-/* hide the nav logo while loader is active, show after */
-.nav-logo-wrap{ opacity:0; transition: opacity .3s ease; }
-.nav-logo-wrap.visible{ opacity:1; }
-
-/* body hidden until site revealed */
-body.loading { overflow:hidden; }
-body.revealed #hero,
-body.revealed nav,
-body.revealed footer { animation: siteReveal .8s cubic-bezier(.22,1,.36,1) both; }
-
-@keyframes loaderSpin{
-  0%  {transform:translate(-50%,-50%) rotateY(0deg)   rotateZ(0deg)  scale(.9);  filter:drop-shadow(0 0 20px rgba(200,200,200,.12));}
-  25% {transform:translate(-50%,-50%) rotateY(180deg) rotateZ(5deg)  scale(1.05);filter:drop-shadow(0 0 60px rgba(200,200,200,.42));}
-  50% {transform:translate(-50%,-50%) rotateY(360deg) rotateZ(-3deg) scale(1.02);filter:drop-shadow(0 0 45px rgba(200,200,200,.28));}
-  75% {transform:translate(-50%,-50%) rotateY(510deg) rotateZ(2deg)  scale(1.01);}
-  100%{transform:translate(-50%,-50%) rotateY(630deg) rotateZ(0deg)  scale(1);   filter:drop-shadow(0 0 32px rgba(200,200,200,.2));}
-}
-@keyframes loaderSlide{
-  0%{transform:translateX(-150%);}
-  100%{transform:translateX(400%);}
-}
-@keyframes siteReveal{
-  from{opacity:0;transform:translateY(18px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-/* ── BARBEARIA PREVIEW SECTION ───────────────────────────── */
-#barbearia{background:var(--dark2);}
-.barb-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:1px;
-  border:1px solid var(--border);
-  max-width:1100px;margin:0 auto;
-}
-.barb-card{
-  background:var(--dark3);
-  padding:3rem 2.5rem;
-  position:relative;overflow:hidden;
-  transition:background .3s;
-}
-.barb-card:hover{background:rgba(30,30,30,1);}
-.barb-card-icon{font-size:1.8rem;margin-bottom:1.2rem;opacity:.55;}
-.barb-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.05em;color:var(--white);margin-bottom:.6rem;}
-.barb-card-body{font-size:.82rem;color:var(--muted);line-height:1.85;}
-.barb-card-tag{display:inline-block;margin-top:1.2rem;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-d);border:1px solid rgba(200,200,200,.12);padding:.3rem .8rem;}
-.barb-hero-img{
-  grid-column:1/-1;
-  position:relative;overflow:hidden;
-  min-height:320px;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--dark4);
-}
-.barb-hero-img img{
-  width:100%;max-height:400px;object-fit:cover;object-position:center 20%;
-  filter:grayscale(20%) contrast(1.05);
-  display:block;
-}
-.barb-hero-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(8,8,8,.85) 0%,rgba(8,8,8,.1) 60%);
-  display:flex;align-items:flex-end;padding:2.5rem;
-}
-.barb-hero-txt{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,4vw,2.8rem);letter-spacing:.06em;color:var(--white);line-height:1.1;}
-.barb-cta-row{grid-column:1/-1;padding:2.5rem;background:var(--dark3);display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
-.barb-cta-txt{font-family:'Crimson Pro',serif;font-style:italic;font-size:1.15rem;color:var(--muted);}
-@media(max-width:768px){
-  .barb-grid{grid-template-columns:1fr;}
-  .barb-hero-img{min-height:220px;}
-  .barb-cta-row{flex-direction:column;text-align:center;}
-}
-
-/* ── KEYFRAMES ───────────────────────────────────────────── */
-@keyframes heroIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-@keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 30px rgba(200,200,200,.12))}50%{filter:drop-shadow(0 0 60px rgba(200,200,200,.22))}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── RESPONSIVE ──────────────────────────────────────────── */
-@media(max-width:1024px){
-  .about-wrap{grid-template-columns:300px 1fr;gap:3rem;}
-  .nav-links{gap:1.2rem;}
+/* ── REPORTS ─────────────────────────────────── */
+.rep-period{display:flex;gap:.6rem;margin-bottom:1.75rem;flex-wrap:wrap;}
+.rep-tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.5rem 1.1rem;font-family:'Barlow',sans-serif;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.rep-tab.active{background:var(--white);color:var(--black);border-color:var(--white);}
+.rep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
+.rep-card{background:var(--dark2);border:1px solid var(--border);padding:1.4rem 1.5rem;}
+.rep-card-lbl{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
+.rep-card-val{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:.03em;color:var(--white);line-height:1;}
+.rep-card-sub{font-size:.7rem;color:var(--muted);margin-top:.35rem;}
+.rep-card-val.green{color:var(--ok);}
+.rep-card-val.silver{color:var(--silver-l);}
+.rep-section-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.06em;color:var(--silver-d);margin:1.75rem 0 .85rem;text-transform:uppercase;}
+.rep-chart-bar-wrap{background:var(--dark2);border:1px solid var(--border);padding:1.5rem;}
+.rep-bar-row{display:flex;align-items:center;gap:.85rem;margin-bottom:.75rem;}
+.rep-bar-label{font-size:.72rem;color:var(--muted);width:110px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rep-bar-track{flex:1;background:rgba(200,200,200,.06);height:6px;border-radius:0;}
+.rep-bar-fill{height:6px;background:var(--silver);border-radius:0;transition:width .6s cubic-bezier(.22,1,.36,1);}
+.rep-bar-val{font-size:.7rem;color:var(--silver-l);width:60px;text-align:right;flex-shrink:0;}
+.rep-notice{background:var(--dark2);border:1px solid var(--border);padding:1.25rem 1.5rem;font-size:.8rem;color:var(--muted);line-height:1.7;}
+.rep-notice strong{color:var(--silver-l);}
+
+/* ── CLIENTS ─────────────────────────────────── */
+.cli-layout{display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start;}
+.cli-search-wrap{display:flex;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;}
+.cli-search{flex:1;min-width:180px;background:var(--dark3);border:1px solid var(--border);color:var(--white);padding:.7rem 1rem;font-family:'Barlow',sans-serif;font-size:.83rem;outline:none;transition:border-color .3s;}
+.cli-search:focus{border-color:var(--silver-d);}
+.cli-table-wrap{background:var(--dark2);border:1px solid var(--border);overflow:hidden;}
+.cli-row{display:grid;grid-template-columns:1fr 140px 100px 80px;align-items:center;padding:.85rem 1.25rem;border-bottom:1px solid rgba(200,200,200,.04);transition:background .2s;cursor:pointer;}
+.cli-row:hover{background:rgba(200,200,200,.02);}
+.cli-row:last-child{border-bottom:none;}
+.cli-row-head{background:var(--dark3)!important;cursor:default;}
+.cli-row-head span{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+.cli-name{font-size:.87rem;color:var(--white);}
+.cli-phone{font-size:.78rem;color:var(--muted);}
+.cli-tag{display:inline-block;padding:.18rem .55rem;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;border-radius:1px;}
+.cli-tag-new{background:rgba(74,222,128,.1);color:var(--ok);}
+.cli-tag-ret{background:rgba(200,200,200,.08);color:var(--silver-d);}
+.cli-tag-vip{background:rgba(250,204,21,.1);color:var(--warn);}
+.cli-last-visit{font-size:.75rem;color:var(--muted);}
+.cli-act-icon{font-size:.85rem;color:var(--muted);text-align:right;}
+.cli-form-panel{background:var(--dark2);border:1px solid var(--border);padding:1.5rem;position:sticky;top:1.5rem;}
+.cli-form-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.04em;color:var(--white);margin-bottom:1.25rem;}
+.cli-ai-banner{background:var(--dark3);border:1px solid rgba(200,200,200,.1);border-left:2px solid var(--silver-d);padding:1rem 1.2rem;margin-top:1.25rem;font-size:.76rem;color:var(--muted);line-height:1.7;}
+.cli-ai-banner strong{color:var(--silver-l);}
+.cli-ai-icon{font-size:1.1rem;margin-right:.4rem;}
+@media(max-width:900px){.cli-layout{grid-template-columns:1fr;}.cli-form-panel{position:static;}}
+@media(max-width:600px){.cli-row{grid-template-columns:1fr 90px;}.cli-row>:nth-child(3),.cli-row>:nth-child(4){display:none;}}
+
+/* ── INTEGRATIONS ────────────────────────────── */
+.int-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;}
+.int-card{background:var(--dark2);border:1px solid var(--border);padding:1.75rem;}
+.int-card-top{display:flex;align-items:center;gap:.85rem;margin-bottom:1.25rem;}
+.int-card-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;border:1px solid var(--border);flex-shrink:0;}
+.int-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;color:var(--white);}
+.int-card-desc{font-size:.76rem;color:var(--muted);line-height:1.7;margin-bottom:1.25rem;}
+.int-status{display:inline-flex;align-items:center;gap:.45rem;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;border-radius:1px;margin-bottom:1.25rem;}
+.int-status-off{background:rgba(200,200,200,.06);color:var(--muted);}
+.int-status-on{background:rgba(74,222,128,.1);color:var(--ok);}
+.int-status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.int-form{display:flex;flex-direction:column;gap:.75rem;}
+.int-save-ok{color:var(--ok);font-size:.78rem;display:none;padding:.4rem 0;}
+.int-save-err{color:var(--danger);font-size:.78rem;display:none;padding:.4rem 0;}
+.int-coming{opacity:.45;pointer-events:none;}
+.int-coming-badge{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);padding:.2rem .55rem;margin-left:.5rem;vertical-align:middle;}
+
+/* ── IA PANEL ─────────────────────────────── */
+.ia-layout{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;}
+.ia-card{background:var(--dark2);border:1px solid var(--border);padding:1.75rem;}
+.ia-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.05em;color:var(--white);margin-bottom:.4rem;}
+.ia-card-sub{font-size:.75rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+/* QR */
+.ia-qr-wrap{display:flex;flex-direction:column;align-items:center;gap:1.25rem;}
+.ia-qr-box{position:relative;background:var(--dark3);border:1px solid var(--border);padding:1.25rem;display:flex;align-items:center;justify-content:center;}
+.ia-qr-box canvas{display:block;}
+.ia-qr-corner{position:absolute;width:16px;height:16px;border-color:var(--silver);border-style:solid;}
+.ia-qr-corner.tl{top:6px;left:6px;border-width:2px 0 0 2px;}
+.ia-qr-corner.tr{top:6px;right:6px;border-width:2px 2px 0 0;}
+.ia-qr-corner.bl{bottom:6px;left:6px;border-width:0 0 2px 2px;}
+.ia-qr-corner.br{bottom:6px;right:6px;border-width:0 2px 2px 0;}
+.ia-qr-label{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);text-align:center;}
+.ia-qr-status{display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--muted);padding:.55rem 1rem;background:var(--dark3);border:1px solid var(--border);width:100%;}
+.ia-qr-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ia-qr-status-dot.off{background:var(--muted);}
+.ia-qr-status-dot.on{background:var(--ok);box-shadow:0 0 6px rgba(74,222,128,.4);}
+.ia-qr-status-dot.waiting{background:var(--warn);animation:qrPulse 1.2s ease-in-out infinite;}
+@keyframes qrPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.ia-qr-btn{width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.7rem;font-family:'Barlow',sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.ia-qr-btn:hover{border-color:var(--white);color:var(--white);}
+.ia-qr-btn.primary{background:var(--white);color:var(--black);border-color:var(--white);}
+.ia-qr-btn.primary:hover{background:var(--silver-l);}
+/* Personality */
+.ia-pers-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.ia-pers-btn{background:var(--dark3);border:2px solid var(--border);padding:1.1rem 1rem;cursor:pointer;transition:all .25s;text-align:left;position:relative;}
+.ia-pers-btn:hover{border-color:var(--silver-d);background:rgba(200,200,200,.04);}
+.ia-pers-btn.sel{border-color:var(--white);background:rgba(200,200,200,.06);}
+.ia-pers-btn.sel::after{content:'✓';position:absolute;top:.6rem;right:.75rem;font-size:.75rem;color:var(--white);}
+.ia-pers-icon{font-size:1.3rem;margin-bottom:.5rem;display:block;}
+.ia-pers-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.05em;color:var(--white);display:block;margin-bottom:.2rem;}
+.ia-pers-desc{font-size:.68rem;color:var(--muted);line-height:1.5;}
+/* Settings */
+.ia-settings-grid{display:flex;flex-direction:column;gap:1rem;}
+.ia-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--dark3);border:1px solid var(--border);}
+.ia-toggle-label{font-size:.8rem;color:var(--white);}
+.ia-toggle-sub{font-size:.68rem;color:var(--muted);margin-top:.15rem;}
+.ia-toggle{position:relative;width:40px;height:22px;flex-shrink:0;}
+.ia-toggle input{opacity:0;width:0;height:0;}
+.ia-toggle-slider{position:absolute;cursor:pointer;inset:0;background:rgba(200,200,200,.12);border:1px solid var(--border);transition:.3s;}
+.ia-toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:var(--muted);transition:.3s;}
+.ia-toggle input:checked+.ia-toggle-slider{background:rgba(74,222,128,.15);border-color:var(--ok);}
+.ia-toggle input:checked+.ia-toggle-slider::before{transform:translateX(18px);background:var(--ok);}
+.ia-save-ok{color:var(--ok);font-size:.78rem;display:none;padding:.4rem 0;}
+.ia-full{grid-column:1/-1;}
+@media(max-width:900px){.ia-layout{grid-template-columns:1fr;}}
+@media(max-width:480px){.ia-pers-grid{grid-template-columns:1fr;}.ia-layout{grid-template-columns:1fr;}}
+/* ── MOBILE HAMBURGER TOGGLE ── */
+.sb-toggle{display:none;position:fixed;top:.8rem;left:.8rem;z-index:200;background:var(--dark2);border:1px solid var(--border);width:40px;height:40px;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;padding:8px;}
+.sb-toggle span{display:block;width:20px;height:1.5px;background:var(--silver);transition:all .3s;}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:49;}
+.sb-overlay.on{display:block;}
+
+@media(max-width:900px){
+  .sidebar{width:60px;}
+  .sb-logo-txt,.sb-logo-sub,.sb-item span:not(.sb-icon){display:none;}
+  .sb-logo{justify-content:center;}
+  .main{margin-left:60px;}
+  .svc-mgmt-grid{grid-template-columns:1fr;}
+  .stat-row{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
 }
-@media(max-width:860px){
-  .nav-links li:nth-child(3){display:none;} /* Barbearia some no tablet médio */
-}
-@media(max-width:800px){
-  .about-wrap{grid-template-columns:1fr;gap:2.5rem;}
-  .about-photo{max-width:320px;margin:0 auto;}
-  .about-photo-deco{display:none;}
-  .about-text .sec-eye{text-align:center;}
-  .about-title{text-align:center;}
-  .about-name{text-align:center;}
-  .about-body{text-align:center;}
-  .about-stats{justify-content:center;}
-  .about-divider{margin:0 auto 1.5rem;}
-}
-@media(max-width:768px){
-  /* Nav: esconde links e cta, mostra hamburger */
-  .nav-links,.nav-cta{display:none;}
-  .nav-hamburger{display:flex;}
-  /* Hero */
-  #hero{padding-top:100px;}
-  .hero-title{font-size:clamp(2.5rem,12vw,5rem);}
-  /* Sections */
-  section{padding:4rem 6vw;}
-  .sec-title{font-size:clamp(1.8rem,8vw,3rem);}
-  /* Booking */
-  .form-grid{grid-template-columns:1fr;}
-  .fg.full{grid-column:1;}
-  .bk-step{padding:.75rem .35rem;font-size:.52rem;}
-  .sv-picks{grid-template-columns:1fr 1fr;}
-  /* Footer */
-  footer{grid-template-columns:1fr;text-align:center;gap:1.5rem;}
-  .f-links{gap:1rem;justify-content:center;}
-  .f-logo{margin:0 auto;}
-  /* Barb */
-  .barb-grid{grid-template-columns:1fr;}
-  .barb-hero-img{min-height:220px;}
-  .barb-cta-row{flex-direction:column;text-align:center;}
-}
-@media(max-width:540px){
-  nav{padding:0 4vw;}
-  section{padding:3.5rem 5vw;}
-  .hero-title{font-size:clamp(2.2rem,13vw,4rem);}
-  .hero-sub{font-size:.9rem;}
-  .hero-btns{flex-direction:column;align-items:center;}
-  .hero-btns .btn-primary,.hero-btns .btn-outline{width:100%;max-width:300px;}
-  .hero-logo{max-width:180px;}
-  .about-photo{max-width:240px;}
-  .sv-picks{grid-template-columns:1fr;}
-  .bk-step-num{font-size:1.1rem;}
-  .bk-step{font-size:.48rem;padding:.65rem .25rem;}
-  .logo-img{height:110px;}
-  /* Ajusta altura inicial da logo no loader em telas pequenas */
-  #loader-logo-flying{width:clamp(110px,55vw,180px);}
-  .slots-grid{grid-template-columns:repeat(auto-fill,minmax(66px,1fr));}
-  .cal-d{font-size:.75rem;}
-  .about-stat-num{font-size:2.2rem;}
+@media(max-width:600px){
+  .sb-toggle{display:flex;}
+  .sidebar{width:240px;transform:translateX(-100%);transition:transform .3s;z-index:100;}
+  .sidebar.open{transform:translateX(0);}
+  .sb-logo-txt,.sb-logo-sub,.sb-item span:not(.sb-icon){display:block;}
+  .sb-logo{justify-content:flex-start;}
+  .main{margin-left:0;padding:1rem;padding-top:3.5rem;}
+  .add-form-grid{grid-template-columns:1fr;}
+  .svc-form-grid{grid-template-columns:1fr;}
+  .svc-mgmt-grid{grid-template-columns:1fr;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .page-title{font-size:1.6rem;}
+  table{font-size:.72rem;}
+  th,td{padding:.5rem .75rem;}
+  .tbl-head{flex-direction:column;align-items:flex-start;}
+  .today-appts{grid-template-columns:1fr;}
+  .avail-grid-wrap{grid-template-columns:1fr!important;}
+  .avail-controls{flex-direction:column;}
+  #page-disponibilidade > main > div,
+  .mcal+div{grid-template-columns:1fr!important;}
+  .act-btn{padding:.25rem .5rem;font-size:.65rem;}
+  .modal{padding:1.5rem;}
 }
 @media(max-width:380px){
-  .bk-steps{display:grid;grid-template-columns:1fr 1fr 1fr;}
-  .hero-title{font-size:2rem;}
-  section{padding:3rem 4vw;}
+  .stat-row{grid-template-columns:1fr;}
 }
 </style>
 </head>
-<body class="loading">
+<body>
 
-<!-- FLYING LOGO (lives outside loader, flies to nav) -->
-<img id="loader-logo-flying" src="logo.png" alt="Mister das Navalhas" class="pulse"/>
-
-<!-- PAGE LOADER (background + bar + text) -->
-<div id="page-loader">
-  <div style="width:clamp(140px,28vw,220px);height:clamp(140px,28vw,220px);"></div><!-- spacer where logo was -->
-  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-  <span class="loader-txt">Mister das Navalhas</span>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <img class="login-logo" src="logo.png" alt="Mister das Navalhas"/>
+    <div class="login-sub">Área do Barbeiro</div>
+    <label class="login-label">Senha de Acesso</label>
+    <input class="login-input" type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-err" id="login-err">Senha incorreta. Tente novamente.</div>
+  </div>
 </div>
 
-<!-- NAV MOBILE OVERLAY -->
-<div class="nav-mobile" id="nav-mobile">
-  <a href="#services" onclick="closeMenu()">Serviços</a>
-  <a href="#about" onclick="closeMenu()">Sobre</a>
-  <a href="#barbearia" onclick="closeMenu()">Barbearia</a>
-  <button class="nav-cta-mob" onclick="closeMenu();goTo('booking')">Agendar Horário</button>
-</div>
-
-<nav id="navbar" class="nav-expanded">
-  <div class="nav-inner">
-    <div class="nav-brand">
-      <div class="nav-logo-wrap">
-        <img class="logo-img" src="logo.png" alt="Mister das Navalhas — Barbearia"/>
-      </div>
-      <ul class="nav-links">
-        <li><a href="#services">Serviços</a></li>
-        <li><a href="#about">Sobre</a></li>
-        <li><a href="#barbearia">Barbearia</a></li>
-      </ul>
-    </div>
-    <div class="nav-actions">
-      <button class="nav-cta" onclick="goTo('booking')">Reservar</button>
-      <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
-    </div>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section id="hero" aria-label="Mister das Navalhas — Barbearia">
-  <div class="hero-bg"></div>
-  <div class="hero-noise"></div>
-  <div class="hero-lines"></div>
-  <div class="hero-content">
-    <!--img class="hero-logo" src="" alt="" width="240" height="240"/-->
-    <p class="eyebrow">✦ Barbearia · Desde 2019 · Jurujuba, RJ ✦</p>
-    <h1 class="hero-title">ARTE &amp;<br><span>ESTILO</span></h1>
-    <p class="hero-sub">Onde cada corte conta uma história.</p>
-    <div class="hero-btns">
-      <button class="btn-primary" onclick="goTo('booking')">Agendar Horário</button>
-      <a class="btn-outline btn-wpp" href="https://wa.me/5521999999999" target="_blank" rel="noopener">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:.45rem;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp
-      </a>
-      <a class="btn-outline btn-insta" href="https://instagram.com/misterdosnavalhas" target="_blank" rel="noopener">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:.45rem;"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-        Instagram
-      </a>
-    </div>
-  </div>
-  <div class="scroll-hint" aria-hidden="true"><div class="scroll-line"></div><span>Rolar</span></div>
-</section>
-
-<!-- SERVICES -->
-<section id="services" aria-label="Nossos Serviços">
-  <div class="sec-header reveal">
-    <span class="sec-eye">O que oferecemos</span>
-    <h2 class="sec-title">Nossos <em>Serviços</em></h2>
-  </div>
-  <div class="svc-list reveal">
-    <div class="svc-item"><span class="svc-item-dot"></span>Corte de Cabelo</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Corte Infantil</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Barba</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Hidratação</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Relaxamento</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Coloração</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Degradê</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Sobrancelha</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Limpeza de Pele</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Massagem Facial</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Depilação a Cera</div>
-    <div class="svc-item"><span class="svc-item-dot"></span>Navalha</div>
-  </div>
-  <div id="svc-grid" class="svc-grid" aria-hidden="true"></div>
-  <div style="text-align:center;margin-top:2.5rem;">
-    <button class="btn-outline" onclick="goTo('booking')">Ver preços & agendar →</button>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section id="about" aria-label="Sobre o Profissional">
-  <div class="about-wrap">
-    <div class="about-photo-frame reveal from-left">
-      <div class="about-photo-deco" aria-hidden="true"></div>
-      <img
-        class="about-photo"
-        src="wesley.png"
-        alt="Wesley — Barbeiro especialista da Mister das Navalhas em Jurujuba"
-        width="420"
-        loading="lazy"
-      />
-    </div>
-    <div class="about-text reveal from-right">
-      <span class="sec-eye">Conheça o profissional</span>
-      <div class="about-divider"></div>
-      <h2 class="about-title">MISTER DAS<br>NAVALHAS</h2>
-      <span class="about-name">Wesley</span>
-      <p class="about-body">
-        Com mais de 6 anos de experiência na arte da barbearia, Wesley transformou sua paixão pelo ofício em uma marca de excelência em Jurujuba. Cada corte é tratado como uma obra única, combinando técnica apurada, criatividade e atenção cirúrgica aos detalhes.<br><br>
-        Especialista em degradê, navalha e barba, Wesley atende com exclusividade na <strong style="color:var(--silver-l);">Mister das Navalhas</strong> — onde a tradição da barbearia clássica encontra o estilo contemporâneo. Seu compromisso é simples: você sai como sempre quis.
-      </p>
-      <div class="about-stats">
-        <div class="about-stat">
-          <div class="about-stat-num counter" data-target="6" data-suffix="+">0</div>
-          <div class="about-stat-lbl">Anos de<br>Experiência</div>
-        </div>
-        <div class="about-stat">
-          <div class="about-stat-num counter" data-target="2019" data-suffix="">0</div>
-          <div class="about-stat-lbl">Fundação da<br>Barbearia</div>
-        </div>
-        <div class="about-stat">
-          <div class="about-stat-num counter" data-target="100" data-suffix="%">0</div>
-          <div class="about-stat-lbl">Dedicação<br>Exclusiva</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- BARBEARIA -->
-<section id="barbearia" aria-label="Conheça a Barbearia">
-  <div class="sec-header reveal">
-    <span class="sec-eye">Nosso espaço</span>
-    <h2 class="sec-title">A <em>Barbearia</em></h2>
-    <p class="sec-desc">Um espaço pensado para você se sentir em casa.</p>
-  </div>
-  <div class="barb-grid reveal">
-    <div class="barb-hero-img">
-      <img src="wesley.png" alt="Interior da Mister das Navalhas"/>
-      <div class="barb-hero-overlay">
-        <div class="barb-hero-txt">MISTER DAS NAVALHAS<br><span style="color:var(--silver);font-size:60%;">Jurujuba · Rio de Janeiro</span></div>
-      </div>
-    </div>
-    <div class="barb-card">
-      <div class="barb-card-icon">✦</div>
-      <div class="barb-card-title">Ambiente Exclusivo</div>
-      <div class="barb-card-body">Um espaço cuidadosamente preparado para proporcionar conforto e privacidade. Cada detalhe do ambiente foi pensado para fazer você relaxar e curtir o momento.</div>
-      <span class="barb-card-tag">Atendimento Individual</span>
-    </div>
-    <div class="barb-card">
-      <div class="barb-card-icon">◈</div>
-      <div class="barb-card-title">Localização</div>
-      <div class="barb-card-body">Situado no charmoso bairro de Jurujuba, em Niterói — RJ. Fácil acesso, estacionamento próximo e uma vista única que só a orla de Jurujuba oferece.</div>
-      <span class="barb-card-tag">Jurujuba · Niterói · RJ</span>
-    </div>
-    <div class="barb-card">
-      <div class="barb-card-icon">⧖</div>
-      <div class="barb-card-title">Horário de Funcionamento</div>
-      <div class="barb-card-body">Segunda a Sexta das <strong style="color:var(--silver-l);">08h às 18h</strong><br>Sábado das <strong style="color:var(--silver-l);">08h às 17h</strong><br><br>Atendimento exclusivo com agendamento online. Sem filas, sem espera.</div>
-      <span class="barb-card-tag">Desde 2019</span>
-    </div>
-    <div class="barb-card">
-      <div class="barb-card-icon">◇</div>
-      <div class="barb-card-title">Ferramentas & Técnica</div>
-      <div class="barb-card-body">Equipamentos profissionais de alto nível, produtos premium e técnicas apuradas ao longo de mais de 6 anos. Do degradê clássico à navalha — cada ferramenta no lugar certo.</div>
-      <span class="barb-card-tag">Qualidade Premium</span>
-    </div>
-    <div class="barb-cta-row">
-      <p class="barb-cta-txt">"Onde cada corte conta uma história."</p>
-      <button class="btn-primary" onclick="goTo('booking')">Agendar Horário →</button>
-    </div>
-  </div>
-</section>
-
-<!-- BOOKING -->
-<section id="booking" aria-label="Agendamento Online">
-  <div class="sec-header reveal">
-    <span class="sec-eye">Reserve seu horário</span>
-    <h2 class="sec-title">Agendamento <em>Online</em></h2>
-    <p class="sec-desc">Escolha o serviço, data e horário disponíveis.</p>
-  </div>
-  <div class="booking-wrap reveal">
-    <div class="bk-steps">
-      <div class="bk-step active" id="si1"><span class="bk-step-num">1</span>Serviço</div>
-      <div class="bk-step" id="si2"><span class="bk-step-num">2</span>Data &amp; Hora</div>
-      <div class="bk-step" id="si3"><span class="bk-step-num">3</span>Confirmar</div>
-    </div>
-    <div class="sp on" id="sp1">
-      <div class="sv-picks" id="sv-picks"></div>
-      <div class="step-acts">
-        <button class="btn-primary" id="s1btn" onclick="goStep(2)" disabled>Próximo →</button>
-      </div>
-    </div>
-    <div class="sp" id="sp2">
-      <div class="cal-box">
-        <div class="cal-top">
-          <button class="cal-nav-btn" onclick="calMov(-1)" aria-label="Mês anterior">&#8249;</button>
-          <span class="cal-month-lbl" id="cal-lbl"></span>
-          <button class="cal-nav-btn" onclick="calMov(1)" aria-label="Próximo mês">&#8250;</button>
-        </div>
-        <div class="cal-grid" id="cal-grid" role="grid" aria-label="Calendário de datas"></div>
-        <div class="cal-leg" aria-hidden="true">
-          <div class="cal-leg-i"><div class="ld ld-a"></div>Disponível</div>
-          <div class="cal-leg-i"><div class="ld ld-s"></div>Selecionado</div>
-          <div class="cal-leg-i"><div class="ld ld-n"></div>Indisponível</div>
-        </div>
-      </div>
-      <div id="slots-sec" style="display:none;margin-top:1.5rem;">
-        <div class="slots-top" id="slots-lbl">Horários disponíveis</div>
-        <div class="slots-grid" id="slots-grid"></div>
-      </div>
-      <div class="step-acts">
-        <button class="btn-back" onclick="goStep(1)">← Voltar</button>
-        <button class="btn-primary" id="s2btn" onclick="goStep(3)" disabled>Próximo →</button>
-      </div>
-    </div>
-    <div class="sp" id="sp3">
-      <div class="summary-box" id="summary"></div>
-      <div class="form-grid">
-        <div class="fg"><label class="flabel">Seu Nome</label><input class="fi" type="text" id="cn" placeholder="Nome completo" autocomplete="name"/></div>
-        <div class="fg"><label class="flabel">Telefone / WhatsApp</label><input class="fi" type="tel" id="cp" placeholder="(21) 99999-9999" autocomplete="tel"/></div>
-        <div class="fg full"><label class="flabel">Email (opcional)</label><input class="fi" type="email" id="ce" placeholder="seu@email.com" autocomplete="email"/></div>
-      </div>
-      <div class="form-err" id="ferr"></div>
-      <div class="step-acts">
-        <button class="btn-back" onclick="goStep(2)">← Voltar</button>
-        <button class="btn-primary" id="cfmbtn" onclick="doBook()">Confirmar Agendamento</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- LOCATION -->
-<section id="location" aria-label="Localização">
-  <div class="location-wrap">
-    <div class="location-info reveal from-left">
-      <span class="location-label">Como chegar</span>
-      <h2 class="location-title">Nos encontre em<br><em>Jurujuba</em></h2>
-      <div class="location-details">
-        <div class="location-row">
-          <span class="location-icon">◈</span>
-          <p class="location-text"><strong>Rua Santos Dumont, Jurujuba</strong><br>Niterói · Rio de Janeiro · RJ</p>
-        </div>
-        <div class="location-row">
-          <span class="location-icon">⧖</span>
-          <p class="location-text">
-            <strong>Segunda a Sexta</strong> — 08h às 18h<br>
-            <strong>Sábado</strong> — 08h às 17h
-          </p>
-        </div>
-        <div class="location-row">
-          <span class="location-icon">✦</span>
-          <p class="location-text">Atendimento exclusivo com <strong>agendamento online</strong>.<br>Sem filas, sem espera.</p>
-        </div>
-      </div>
+<!-- APP -->
+<div id="app">
+  <!-- Mobile sidebar toggle -->
+  <button class="sb-toggle" onclick="toggleSidebar()" aria-label="Menu" id="sb-toggle-btn">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+  <div class="sidebar">
+    <div class="sb-logo">
+      <img class="sb-logo-img" src="logo.png" alt="Logo"/>
       <div>
-        <button class="btn-primary" onclick="goTo('booking')">Agendar Horário →</button>
+        <div class="sb-logo-txt">Mister das Navalhas</div>
+        <div class="sb-logo-sub">Painel Admin</div>
       </div>
     </div>
-    <div class="map-frame reveal">
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3675.2!2d-43.1051!3d-22.9323!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU1JzU2LjMiUyA0M8KwMDYnMTguNCJX!5e0!3m2!1spt-BR!2sbr!4v1680000000000!5m2!1spt-BR!2sbr&q=Jurujuba,+Niter%C3%B3i,+RJ"
-        allowfullscreen=""
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        title="Localização Mister das Navalhas — Jurujuba, Niterói RJ">
-      </iframe>
+    <nav class="sb-nav">
+      <div class="sb-item active" onclick="showPage('hoje',this)"><span class="sb-icon">◈</span><span>Hoje</span></div>
+      <div class="sb-item" onclick="showPage('agendamentos',this)"><span class="sb-icon">☰</span><span>Agendamentos</span></div>
+      <div class="sb-item" onclick="showPage('novo',this)"><span class="sb-icon">＋</span><span>Novo Agendamento</span></div>
+      <div class="sb-item" onclick="showPage('servicos',this)"><span class="sb-icon">✂</span><span>Serviços</span></div>
+      <div class="sb-item" onclick="showPage('disponibilidade',this)"><span class="sb-icon">◷</span><span>Disponibilidade</span></div>
+      <div class="sb-item" onclick="showPage('clientes',this)"><span class="sb-icon">⊛</span><span>Clientes</span></div>
+      <div class="sb-item" onclick="showPage('relatorios',this)"><span class="sb-icon">▦</span><span>Relatórios</span></div>
+      <div class="sb-item" onclick="showPage('integracoes',this)"><span class="sb-icon">⌁</span><span>Integrações</span></div>
+      <div class="sb-item" onclick="showPage('ia',this)"><span class="sb-icon">✦</span><span>IA</span></div>
+      <div class="sb-item" onclick="autoRefresh()" style="margin-top:auto"><span class="sb-icon"><span id="refresh-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .4s;"></span></span><span>Atualizar</span></div>
+    </nav>
+    <div class="sb-foot">
+      <button class="sb-logout" onclick="doLogout()">Sair</button>
     </div>
   </div>
-</section>
 
-<footer>
-  <div>
-    <img class="f-logo" src="logo.png" alt="Mister das Navalhas" width="120" height="42" loading="lazy"/>
-    <p class="f-copy">© 2025 Mister das Navalhas · Jurujuba, RJ</p>
-  </div>
-  <div class="f-credit">
-    <p class="f-credit-txt">Desenvolvido por</p>
-    <a href="https://nxolab.io/" target="_blank" rel="noopener" class="f-credit-link">NXOlab</a>
-  </div>
-  <ul class="f-links" aria-label="Links do rodapé">
-    <li><a href="#services">Serviços</a></li>
-    <li><a href="#barbearia">Barbearia</a></li>
-    <li><a href="#about">Sobre</a></li>
-    <li><a href="#booking">Agendar</a></li>
-    <li><a href="admin.html">Área do Barbeiro</a></li>
-  </ul>
-</footer>
+  <main class="main">
 
-<div class="overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-el">
+    <!-- HOJE -->
+    <div class="page on" id="page-hoje">
+      <div class="page-title">Agenda do Dia</div>
+      <p class="page-sub" id="hoje-date"></p>
+      <div class="stat-row" id="hoje-stats"></div>
+      <div class="today-appts" id="hoje-appts"></div>
+    </div>
+
+    <!-- TODOS OS AGENDAMENTOS -->
+    <div class="page" id="page-agendamentos">
+      <div class="page-title">Todos os Agendamentos</div>
+      <p class="page-sub">Gerencie e atualize o status dos agendamentos.</p>
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <span class="tbl-head-title">Agendamentos</span>
+          <div class="tbl-filters">
+            <select class="tbl-filter" id="f-status" onchange="filterAppts()">
+              <option value="">Todos os status</option>
+              <option value="pending">Pendente</option>
+              <option value="confirmed">Confirmado</option>
+              <option value="done">Concluído</option>
+              <option value="cancelled">Cancelado</option>
+            </select>
+            <input class="tbl-filter" type="date" id="f-date" onchange="filterAppts()" style="color:var(--white);background:var(--dark3);"/>
+            <button class="act-btn" onclick="clearFilters()">Limpar</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Data & Hora</th><th>Cliente</th><th>Serviço</th><th>Origem</th><th>Status</th><th>Ações</th>
+          </tr></thead>
+          <tbody id="appts-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NOVO AGENDAMENTO -->
+    <div class="page" id="page-novo">
+      <div class="page-title">Novo Agendamento</div>
+      <p class="page-sub">Registre agendamentos feitos pelo WhatsApp ou presencialmente.</p>
+      <div class="add-form">
+        <div class="add-form-grid">
+          <div class="fg"><label class="flabel">Cliente — Nome</label><input class="fi" type="text" id="na-name" placeholder="Nome do cliente"/></div>
+          <div class="fg"><label class="flabel">Telefone / WhatsApp</label><input class="fi" type="tel" id="na-phone" placeholder="(21) 99999-9999"/></div>
+          <div class="fg">
+            <label class="flabel">Serviço</label>
+            <div class="sel-wrap"><select class="fi" id="na-service"><option value="">Selecione</option></select></div>
+          </div>
+          <div class="fg">
+            <label class="flabel">Origem</label>
+            <div class="sel-wrap">
+              <select class="fi" id="na-source">
+                <option value="whatsapp">WhatsApp</option>
+                <option value="presencial">Presencial</option>
+                <option value="telefone">Telefone</option>
+                <option value="online">Online</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label class="flabel">Data</label><input class="fi" type="date" id="na-date" onchange="loadAvailSlots()"/></div>
+          <div class="fg">
+            <label class="flabel">Horário</label>
+            <div class="sel-wrap"><select class="fi" id="na-time"><option value="">Selecione a data primeiro</option></select></div>
+          </div>
+          <div class="fg"><label class="flabel">Email (opcional)</label><input class="fi" type="email" id="na-email" placeholder="email@exemplo.com"/></div>
+        </div>
+        <div class="form-ok" id="na-ok">✓ Agendamento registrado com sucesso!</div>
+        <div class="form-err" id="na-err"></div>
+        <div class="add-actions">
+          <button class="btn-primary" id="na-btn" onclick="saveNewAppt()">Registrar Agendamento</button>
+          <button class="btn-sec" onclick="clearNewForm()">Limpar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVIÇOS -->
+    <div class="page" id="page-servicos">
+      <div class="page-title">Gerenciar Serviços</div>
+      <p class="page-sub">Cadastre, edite ou remova os serviços oferecidos na barbearia.</p>
+      <div class="svc-mgmt-grid">
+        <div>
+          <div class="svc-list" id="svc-list">
+            <div class="svc-list-header">Serviços Cadastrados</div>
+            <div id="svc-items-list"></div>
+          </div>
+        </div>
+        <div>
+          <div class="svc-form">
+            <div class="svc-form-title" id="svc-form-title">Novo Serviço</div>
+            <input type="hidden" id="svc-edit-id"/>
+            <div class="svc-form-grid">
+              <div class="fg full"><label class="flabel">Nome do Serviço</label><input class="fi" type="text" id="svc-name" placeholder="Ex: Corte + Barba"/></div>
+              <div class="fg full"><label class="flabel">Descrição</label><input class="fi" type="text" id="svc-desc" placeholder="Breve descrição do serviço"/></div>
+              <div class="fg">
+                <label class="flabel">Duração (minutos)</label>
+                <input class="fi" type="number" id="svc-duration" placeholder="Ex: 50" min="10" max="300" step="5" value="50"/>
+              </div>
+              <div class="fg"><label class="flabel">Preço (R$)</label><input class="fi" type="number" id="svc-price" placeholder="0.00" step="0.01" min="0"/></div>
+            </div>
+            <div class="form-ok" id="svc-ok">✓ Serviço salvo com sucesso!</div>
+            <div class="form-err" id="svc-err"></div>
+            <div class="add-actions">
+              <button class="btn-primary" onclick="saveSvc()">Salvar Serviço</button>
+              <button class="btn-sec" onclick="clearSvcForm()">Limpar</button>
+            </div>
+          </div>
+          <div style="margin-top:1rem;background:var(--dark2);border:1px solid var(--border);padding:1.25rem;">
+            <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-d);margin-bottom:.6rem;">ℹ️ Sobre durações e horários</div>
+            <div style="font-size:.78rem;color:var(--muted);line-height:1.7;">
+              Serviços com duração acima de <strong style="color:var(--white);">50 min</strong> bloqueiam automaticamente os slots consecutivos no agendamento.<br>
+              Ex: um serviço de <strong style="color:var(--white);">100 min</strong> às 08:00 bloqueia 08:00 e 08:50.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPONIBILIDADE -->
+    <div class="page" id="page-disponibilidade">
+      <div class="page-title">Gerenciar Disponibilidade</div>
+      <p class="page-sub">Defina os dias e horários disponíveis para agendamento.</p>
+      <div class="avail-grid-wrap">
+        <div class="mcal" id="avail-cal">
+          <div class="mcal-top">
+            <button class="mcal-nav" onclick="avCalMov(-1)">&#8249;</button>
+            <span class="mcal-lbl" id="av-lbl"></span>
+            <button class="mcal-nav" onclick="avCalMov(1)">&#8250;</button>
+          </div>
+          <div class="mcal-grid" id="av-grid"></div>
+        </div>
+        <div id="av-editor" style="display:none">
+          <div class="slot-editor">
+            <div class="slot-ed-title" id="av-ed-title"></div>
+            <div class="slot-day-btns">
+              <button class="quick-btn" onclick="checkAll()">Selecionar todos</button>
+              <button class="quick-btn" onclick="uncheckAll()">Remover todos</button>
+            </div>
+            <div class="occ-note" id="occ-note">⚠ Horários ocupados não podem ser removidos.</div>
+            <div class="slot-checks" id="slot-checks"></div>
+            <div style="display:flex;gap:.75rem;">
+              <button class="btn-primary" onclick="saveAvailSlots()">Salvar Disponibilidade</button>
+              <button class="btn-sec" onclick="document.getElementById('av-editor').style.display='none'">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAINEL: CLIENTES
+══════════════════════════════════════════════ -->
+<script id="tmpl-clients" type="text/template">
+<div class="page" id="page-clientes">
+  <div class="page-title">Clientes</div>
+  <p class="page-sub">Cadastre e gerencie sua base de clientes.</p>
+  <div class="cli-layout">
+    <div>
+      <div class="cli-search-wrap">
+        <input class="cli-search" type="text" id="cli-q" placeholder="Buscar por nome ou telefone…" oninput="renderCliTable()"/>
+        <button class="btn-primary" onclick="openCliForm(null)" style="white-space:nowrap">+ Novo Cliente</button>
+      </div>
+      <div class="cli-table-wrap">
+        <div class="cli-row cli-row-head">
+          <span>Cliente</span><span>Telefone</span><span>Última visita</span><span>Tag</span>
+        </div>
+        <div id="cli-table-body"></div>
+      </div>
+    </div>
+    <div>
+      <div class="cli-form-panel" id="cli-form-panel">
+        <div class="cli-form-title" id="cli-form-title">Novo Cliente</div>
+        <input type="hidden" id="cli-edit-id"/>
+        <div style="display:flex;flex-direction:column;gap:.85rem;">
+          <div class="fg"><label class="flabel">Nome Completo</label><input class="fi" type="text" id="cli-fname" placeholder="Nome do cliente"/></div>
+          <div class="fg"><label class="flabel">Telefone / WhatsApp</label><input class="fi" type="tel" id="cli-fphone" placeholder="(21) 99999-9999"/></div>
+          <div class="fg"><label class="flabel">Email (opcional)</label><input class="fi" type="email" id="cli-femail" placeholder="email@exemplo.com"/></div>
+          <div class="fg"><label class="flabel">Data de Nascimento (opcional)</label><input class="fi" type="date" id="cli-fbirth"/></div>
+          <div class="fg"><label class="flabel">Observações</label><input class="fi" type="text" id="cli-fnotes" placeholder="Ex: preferência de corte…"/></div>
+        </div>
+        <div class="form-ok" id="cli-ok">✓ Cliente salvo com sucesso!</div>
+        <div class="form-err" id="cli-err"></div>
+        <div class="add-actions" style="margin-top:1.1rem;">
+          <button class="btn-primary" onclick="saveCli()">Salvar Cliente</button>
+          <button class="btn-sec" onclick="clearCliForm()">Limpar</button>
+        </div>
+        <div class="cli-ai-banner">
+          <span class="cli-ai-icon">✦</span>
+          <strong>IA em breve</strong><br>
+          Em breve a nossa IA enviará automaticamente mensagens pelo WhatsApp para clientes que não agendam há mais de <strong>30 dias</strong>, recuperando clientes inativos sem esforço manual.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</script>
+
+<!-- ══════════════════════════════════════════════
+     PAINEL: RELATÓRIOS
+══════════════════════════════════════════════ -->
+<script id="tmpl-reports" type="text/template">
+<div class="page" id="page-relatorios">
+  <div class="page-title">Relatórios</div>
+  <p class="page-sub">Acompanhe o desempenho da barbearia.</p>
+  <div class="rep-period">
+    <button class="rep-tab active" onclick="setRepPeriod('mes',this)">Este Mês</button>
+    <button class="rep-tab" onclick="setRepPeriod('anterior',this)">Mês Anterior</button>
+    <button class="rep-tab" onclick="setRepPeriod('ano',this)">Este Ano</button>
+    <button class="rep-tab" onclick="setRepPeriod('total',this)">Tudo</button>
+  </div>
+  <div class="rep-grid" id="rep-kpis"></div>
+  <div class="rep-section-title">Agendamentos por serviço</div>
+  <div class="rep-chart-bar-wrap" id="rep-svc-chart"></div>
+  <div class="rep-section-title">Origem dos agendamentos</div>
+  <div class="rep-chart-bar-wrap" id="rep-src-chart"></div>
+  <div class="rep-section-title">Acessos ao site</div>
+  <div class="rep-notice">
+    <strong>Analytics integrado em breve.</strong> A métrica de visitantes únicos e pageviews mensais estará disponível após a integração com o nosso módulo de analytics.<br>
+    Por enquanto, você pode acompanhar os acessos gratuitamente via <strong>Google Analytics</strong> ou <strong>Umami</strong> adicionado ao site.
+  </div>
+</div>
+</script>
+
+<!-- ══════════════════════════════════════════════
+     PAINEL: INTEGRAÇÕES
+══════════════════════════════════════════════ -->
+<script id="tmpl-integrations" type="text/template">
+<div class="page" id="page-integracoes">
+  <div class="page-title">Integrações</div>
+  <p class="page-sub">Conecte serviços externos à sua barbearia.</p>
+  <div class="int-grid">
+
+    <!-- MERCADO PAGO -->
+    <div class="int-card">
+      <div class="int-card-top">
+        <div class="int-card-icon">💳</div>
+        <div>
+          <div class="int-card-title">Mercado Pago</div>
+          <span class="int-status int-status-off" id="mp-status"><span class="int-status-dot"></span>Não conectado</span>
+        </div>
+      </div>
+      <p class="int-card-desc">Receba pagamentos online pelo Mercado Pago. Os clientes poderão pagar no momento do agendamento via Pix, cartão de crédito ou débito.</p>
+      <div class="int-form">
+        <div class="fg"><label class="flabel">Access Token de Produção</label><input class="fi" type="password" id="mp-token" placeholder="APP_USR-…" autocomplete="off"/></div>
+        <div class="fg"><label class="flabel">Public Key</label><input class="fi" type="text" id="mp-pubkey" placeholder="APP_USR-…"/></div>
+        <div class="int-save-ok" id="mp-ok">✓ Credenciais salvas com sucesso!</div>
+        <div class="int-save-err" id="mp-err"></div>
+        <div class="add-actions">
+          <button class="btn-primary" onclick="saveMpCreds()">Salvar & Ativar</button>
+          <button class="btn-sec" onclick="clearMpCreds()">Limpar</button>
+        </div>
+      </div>
+      <div style="margin-top:1.1rem;font-size:.72rem;color:var(--muted);line-height:1.6;">
+        Acesse <strong style="color:var(--silver-l);">Mercado Pago Developers</strong> → Suas integrações → Credenciais de produção para obter as chaves.
+      </div>
+    </div>
+
+    <!-- WHATSAPP / Z-API -->
+    <div class="int-card">
+      <div class="int-card-top">
+        <div class="int-card-icon">💬</div>
+        <div>
+          <div class="int-card-title">WhatsApp (Z-API)</div>
+          <span class="int-status int-status-off" id="zapi-status"><span class="int-status-dot"></span>Não conectado</span>
+        </div>
+      </div>
+      <p class="int-card-desc">Envie confirmações automáticas de agendamento e notificações para os clientes diretamente pelo WhatsApp via Z-API.</p>
+      <div class="int-form">
+        <div class="fg"><label class="flabel">Instance ID</label><input class="fi" type="text" id="zapi-id" placeholder="Ex: 3A1B2C…"/></div>
+        <div class="fg"><label class="flabel">Token</label><input class="fi" type="password" id="zapi-token" placeholder="Token da instância" autocomplete="off"/></div>
+        <div class="int-save-ok" id="zapi-ok">✓ Instância salva!</div>
+        <div class="int-save-err" id="zapi-err"></div>
+        <div class="add-actions">
+          <button class="btn-primary" onclick="saveZapiCreds()">Salvar & Ativar</button>
+          <button class="btn-sec" onclick="clearZapiCreds()">Limpar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- IA — em breve -->
+    <div class="int-card int-coming">
+      <div class="int-card-top">
+        <div class="int-card-icon">✦</div>
+        <div>
+          <div class="int-card-title">IA NXOlab <span class="int-coming-badge">Em breve</span></div>
+          <span class="int-status int-status-off"><span class="int-status-dot"></span>Disponível em breve</span>
+        </div>
+      </div>
+      <p class="int-card-desc">A IA da NXOlab identificará clientes inativos e enviará mensagens personalizadas pelo WhatsApp para reativar quem não agenda há mais de 30 dias.</p>
+      <div class="int-form">
+        <div class="fg"><label class="flabel">Chave de API NXOlab</label><input class="fi" type="password" placeholder="Disponível em breve" disabled/></div>
+        <div class="add-actions">
+          <button class="btn-primary" disabled>Em breve</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS — em breve -->
+    <div class="int-card int-coming">
+      <div class="int-card-top">
+        <div class="int-card-icon">◈</div>
+        <div>
+          <div class="int-card-title">Analytics <span class="int-coming-badge">Em breve</span></div>
+          <span class="int-status int-status-off"><span class="int-status-dot"></span>Disponível em breve</span>
+        </div>
+      </div>
+      <p class="int-card-desc">Métricas de acesso ao site — visitantes únicos, pageviews mensais e taxa de conversão — diretamente no painel de Relatórios.</p>
+      <div class="int-form">
+        <div class="fg"><label class="flabel">Tracking ID</label><input class="fi" type="text" placeholder="Disponível em breve" disabled/></div>
+        <div class="add-actions">
+          <button class="btn-primary" disabled>Em breve</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</script>
+
+<!-- ══════════════════════════════════════════════
+     PAINEL: IA
+══════════════════════════════════════════════ -->
+<script id="tmpl-ia" type="text/template">
+<div class="page" id="page-ia">
+  <div class="page-title">IA do WhatsApp</div>
+  <p class="page-sub">Configure e conecte a inteligência artificial da sua barbearia.</p>
+
+  <div class="ia-layout">
+
+    <!-- COL 1: QR CODE -->
+    <div>
+      <div class="ia-card">
+        <div class="ia-card-title">Conexão WhatsApp</div>
+        <div class="ia-card-sub">Escaneie o QR Code com o WhatsApp do número que a IA usará para atender seus clientes.</div>
+        <div class="ia-qr-wrap">
+          <div class="ia-qr-box">
+            <canvas id="ia-qr-canvas" width="200" height="200"></canvas>
+            <div class="ia-qr-corner tl"></div>
+            <div class="ia-qr-corner tr"></div>
+            <div class="ia-qr-corner bl"></div>
+            <div class="ia-qr-corner br"></div>
+          </div>
+          <div class="ia-qr-label">Escaneie com o WhatsApp → Dispositivos conectados → Conectar dispositivo</div>
+          <div class="ia-qr-status" id="ia-qr-status-row">
+            <span class="ia-qr-status-dot waiting" id="ia-qr-dot"></span>
+            <span id="ia-qr-status-txt">Aguardando leitura do QR Code…</span>
+          </div>
+          <button class="ia-qr-btn" onclick="refreshQr()">↻ Gerar novo QR Code</button>
+          <button class="ia-qr-btn primary" id="ia-connect-btn" onclick="simulateConnect()" style="display:none">✓ Confirmar Conexão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COL 2: PERSONALIDADE + CONFIGURAÇÕES -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+      <!-- PERSONALIDADE -->
+      <div class="ia-card">
+        <div class="ia-card-title">Personalidade da IA</div>
+        <div class="ia-card-sub">Escolha como a IA vai interagir com seus clientes pelo WhatsApp.</div>
+        <div class="ia-pers-grid">
+          <button class="ia-pers-btn sel" onclick="selPers('profissional',this)">
+            <span class="ia-pers-icon">🧔</span>
+            <span class="ia-pers-name">Profissional</span>
+            <span class="ia-pers-desc">Responde com objetividade e cordialidade. Foco em agendamentos rápidos e sem enrolação.</span>
+          </button>
+          <button class="ia-pers-btn" onclick="selPers('descontraido',this)">
+            <span class="ia-pers-icon">😎</span>
+            <span class="ia-pers-name">Descontraído</span>
+            <span class="ia-pers-desc">Tom casual, emojis moderados e linguagem do dia a dia. Deixa o cliente à vontade.</span>
+          </button>
+          <button class="ia-pers-btn" onclick="selPers('premium',this)">
+            <span class="ia-pers-icon">✦</span>
+            <span class="ia-pers-name">Premium</span>
+            <span class="ia-pers-desc">Linguagem refinada e exclusiva. Transmite sofisticação e cuidado com cada detalhe.</span>
+          </button>
+          <button class="ia-pers-btn" onclick="selPers('direto',this)">
+            <span class="ia-pers-icon">⚡</span>
+            <span class="ia-pers-name">Direto ao ponto</span>
+            <span class="ia-pers-desc">Respostas curtíssimas. Apenas o essencial — data, hora e confirmação. Zero papo.</span>
+          </button>
+        </div>
+        <div id="ia-pers-preview" style="margin-top:1.1rem;background:var(--dark3);border:1px solid var(--border);border-left:2px solid var(--silver-d);padding:.9rem 1.1rem;font-size:.78rem;color:var(--muted);line-height:1.75;"></div>
+      </div>
+
+      <!-- CONFIGURAÇÕES -->
+      <div class="ia-card">
+        <div class="ia-card-title">Configurações</div>
+        <div class="ia-settings-grid">
+          <div class="ia-toggle-row">
+            <div>
+              <div class="ia-toggle-label">Reativação automática</div>
+              <div class="ia-toggle-sub">Envia mensagem para clientes sem visita há +30 dias</div>
+            </div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-reativacao" checked/><span class="ia-toggle-slider"></span></label>
+          </div>
+          <div class="ia-toggle-row">
+            <div>
+              <div class="ia-toggle-label">Confirmação de agendamento</div>
+              <div class="ia-toggle-sub">Confirma o horário 24h antes pelo WhatsApp</div>
+            </div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-confirmacao" checked/><span class="ia-toggle-slider"></span></label>
+          </div>
+          <div class="ia-toggle-row">
+            <div>
+              <div class="ia-toggle-label">Responder fora do horário</div>
+              <div class="ia-toggle-sub">IA atende mensagens mesmo quando a barbearia está fechada</div>
+            </div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-fora-horario"/><span class="ia-toggle-slider"></span></label>
+          </div>
+          <div class="ia-toggle-row">
+            <div>
+              <div class="ia-toggle-label">Agendamento automático</div>
+              <div class="ia-toggle-sub">IA cria o agendamento direto pelo chat sem intervenção</div>
+            </div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-auto-book"/><span class="ia-toggle-slider"></span></label>
+          </div>
+        </div>
+        <div style="margin-top:1.1rem;">
+          <div class="fg" style="margin-bottom:.75rem;"><label class="flabel">Mensagem de boas-vindas personalizada</label><input class="fi" type="text" id="ia-welcome-msg" placeholder="Ex: Olá! Bem-vindo à Mister das Navalhas 🪒"/></div>
+          <div class="fg"><label class="flabel">Intervalo de reativação (dias)</label>
+            <div class="sel-wrap"><select class="fi" id="ia-reativ-days">
+              <option value="30">30 dias</option><option value="45">45 dias</option><option value="60">60 dias</option><option value="90">90 dias</option>
+            </select></div>
+          </div>
+        </div>
+        <div class="ia-save-ok" id="ia-save-ok">✓ Configurações salvas!</div>
+        <div class="add-actions" style="margin-top:1.1rem;">
+          <button class="btn-primary" onclick="saveIaConfig()">Salvar Configurações</button>
+          <button class="btn-sec" onclick="loadIaConfig()">Restaurar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</script>
+<div class="overlay" id="conf-modal">
   <div class="modal">
-    <div class="modal-icon" aria-hidden="true">✦</div>
-    <div class="modal-title" id="modal-title-el">Agendamento Confirmado!</div>
-    <div class="modal-body" id="mbody"></div>
-    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('on')">Fechar</button>
+    <div class="modal-title" id="cm-title"></div>
+    <div class="modal-body" id="cm-body"></div>
+    <div class="modal-acts">
+      <button class="btn-primary" id="cm-ok">Confirmar</button>
+      <button class="btn-sec" onclick="closeConfModal()">Cancelar</button>
+    </div>
   </div>
 </div>
 
 <script>
-/* ── PAGE LOADER + LOGO FLY ANIMATION ───────────── */
-(function(){
-  const MIN_MS = 1500 // mínimo de splash antes de voar (ms)
-  const flyingLogo  = document.getElementById('loader-logo-flying')
-  const loader      = document.getElementById('page-loader')
-  const navLogoWrap = document.querySelector('.nav-logo-wrap')
-  const navLogo     = document.querySelector('.logo-img')
-  const start       = Date.now()
-
-  function flyToNav(){
-    // Mede posição e tamanho da logo no nav
-    const navRect = navLogo.getBoundingClientRect()
-
-    // 1. Para a animação de spin mas mantém o translate(-50%,-50%) intacto
-    //    para que o elemento permaneça visualmente no mesmo lugar
-    flyingLogo.classList.remove('pulse')
-    flyingLogo.style.animation = 'none'
-    flyingLogo.style.transform = 'translate(-50%,-50%)'
-
-    // 2. Força reflow — agora o elemento está parado com transform centrado
-    flyingLogo.getBoundingClientRect()
-
-    // 3. Mede a posição real depois do reflow (sem a animação rodando)
-    const flyRect = flyingLogo.getBoundingClientRect()
-
-    // 4. Converte para top/left absolutos equivalentes e zera o transform
-    flyingLogo.style.transform = 'none'
-    flyingLogo.style.top    = flyRect.top    + 'px'
-    flyingLogo.style.left   = flyRect.left   + 'px'
-    flyingLogo.style.width  = flyRect.width  + 'px'
-    flyingLogo.style.height = flyRect.height + 'px'
-
-    // 5. Força mais um reflow para fixar a posição antes de iniciar a transição
-    flyingLogo.getBoundingClientRect()
-
-    // Inicia voo — destino é a posição e tamanho exatos da logo no nav
-    flyingLogo.classList.add('flying')
-    flyingLogo.style.top    = navRect.top    + 'px'
-    flyingLogo.style.left   = navRect.left   + 'px'
-    flyingLogo.style.width  = navRect.width  + 'px'
-    flyingLogo.style.height = navRect.height + 'px'
-    flyingLogo.style.filter = 'drop-shadow(0 0 20px rgba(200,200,200,.12))'
-
-    // Fade out loader background junto
-    loader.classList.add('fly-out')
-    document.body.classList.remove('loading')
-    document.body.classList.add('revealed')
-
-    // Depois que a logo chegou: mostra a logo real no nav e some a voadora
-    setTimeout(()=>{
-      navLogoWrap.classList.add('visible')
-      flyingLogo.classList.add('gone')
-      // Remove a logo voadora do DOM após fadeout
-      setTimeout(()=>flyingLogo.remove(), 300)
-    }, 780)
-  }
-
-  function tryFly(){
-    const elapsed = Date.now() - start
-    const wait    = Math.max(0, MIN_MS - elapsed)
-    setTimeout(flyToNav, wait)
-  }
-
-  if(document.readyState === 'complete') tryFly()
-  else window.addEventListener('load', tryFly)
-})()
-
-/* ── MOBILE MENU ─────────────────────────────── */
-function toggleMenu(){
-  const m=document.getElementById('nav-mobile'), h=document.getElementById('hamburger')
-  const open=m.classList.toggle('open')
-  h.classList.toggle('open',open)
-  document.body.style.overflow=open?'hidden':''
-}
-function closeMenu(){
-  document.getElementById('nav-mobile').classList.remove('open')
-  document.getElementById('hamburger').classList.remove('open')
-  document.body.style.overflow=''
-}
-
-/* ── NAVBAR SCROLL SHRINK ────────────────────── */
-(function(){
-  const nav=document.getElementById('navbar')
-  function onScroll(){
-    if(window.scrollY>90){
-      nav.classList.remove('nav-expanded')
-      nav.classList.add('nav-scrolled')
-    } else {
-      nav.classList.remove('nav-scrolled')
-      nav.classList.add('nav-expanded')
-    }
-  }
-  window.addEventListener('scroll',onScroll,{passive:true})
-  onScroll()
-})()
-
-/* ── SCROLL REVEAL ───────────────────────────── */
-const revObs=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revObs.unobserve(e.target)} })
-},{threshold:0.12,rootMargin:'0px 0px -40px 0px'})
-document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el))
-
-/* ── COUNTER ANIMATION ───────────────────────── */
-function animateCounter(el){
-  const target=parseInt(el.dataset.target)
-  const suffix=el.dataset.suffix||''
-  const duration=1600
-  const start=performance.now()
-  const startVal=target>100?1800:0
-  function step(now){
-    const elapsed=now-start
-    const progress=Math.min(elapsed/duration,1)
-    // Ease out cubic
-    const eased=1-Math.pow(1-progress,3)
-    const current=Math.round(startVal+(target-startVal)*eased)
-    el.textContent=current+suffix
-    if(progress<1) requestAnimationFrame(step)
-    else el.textContent=target+suffix
-  }
-  requestAnimationFrame(step)
-}
-const counterObs=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      animateCounter(e.target)
-      counterObs.unobserve(e.target)
-    }
-  })
-},{threshold:0.5})
-document.querySelectorAll('.counter').forEach(el=>counterObs.observe(el))
-
-/* ── SERVICE CARDS STAGGER ───────────────────── */
-function observeSvcCards(){
-  const cards=document.querySelectorAll('.svc-card')
-  cards.forEach((c,i)=>{
-    c.classList.add('reveal')
-    const rect=c.getBoundingClientRect()
-    const inView=rect.top < window.innerHeight && rect.bottom > 0
-    if(inView){
-      setTimeout(()=>c.classList.add('visible'),i*80)
-    } else {
-      revObs.observe(c)
-    }
-  })
-}
-
-/* ── API ──────────────────────── */
+const ADMIN_PASSWORD = 'barbearia2025'
 const API = window.location.origin + '/api'
+
+// Helper: fetch wrapper
 async function apiFetch(path, opts = {}) {
   const res = await fetch(API + path, {
     headers: { 'Content-Type': 'application/json' },
     ...opts,
     body: opts.body ? JSON.stringify(opts.body) : undefined,
   })
-  if (!res.ok) throw new Error('API error')
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || 'Erro na API')
+  }
   return res.json()
 }
+
+// Compatibility shim (so existing code using sb.from().select() etc works via API)
 const MOCK = () => false
 
+const ALL_SLOTS = ['08:00','08:50','09:40','10:30','11:20','12:10','13:00','13:50','14:40','15:30','16:20','17:10','18:00']
 const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 const DNAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
+const STATUS_LABELS = {pending:'Pendente',confirmed:'Confirmado',done:'Concluído',cancelled:'Cancelado'}
+const STATUS_CLS = {pending:'badge-pending',confirmed:'badge-confirmed',done:'badge-done',cancelled:'badge-cancelled'}
+const SOURCE_LABELS = {whatsapp:'WhatsApp',online:'Online',presencial:'Presencial',telefone:'Telefone'}
 
-// Estado global
-const S = { services:[], avail:{}, sel:{b:null,s:null,date:null,time:null}, cy:0, cm:0 }
+const A = { barber:null, services:[], appts:[], avail:{}, acy:0, acm:0, avSelDate:null, avOccupied:[] }
 
-/* MOCK DATA */
-const MS = [
-  {id:'s1',name:'Corte Clássico',description:'Tesoura, pente e acabamento perfeito.',duration_min:30,price:45},
-  {id:'s2',name:'Corte + Barba',description:'Pacote completo com navalha.',duration_min:60,price:75},
-  {id:'s3',name:'Barba Completa',description:'Modelagem com toalha quente.',duration_min:30,price:40},
-  {id:'s4',name:'Degradê',description:'Fade do mais baixo ao alto.',duration_min:45,price:55},
+// MOCK
+const MS=[
+  {id:'s1',name:'Corte Clássico',description:'Tesoura, pente e acabamento.',duration_min:30,price:45,active:true},
+  {id:'s2',name:'Corte + Barba',description:'Pacote completo com navalha.',duration_min:60,price:75,active:true},
+  {id:'s3',name:'Barba Completa',description:'Modelagem com toalha quente.',duration_min:30,price:40,active:true},
+  {id:'s4',name:'Degradê',description:'Fade do mais baixo ao alto.',duration_min:45,price:55,active:true},
 ]
-const MB_MOCK = [{id:'b1',name:'Wsley',role:'Master Barber',experience:'6 anos',image_url:''}]
-
-function mockAvail() {
-  const a={}, t=new Date()
-  for(let i=1;i<=28;i++){
+function mockAppts(){
+  const t=new Date(),res=[]
+  for(let i=-2;i<=5;i++){
     const d=new Date(t); d.setDate(t.getDate()+i)
     if(d.getDay()===0) continue
-    if(i%5===0) continue
-    a[fd(d)]=['08:00','08:50','09:40','10:30','11:20','13:00','13:50','14:40','15:30','16:20','17:10']
+    res.push({id:'a'+i,barber_id:'b1',service_id:'s'+(Math.abs(i)%4+1),client_name:['Carlos Silva','Ana Lima','Pedro Rocha','Marcos Duarte'][Math.abs(i)%4],client_phone:'(21) 9'+Math.abs(i)+'999-999'+Math.abs(i),appt_date:fd(d),time_slot:['09:00','10:30','14:00','15:30'][Math.abs(i)%4],status:['pending','confirmed','done','pending'][Math.abs(i)%4],source:['whatsapp','online','presencial','whatsapp'][Math.abs(i)%4]})
   }
-  return a
+  return res
 }
+function mockAvail(){const a={},t=new Date();for(let i=0;i<=30;i++){const d=new Date(t);d.setDate(t.getDate()+i);if(d.getDay()===0)continue;if(i%5===0)continue;a[fd(d)]=['08:00','08:50','09:40','10:30','11:20','13:00','13:50','14:40','15:30','16:20']}return a}
 
 function fd(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function ptd(s){const[y,m,d]=s.split('-');return`${d}/${m}/${y}`}
-function goTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+function now(){return fd(new Date())}
+function sName(id){return(A.services.find(s=>s.id===id)||{}).name||id}
+function slotsCount(dur){return Math.ceil((dur||50)/50)}
+function blockedSlots(slot, dur_min, allSlots){const idx=allSlots.indexOf(slot);if(idx<0)return[slot];return allSlots.slice(idx,idx+slotsCount(dur_min))}
 
-// Calcula quantos slots adicionais o serviço ocupa (além do 1o)
-function slotsCount(duration_min){return Math.ceil((duration_min||50)/50)}
-
-// Lista todos os slots bloqueados por um agendamento (incluindo consecutivos)
-function blockedSlots(slot, duration_min, allSlots){
-  const idx = allSlots.indexOf(slot)
-  if(idx<0) return [slot]
-  const n = slotsCount(duration_min)
-  return allSlots.slice(idx, idx+n)
-}
-
-async function init(){
-  const now=new Date(); S.cy=now.getFullYear(); S.cm=now.getMonth()
-  const [rb,rs]=await Promise.all([
-    apiFetch('/barbers').catch(()=>[]),
-    apiFetch('/services?active=true').catch(()=>[])
-  ])
-  S.barber=(Array.isArray(rb)?rb:[])[0]||null
-  if(S.barber) S.sel.b=S.barber.id
-  S.services=Array.isArray(rs)?rs:[]
-  renderSvcSec(); renderSvPicks()
-}
-
-function renderSvcSec(){
-  document.getElementById('svc-grid').innerHTML=S.services.map((s,i)=>`
-    <div class="svc-card">
-      <div class="svc-num">${String(i+1).padStart(2,'0')}</div>
-      <div class="svc-name">${s.name}</div>
-      <div class="svc-desc">${s.description||''}</div>
-      <div class="svc-meta"><span class="svc-price">R$ ${Number(s.price).toFixed(2)}</span><span class="svc-dur">${s.duration_min} min</span></div>
-    </div>`).join('')
-  observeSvcCards()
-}
-
-function renderSvPicks(){
-  document.getElementById('sv-picks').innerHTML=S.services.map(s=>`
-    <div class="sv-pick" id="svp${s.id}" onclick="selSvc('${s.id}')">
-      <div class="sv-pick-name">${s.name}</div>
-      <div class="sv-pick-info">${s.duration_min} min · ${s.description||''}</div>
-      <div class="sv-pick-price">R$ ${Number(s.price).toFixed(2)}</div>
-    </div>`).join('')
-}
-
-function selSvc(id){
-  S.sel.s=id
-  document.querySelectorAll('.sv-pick').forEach(e=>e.classList.remove('sel'))
-  document.getElementById('svp'+id)?.classList.add('sel')
-  document.getElementById('s1btn').disabled=false
-}
-
-function goStep(n){
-  document.querySelectorAll('.sp').forEach(p=>p.classList.remove('on'))
-  document.querySelectorAll('.bk-step').forEach(s=>s.classList.remove('active','done'))
-  document.getElementById('sp'+n).classList.add('on')
-  document.getElementById('si'+n).classList.add('active')
-  for(let i=1;i<n;i++) document.getElementById('si'+i).classList.add('done')
-  if(n===2) renderCal()
-  if(n===3) renderSummary()
-  goTo('booking')
-}
-
-async function loadAvail(){
-  if(!S.sel.b) return
-  if(false){S.avail={};return}
-  const start=`${S.cy}-${String(S.cm+1).padStart(2,'0')}-01`
-  const nm=S.cm===11?0:S.cm+1, ny=S.cm===11?S.cy+1:S.cy
-  const end=`${ny}-${String(nm+1).padStart(2,'0')}-01`
-  const data=await apiFetch(`/barber_availability?barber_id=${S.sel.b}&gte=${start}&lt=${end}`).catch(()=>[])
-  S.avail={}; (data||[]).forEach(r=>{S.avail[r.avail_date]=r.time_slots})
-}
-
-async function renderCal(){
-  document.getElementById('cal-lbl').textContent=`${MONTHS[S.cm]} ${S.cy}`
-  const g=document.getElementById('cal-grid')
-  g.innerHTML=`<div class="cal-loading"><span class="ring"></span> Carregando...</div>`
-  await loadAvail()
-  const today=new Date(); today.setHours(0,0,0,0)
-  const first=new Date(S.cy,S.cm,1), last=new Date(S.cy,S.cm+1,0)
-  let h=DNAMES.map(d=>`<div class="cal-dn">${d}</div>`).join('')
-  for(let i=0;i<first.getDay();i++) h+=`<div class="cal-d other"></div>`
-  for(let d=1;d<=last.getDate();d++){
-    const dt=new Date(S.cy,S.cm,d); const key=fd(dt)
-    const isToday=dt.getTime()===today.getTime()
-    const isPast=dt<today, isSel=key===S.sel.date
-    const hasSlots=!!S.avail[key]&&S.avail[key].length>0
-    let cls='cal-d'+(isSel?' sel':isPast?' past':hasSlots?' avail':' ')+(isToday&&!isSel?' today':'')
-    const click=(!isPast&&hasSlots)?`onclick="selDate('${key}')"`:''
-    h+=`<div class="${cls}" ${click}>${d}</div>`
+/* LOGIN */
+function doLogin(){
+  const pw=document.getElementById('pw-input').value
+  const err=document.getElementById('login-err')
+  if(pw===ADMIN_PASSWORD){
+    sessionStorage.setItem('mdn_admin','1')
+    document.getElementById('login-screen').style.display='none'
+    document.getElementById('app').style.display='block'
+    initApp()
+  } else {
+    err.style.display='block'
+    setTimeout(()=>err.style.display='none',3000)
   }
-  const trail=6-last.getDay()
-  for(let i=0;i<trail;i++) h+=`<div class="cal-d other"></div>`
+}
+document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()})
+function doLogout(){sessionStorage.removeItem('mdn_admin');location.reload()}
+if(sessionStorage.getItem('mdn_admin')==='1'){
+  document.getElementById('login-screen').style.display='none'
+  document.getElementById('app').style.display='block'
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initApp)
+  } else {
+    initApp()
+  }
+}
+
+/* INIT */
+async function initApp(){
+  const now2=new Date(); A.acy=now2.getFullYear(); A.acm=now2.getMonth()
+  const [barbers,services,appts]=await Promise.all([
+    apiFetch('/barbers'),
+    apiFetch('/services'),
+    apiFetch('/appointments')
+  ])
+  A.barber=barbers[0]||null
+  A.services=services||[]
+  A.appts=appts||[]
+  populateNewApptSelects()
+  renderHoje()
+  renderAppts()
+  renderSvcList()
+  document.getElementById('hoje-date').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+  setInterval(autoRefresh,30000)
+}
+
+async function autoRefresh(){
+  const data=await apiFetch('/appointments').catch(()=>null)
+  if(data){ A.appts=data; renderHoje(); filterAppts(); showRefreshPulse() }
+}
+function showRefreshPulse(){const el=document.getElementById('refresh-dot');if(!el)return;el.style.background='var(--ok)';setTimeout(()=>el.style.background='var(--muted)',1500)}
+
+function populateNewApptSelects(){
+  const ns=document.getElementById('na-service')
+  ns.innerHTML='<option value="">Selecione</option>'
+  A.services.filter(s=>s.active!==false).forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=`${s.name} — R$ ${Number(s.price).toFixed(2)} (${s.duration_min}min)`;ns.appendChild(o)})
+}
+
+/* HOJE */
+function renderHoje(){
+  const tod=now(), todAppts=A.appts.filter(a=>a.appt_date===tod).sort((a,b)=>a.time_slot.localeCompare(b.time_slot))
+  const pending=A.appts.filter(a=>a.status==='pending').length
+  const confirmed=A.appts.filter(a=>a.appt_date===tod&&a.status==='confirmed').length
+  const revenue=A.appts.filter(a=>a.appt_date===tod&&a.status!=='cancelled').reduce((sum,a)=>{const svc=A.services.find(s=>s.id===a.service_id);return sum+(svc?Number(svc.price):0)},0)
+  document.getElementById('hoje-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-lbl">Agendamentos Hoje</div><div class="stat-val silver">${todAppts.length}</div><div class="stat-sub">${confirmed} confirmados</div></div>
+    <div class="stat-card"><div class="stat-lbl">Pendentes Total</div><div class="stat-val">${pending}</div><div class="stat-sub">aguardando confirmação</div></div>
+    <div class="stat-card"><div class="stat-lbl">Receita Projetada Hoje</div><div class="stat-val silver">R$ ${revenue.toFixed(2)}</div><div class="stat-sub">excl. cancelamentos</div></div>`
+  if(todAppts.length===0){document.getElementById('hoje-appts').innerHTML=`<p style="color:var(--muted);font-size:.85rem;">Nenhum agendamento para hoje.</p>`;return}
+  document.getElementById('hoje-appts').innerHTML=todAppts.map(a=>`
+    <div class="appt-card">
+      <div class="appt-card-top">
+        <div class="appt-time">${a.time_slot}</div>
+        <span class="badge ${STATUS_CLS[a.status]||'badge-pending'}">${STATUS_LABELS[a.status]||a.status}</span>
+      </div>
+      <div class="appt-name">${a.client_name}</div>
+      <div class="appt-info">${sName(a.service_id)}</div>
+      <div class="appt-info" style="margin-top:.2rem">${a.client_phone} ${a.source==='whatsapp'?'<span class="badge badge-zap" style="margin-left:.4rem">WhatsApp</span>':''}</div>
+      <div class="appt-footer">
+        ${a.status==='pending'?`<button class="act-btn ok" onclick="changeStatus('${a.id}','confirmed')">Confirmar</button>`:''}
+        ${a.status!=='done'&&a.status!=='cancelled'?`<button class="act-btn ok" onclick="changeStatus('${a.id}','done')">Concluir</button>`:''}
+        ${a.status!=='cancelled'?`<button class="act-btn danger" onclick="confirmCancel('${a.id}')">Cancelar</button>`:''}
+      </div>
+    </div>`).join('')
+}
+
+/* AGENDAMENTOS TABLE */
+let filteredAppts=[]
+function filterAppts(){
+  const fs=document.getElementById('f-status').value
+  const fd2=document.getElementById('f-date').value
+  filteredAppts=A.appts.filter(a=>{
+    if(fs&&a.status!==fs) return false
+    if(fd2&&a.appt_date!==fd2) return false
+    return true
+  })
+  renderApptTable(filteredAppts)
+}
+function clearFilters(){document.getElementById('f-status').value='';document.getElementById('f-date').value='';filterAppts()}
+function renderAppts(){filteredAppts=[...A.appts];renderApptTable(filteredAppts)}
+function renderApptTable(list){
+  const tbody=document.getElementById('appts-body')
+  if(!list.length){tbody.innerHTML=`<tr class="empty-row"><td colspan="6">Nenhum agendamento encontrado.</td></tr>`;return}
+  tbody.innerHTML=list.map(a=>`
+    <tr>
+      <td>${ptd(a.appt_date)}<br><span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;color:var(--silver-l);">${a.time_slot}</span></td>
+      <td>${a.client_name}<br><span style="color:var(--muted);font-size:.72rem">${a.client_phone}</span></td>
+      <td>${sName(a.service_id)}</td>
+      <td><span class="badge ${a.source==='whatsapp'?'badge-zap':'badge-online'}">${SOURCE_LABELS[a.source]||a.source||'—'}</span></td>
+      <td><span class="badge ${STATUS_CLS[a.status]||'badge-pending'}">${STATUS_LABELS[a.status]||a.status}</span></td>
+      <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+        ${a.status==='pending'?`<button class="act-btn ok" onclick="changeStatus('${a.id}','confirmed')">Confirmar</button>`:''}
+        ${a.status!=='done'&&a.status!=='cancelled'?`<button class="act-btn" onclick="changeStatus('${a.id}','done')">Concluir</button>`:''}
+        ${a.status!=='cancelled'?`<button class="act-btn danger" onclick="confirmCancel('${a.id}')">Cancelar</button>`:''}
+      </td>
+    </tr>`).join('')
+}
+
+async function changeStatus(id, status){
+  await apiFetch('/appointments/'+id, {method:'PATCH', body:{status}})
+  const a=A.appts.find(x=>x.id===id); if(a) a.status=status
+  renderHoje(); filterAppts()
+}
+function confirmCancel(id){
+  const a=A.appts.find(x=>x.id===id)||{}
+  showConfModal('Cancelar Agendamento',`Cancelar agendamento de <strong style="color:var(--silver-l)">${a.client_name}</strong> em ${ptd(a.appt_date)} às ${a.time_slot}?`,()=>changeStatus(id,'cancelled'))
+}
+
+/* NOVO AGENDAMENTO */
+async function loadAvailSlots(){
+  const date=document.getElementById('na-date').value
+  const serviceId=document.getElementById('na-service').value
+  const tsel=document.getElementById('na-time')
+  if(!A.barber){tsel.innerHTML='<option value="">Barbeiro não configurado</option>';return}
+  const bid=A.barber.id
+  tsel.innerHTML='<option value="">Carregando...</option>'
+  if(!date){tsel.innerHTML='<option value="">Selecione a data</option>';return}
+  const avRows=await apiFetch(`/barber_availability?barber_id=${bid}&avail_date=${date}`).catch(()=>[])
+  const slots=avRows[0]?.time_slots||[]
+  const bookedData=await apiFetch(`/appointments?barber_id=${bid}&appt_date=${date}&status_neq=cancelled`).catch(()=>[])
+  const booked=[]
+  bookedData.forEach(a=>{const svc=A.services.find(s=>s.id===a.service_id)||{duration_min:30};blockedSlots(a.time_slot,svc.duration_min,slots).forEach(sl=>booked.push(sl))})
+  const booked_u=[...new Set(booked)]
+  const svc=A.services.find(s=>s.id===serviceId)||{duration_min:30}
+  const needed=slotsCount(svc.duration_min)
+  const free=slots.filter((sl,i)=>{
+    if(booked_u.includes(sl)) return false
+    for(let j=1;j<needed;j++){const next=slots[i+j];if(!next||booked_u.includes(next))return false}
+    return true
+  })
+  if(free.length===0){tsel.innerHTML='<option value="">Sem horários disponíveis</option>'}
+  else{tsel.innerHTML='<option value="">Selecione o horário</option>'+free.map(s=>`<option value="${s}">${s}</option>`).join('')}
+}
+async function saveNewAppt(){
+  const name=document.getElementById('na-name').value.trim()
+  const phone=document.getElementById('na-phone').value.trim()
+  const service=document.getElementById('na-service').value
+  const date=document.getElementById('na-date').value
+  const time=document.getElementById('na-time').value
+  const source=document.getElementById('na-source').value
+  const email=document.getElementById('na-email').value.trim()
+  const err=document.getElementById('na-err'),ok=document.getElementById('na-ok')
+  err.style.display='none'; ok.style.display='none'
+  if(!name||!phone||!service||!date||!time){err.textContent='Preencha todos os campos obrigatórios.';err.style.display='block';return}
+  const btn=document.getElementById('na-btn'); btn.disabled=true; btn.textContent='Salvando...'
+  const payload={client_name:name,client_phone:phone,client_email:email||null,barber_id:A.barber?.id||'barber-01',service_id:service,appt_date:date,time_slot:time,status:'confirmed',source}
+  try{const newAppt=await apiFetch('/appointments',{method:'POST',body:payload});A.appts.push(newAppt)}catch(e){err.textContent='Erro: '+e.message;err.style.display='block';btn.disabled=false;btn.textContent='Registrar Agendamento';return}
+  ok.style.display='block'; btn.disabled=false; btn.textContent='Registrar Agendamento'
+  renderHoje(); renderAppts()
+  setTimeout(()=>{clearNewForm();ok.style.display='none'},2000)
+}
+function clearNewForm(){
+  ['na-name','na-phone','na-email'].forEach(id=>document.getElementById(id).value='')
+  document.getElementById('na-service').value=''
+  document.getElementById('na-date').value=''
+  document.getElementById('na-time').innerHTML='<option value="">Selecione a data primeiro</option>'
+  document.getElementById('na-source').value='whatsapp'
+}
+
+/* SERVIÇOS CRUD */
+function renderSvcList(){
+  const el=document.getElementById('svc-items-list')
+  if(!A.services.length){el.innerHTML=`<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.84rem;">Nenhum serviço cadastrado.</div>`;return}
+  el.innerHTML=A.services.map(s=>`
+    <div class="svc-item">
+      <div class="svc-item-info">
+        <div class="svc-item-name">${s.name}</div>
+        <div class="svc-item-meta">${s.duration_min} min · ${s.description||''}</div>
+      </div>
+      <div class="svc-item-price">R$ ${Number(s.price).toFixed(2)}</div>
+      <div class="svc-item-acts">
+        <button class="act-btn" onclick="editSvc('${s.id}')">Editar</button>
+        <button class="act-btn danger" onclick="confirmDeleteSvc('${s.id}')">Excluir</button>
+      </div>
+    </div>`).join('')
+}
+
+function editSvc(id){
+  const s=A.services.find(x=>x.id===id); if(!s) return
+  document.getElementById('svc-edit-id').value=id
+  document.getElementById('svc-name').value=s.name
+  document.getElementById('svc-desc').value=s.description||''
+  document.getElementById('svc-duration').value=s.duration_min
+  document.getElementById('svc-price').value=s.price
+  document.getElementById('svc-form-title').textContent='Editar Serviço'
+  document.getElementById('svc-name').focus()
+}
+
+function clearSvcForm(){
+  document.getElementById('svc-edit-id').value=''
+  document.getElementById('svc-name').value=''
+  document.getElementById('svc-desc').value=''
+  document.getElementById('svc-duration').value='30'
+  document.getElementById('svc-price').value=''
+  document.getElementById('svc-form-title').textContent='Novo Serviço'
+  document.getElementById('svc-ok').style.display='none'
+  document.getElementById('svc-err').style.display='none'
+}
+
+async function saveSvc(){
+  const editId=document.getElementById('svc-edit-id').value
+  const name=document.getElementById('svc-name').value.trim()
+  const desc=document.getElementById('svc-desc').value.trim()
+  const dur=parseInt(document.getElementById('svc-duration').value)
+  const price=parseFloat(document.getElementById('svc-price').value)
+  const err=document.getElementById('svc-err'),ok=document.getElementById('svc-ok')
+  err.style.display='none'; ok.style.display='none'
+  if(!name||isNaN(price)||price<0){err.textContent='Preencha nome e preço válidos.';err.style.display='block';return}
+  const payload={name,description:desc,duration_min:dur,price,active:true}
+  try{
+    if(editId){
+      const updated=await apiFetch('/services/'+editId,{method:'PATCH',body:payload})
+      const idx=A.services.findIndex(s=>s.id===editId); if(idx>=0) A.services[idx]={...A.services[idx],...updated}
+    } else {
+      const created=await apiFetch('/services',{method:'POST',body:payload})
+      A.services.push(created)
+    }
+  }catch(e){err.textContent='Erro: '+e.message;err.style.display='block';return}
+  ok.style.display='block'
+  renderSvcList()
+  populateNewApptSelects()
+  setTimeout(()=>{clearSvcForm();ok.style.display='none'},1800)
+}
+
+function confirmDeleteSvc(id){
+  const s=A.services.find(x=>x.id===id)||{}
+  showConfModal('Excluir Serviço',`Deseja excluir o serviço <strong style="color:var(--silver-l)">${s.name}</strong>? Esta ação não pode ser desfeita.`,async ()=>{
+    await apiFetch('/services/'+id,{method:'DELETE'}).catch(()=>{})
+    A.services=A.services.filter(x=>x.id!==id)
+    renderSvcList(); populateNewApptSelects()
+  })
+}
+
+/* DISPONIBILIDADE */
+async function renderAvailCal(){
+  document.getElementById('av-lbl').textContent=`${MONTHS[A.acm]} ${A.acy}`
+  const g=document.getElementById('av-grid')
+  if(!A.barber){g.innerHTML=`<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.8rem;grid-column:1/-1;">Nenhum barbeiro configurado.</div>`;return}
+  const start=`${A.acy}-${String(A.acm+1).padStart(2,'0')}-01`
+  const nm=A.acm===11?0:A.acm+1, ny=A.acm===11?A.acy+1:A.acy
+  const end=`${ny}-${String(nm+1).padStart(2,'0')}-01`
+  const avRows=await apiFetch(`/barber_availability?barber_id=${A.barber.id}&gte=${start}&lt=${end}`).catch(()=>[])
+  A.avail={}; avRows.forEach(r=>{A.avail[r.avail_date]=r.time_slots})
+  const today=new Date(); today.setHours(0,0,0,0)
+  const first=new Date(A.acy,A.acm,1), last=new Date(A.acy,A.acm+1,0)
+  let h=DNAMES.map(d=>`<div class="mcal-dn">${d}</div>`).join('')
+  for(let i=0;i<first.getDay();i++) h+=`<div class="mcal-d other"></div>`
+  for(let d=1;d<=last.getDate();d++){
+    const dt=new Date(A.acy,A.acm,d), key=fd(dt)
+    const isToday=dt.getTime()===today.getTime()
+    const isPast=dt<today, isSel=key===A.avSelDate
+    const hasSlots=!!A.avail[key]&&A.avail[key].length>0
+    let cls='mcal-d'+(isSel?' sel':isPast?' past':hasSlots?' has-slots':' ')+(isToday&&!isSel?' today':'')
+    h+=`<div class="${cls}" onclick="openSlotEditor('${key}')">${d}</div>`
+  }
+  const trail=6-last.getDay(); for(let i=0;i<trail;i++) h+=`<div class="mcal-d other"></div>`
   g.innerHTML=h
 }
 
-async function selDate(key){
-  S.sel.date=key; S.sel.time=null
-  document.getElementById('s2btn').disabled=true
-  renderCal()
-  const ss=document.getElementById('slots-sec'), sg=document.getElementById('slots-grid')
-  document.getElementById('slots-lbl').textContent=`Horários disponíveis — ${ptd(key)}`
-  ss.style.display='block'
-  sg.innerHTML=`<div class="cal-loading"><span class="ring"></span> Carregando horários...</div>`
-  const allSlots=S.avail[key]||[]
-  const sv=S.services.find(x=>x.id===S.sel.s)||{}
-  const needed=slotsCount(sv.duration_min||30)
-  let booked=[]
-  const _bookedData=await apiFetch(`/appointments?barber_id=${S.sel.b}&appt_date=${key}&status_neq=cancelled`).catch(()=>[])
-  ;(_bookedData||[]).forEach(a=>{
-    const svc=S.services.find(s=>s.id===a.service_id)||{duration_min:30}
-    blockedSlots(a.time_slot,svc.duration_min,allSlots).forEach(sl=>booked.push(sl))
-  })
-  const booked_unique=[...new Set(booked)]
-  // Horários onde ainda cabem "needed" slots consecutivos
-  const free=allSlots.filter((sl,i)=>{
-    if(booked_unique.includes(sl)) return false
-    for(let j=1;j<needed;j++){
-      const next=allSlots[i+j]
-      if(!next||booked_unique.includes(next)) return false
+async function openSlotEditor(key){
+  A.avSelDate=key; renderAvailCal()
+  const ed=document.getElementById('av-editor')
+  document.getElementById('av-ed-title').textContent=`Horários — ${ptd(key)}`
+  ed.style.display='block'
+  const bid=A.barber?.id
+  const currentSlots=A.avail[key]||[]
+  A.avOccupied=[]
+  const occData=await apiFetch(`/appointments?barber_id=${bid}&appt_date=${key}&status_neq=cancelled`).catch(()=>[])
+  A.avOccupied=occData.map(r=>r.time_slot)
+  const hasOcc=A.avOccupied.length>0
+  document.getElementById('occ-note').style.display=hasOcc?'block':'none'
+  document.getElementById('slot-checks').innerHTML=ALL_SLOTS.map(s=>{
+    const isChecked=currentSlots.includes(s), isOcc=A.avOccupied.includes(s)
+    return`<div class="slot-chk${isOcc?' occupied':''}">
+      <input type="checkbox" id="slotck-${s}" value="${s}" ${isChecked?'checked':''} ${isOcc?'disabled title="Horário ocupado"':''}/>
+      <label for="slotck-${s}">${s}${isOcc?' 🔒':''}</label>
+    </div>`
+  }).join('')
+}
+function checkAll(){document.querySelectorAll('.slot-chk:not(.occupied) input').forEach(cb=>cb.checked=true)}
+function uncheckAll(){document.querySelectorAll('.slot-chk:not(.occupied) input').forEach(cb=>cb.checked=false)}
+
+async function saveAvailSlots(){
+  const key=A.avSelDate, bid=A.barber?.id
+  if(!bid||!key) return
+  const checked=Array.from(document.querySelectorAll('#slot-checks input:checked')).map(cb=>cb.value)
+  const finalSlots=[...new Set([...checked,...A.avOccupied])].sort()
+  await apiFetch('/barber_availability',{method:'POST',body:{barber_id:bid,avail_date:key,time_slots:finalSlots}}).catch(()=>{})
+  A.avail[key]=finalSlots; renderAvailCal()
+  document.getElementById('av-editor').style.display='none'; A.avSelDate=null
+}
+
+function avCalMov(d){A.acm+=d;if(A.acm<0){A.acm=11;A.acy--}if(A.acm>11){A.acm=0;A.acy++}renderAvailCal()}
+
+/* NAV */
+function showPage(name, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'))
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'))
+
+  // Inject templates on first visit
+  const tmplMap = {clientes:'tmpl-clients', relatorios:'tmpl-reports', integracoes:'tmpl-integrations', ia:'tmpl-ia'}
+  if(tmplMap[name] && !document.getElementById('page-'+name)){
+    const tmpl = document.getElementById(tmplMap[name])
+    if(tmpl){
+      const div = document.createElement('div')
+      div.innerHTML = tmpl.innerHTML
+      document.querySelector('.main').appendChild(div.firstElementChild)
+      if(name==='clientes') renderCliTable()
+      if(name==='relatorios') renderReports()
+      if(name==='integracoes') loadIntCreds()
+      if(name==='ia'){ loadIaConfig(); drawQr(); }
     }
-    return true
-  })
-  if(free.length===0){
-    sg.innerHTML=`<div class="no-avail"><strong>Sem horários disponíveis</strong>Todos os horários já foram reservados.<br>Escolha outra data no calendário.</div>`
-    return
   }
-  const durLabel=needed>1?` (+${needed-1} slot)`:'';
-  sg.innerHTML=allSlots.map(sl=>{
-    const isB=booked_unique.includes(sl)
-    const isFree=free.includes(sl)
-    return`<div class="slot${isB?' booked':''}${!isFree&&!isB?' booked':''}" ${isFree?`onclick="selSlot('${sl}',this)"`:''}>${sl}${isB?'<br><small>Ocupado</small>':(needed>1&&isFree?`<br><small>${sv.duration_min}min</small>`:'') }</div>`
+
+  const pg = document.getElementById('page-'+name)
+  if(pg) pg.classList.add('on')
+  if(el) el.classList.add('active')
+  if(name==='disponibilidade') renderAvailCal()
+  if(name==='relatorios') renderReports()
+}
+
+/* CONFIRM MODAL */
+function showConfModal(title, body, onOk){
+  document.getElementById('cm-title').textContent=title
+  document.getElementById('cm-body').innerHTML=body
+  const btn=document.getElementById('cm-ok')
+  btn.onclick=()=>{onOk();closeConfModal()}
+  document.getElementById('conf-modal').classList.add('on')
+}
+function closeConfModal(){document.getElementById('conf-modal').classList.remove('on')}
+
+/* ══════════════════════════════════════════
+   CLIENTES
+══════════════════════════════════════════ */
+const C = { clients: [], editId: null }
+
+function cliKey(){ return 'mdn_clients' }
+function loadClients(){ try{ C.clients = JSON.parse(localStorage.getItem(cliKey())||'[]') }catch(e){ C.clients=[] } }
+function saveClients(){ localStorage.setItem(cliKey(), JSON.stringify(C.clients)) }
+
+function clientLastVisit(phone){
+  const appts = A.appts.filter(a=>a.client_phone===phone&&a.status!=='cancelled')
+  if(!appts.length) return null
+  return appts.sort((a,b)=>b.appt_date.localeCompare(a.appt_date))[0].appt_date
+}
+function clientVisitCount(phone){
+  return A.appts.filter(a=>a.client_phone===phone&&a.status==='done').length
+}
+function clientTag(phone){
+  const vc = clientVisitCount(phone)
+  if(vc===0) return {cls:'cli-tag-new',lbl:'Novo'}
+  if(vc>=10) return {cls:'cli-tag-vip',lbl:'VIP'}
+  return {cls:'cli-tag-ret',lbl:'Recorrente'}
+}
+
+function renderCliTable(){
+  loadClients()
+  const q=(document.getElementById('cli-q')||{value:''}).value.toLowerCase()
+  const body = document.getElementById('cli-table-body')
+  if(!body) return
+  let list = C.clients.filter(c=>
+    c.name.toLowerCase().includes(q) || (c.phone||'').includes(q)
+  )
+  // Also merge clients from appointments not yet in list
+  A.appts.forEach(a=>{
+    if(!list.find(c=>c.phone===a.client_phone) && !C.clients.find(c=>c.phone===a.client_phone)){
+      list.push({id:'auto_'+a.client_phone, name:a.client_name, phone:a.client_phone, email:'', notes:'', auto:true})
+    }
+  })
+  list = list.filter(c=> c.name.toLowerCase().includes(q)||(c.phone||'').includes(q))
+  if(!list.length){ body.innerHTML=`<div style="padding:2.5rem;text-align:center;color:var(--muted);font-size:.84rem;">Nenhum cliente encontrado.</div>`;return }
+  body.innerHTML = list.map(c=>{
+    const lv = clientLastVisit(c.phone)
+    const tag = clientTag(c.phone)
+    return `<div class="cli-row" onclick="openCliForm('${c.id}')">
+      <div><div class="cli-name">${c.name}</div><div class="cli-phone">${c.phone||'—'}</div></div>
+      <div class="cli-phone">${c.phone||'—'}</div>
+      <div class="cli-last-visit">${lv?ptd(lv):'—'}</div>
+      <div><span class="cli-tag ${tag.cls}">${tag.lbl}</span></div>
+    </div>`
   }).join('')
 }
 
-function selSlot(t,el){
-  S.sel.time=t
-  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('sel'))
-  el.classList.add('sel')
-  document.getElementById('s2btn').disabled=false
+function openCliForm(id){
+  clearCliForm()
+  if(!id) return
+  loadClients()
+  const c = C.clients.find(x=>x.id===id)
+  if(!c) return
+  C.editId = id
+  document.getElementById('cli-edit-id').value = id
+  document.getElementById('cli-fname').value = c.name||''
+  document.getElementById('cli-fphone').value = c.phone||''
+  document.getElementById('cli-femail').value = c.email||''
+  document.getElementById('cli-fbirth').value = c.birth||''
+  document.getElementById('cli-fnotes').value = c.notes||''
+  document.getElementById('cli-form-title').textContent = 'Editar Cliente'
 }
 
-function calMov(d){
-  S.cm+=d
-  if(S.cm<0){S.cm=11;S.cy--}
-  if(S.cm>11){S.cm=0;S.cy++}
-  renderCal()
-}
-
-function renderSummary(){
-  const sv=S.services.find(x=>x.id===S.sel.s)||{}
-  document.getElementById('summary').innerHTML=`
-    <div class="sum-title">Resumo do Agendamento</div>
-    <div class="sum-row"><span class="sum-k">Serviço</span><span class="sum-v">${sv.name||'—'}</span></div>
-    <div class="sum-row"><span class="sum-k">Duração</span><span class="sum-v">${sv.duration_min||30} min</span></div>
-    <div class="sum-row"><span class="sum-k">Data</span><span class="sum-v">${ptd(S.sel.date||'---')}</span></div>
-    <div class="sum-row"><span class="sum-k">Horário</span><span class="sum-v">${S.sel.time||'—'}</span></div>
-    <div class="sum-row sum-total"><span class="sum-k">Total</span><span class="sum-v">R$ ${Number(sv.price||0).toFixed(2)}</span></div>`
-}
-
-async function doBook(){
-  const name=document.getElementById('cn').value.trim()
-  const phone=document.getElementById('cp').value.trim()
-  const email=document.getElementById('ce').value.trim()
-  const err=document.getElementById('ferr')
-  err.style.display='none'
-  if(!name||!phone){err.textContent='Preencha nome e telefone.';err.style.display='block';return}
-  const btn=document.getElementById('cfmbtn')
-  btn.disabled=true; btn.textContent='Aguarde...'
-  const payload={client_name:name,client_phone:phone,client_email:email||null,barber_id:S.sel.b,service_id:S.sel.s,appt_date:S.sel.date,time_slot:S.sel.time,status:'pending',source:'online'}
-  try {
-    await apiFetch('/appointments', {method:'POST', body:payload})
-  } catch(e) {
-    err.textContent='Erro ao agendar: '+e.message; err.style.display='block'
-    btn.disabled=false; btn.textContent='Confirmar Agendamento'; return
+function saveCli(){
+  const name = document.getElementById('cli-fname').value.trim()
+  const phone = document.getElementById('cli-fphone').value.trim()
+  const email = document.getElementById('cli-femail').value.trim()
+  const birth = document.getElementById('cli-fbirth').value
+  const notes = document.getElementById('cli-fnotes').value.trim()
+  const ok = document.getElementById('cli-ok'), err = document.getElementById('cli-err')
+  ok.style.display='none'; err.style.display='none'
+  if(!name||!phone){ err.textContent='Nome e telefone são obrigatórios.'; err.style.display='block'; return }
+  loadClients()
+  const editId = document.getElementById('cli-edit-id').value
+  if(editId){
+    const idx = C.clients.findIndex(c=>c.id===editId)
+    if(idx>=0) C.clients[idx] = {...C.clients[idx], name, phone, email, birth, notes}
+  } else {
+    if(C.clients.find(c=>c.phone===phone)){ err.textContent='Já existe um cliente com esse telefone.'; err.style.display='block'; return }
+    C.clients.push({id:'cli_'+Date.now(), name, phone, email, birth, notes})
   }
-  const sv=S.services.find(x=>x.id===S.sel.s)||{}
-  document.getElementById('mbody').innerHTML=`<p>Reserva confirmada com sucesso!</p><br><p><strong>${sv.name}</strong></p><p><strong>${ptd(S.sel.date)}</strong> às <strong>${S.sel.time}</strong></p><p style="margin-top:.75rem;font-size:.78rem">Entraremos em contato pelo WhatsApp para confirmar. ✦</p>`
-  document.getElementById('modal').classList.add('on')
-  btn.disabled=false; btn.textContent='Confirmar Agendamento'
-  document.getElementById('cn').value=''; document.getElementById('cp').value=''; document.getElementById('ce').value=''
-  S.sel.s=null; S.sel.date=null; S.sel.time=null
-  goStep(1)
-  document.querySelectorAll('.sv-pick').forEach(e=>e.classList.remove('sel'))
-  document.getElementById('s1btn').disabled=true
+  saveClients()
+  ok.style.display='block'
+  renderCliTable()
+  setTimeout(()=>{ clearCliForm(); ok.style.display='none' }, 1800)
 }
 
-init()
+function clearCliForm(){
+  C.editId = null
+  ;['cli-edit-id','cli-fname','cli-fphone','cli-femail','cli-fnotes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value='' })
+  const b=document.getElementById('cli-fbirth'); if(b) b.value=''
+  const t=document.getElementById('cli-form-title'); if(t) t.textContent='Novo Cliente'
+  const ok=document.getElementById('cli-ok'), err=document.getElementById('cli-err')
+  if(ok) ok.style.display='none'; if(err) err.style.display='none'
+}
+
+/* ══════════════════════════════════════════
+   RELATÓRIOS
+══════════════════════════════════════════ */
+let REP_PERIOD = 'mes'
+
+function setRepPeriod(p, el){
+  REP_PERIOD = p
+  document.querySelectorAll('.rep-tab').forEach(t=>t.classList.remove('active'))
+  if(el) el.classList.add('active')
+  renderReports()
+}
+
+function repDateRange(){
+  const now2 = new Date()
+  const y = now2.getFullYear(), m = now2.getMonth()
+  if(REP_PERIOD==='mes') return { from: `${y}-${String(m+1).padStart(2,'0')}-01`, to: fd(now2) }
+  if(REP_PERIOD==='anterior'){
+    const pm = m===0?11:m-1, py = m===0?y-1:y
+    const lastDay = new Date(y, m, 0).getDate()
+    return { from:`${py}-${String(pm+1).padStart(2,'0')}-01`, to:`${py}-${String(pm+1).padStart(2,'0')}-${lastDay}` }
+  }
+  if(REP_PERIOD==='ano') return { from:`${y}-01-01`, to: fd(now2) }
+  return { from:'2000-01-01', to: fd(now2) }
+}
+
+function renderReports(){
+  const kpis = document.getElementById('rep-kpis')
+  const svcChart = document.getElementById('rep-svc-chart')
+  const srcChart = document.getElementById('rep-src-chart')
+  if(!kpis) return
+
+  const {from, to} = repDateRange()
+  const filtered = A.appts.filter(a=> a.appt_date>=from && a.appt_date<=to)
+  const done = filtered.filter(a=>a.status==='done')
+  const notCancelled = filtered.filter(a=>a.status!=='cancelled')
+
+  const revenue = done.reduce((sum,a)=>{
+    const svc = A.services.find(s=>s.id===a.service_id)
+    return sum + (svc?Number(svc.price):0)
+  },0)
+
+  // Novos clientes = phones que não aparecem em agendamentos ANTES do período
+  const beforePhones = new Set(A.appts.filter(a=>a.appt_date<from).map(a=>a.client_phone))
+  const newClients = new Set(filtered.map(a=>a.client_phone).filter(p=>!beforePhones.has(p)))
+
+  // Ticket médio
+  const avgTicket = done.length ? revenue/done.length : 0
+
+  kpis.innerHTML = `
+    <div class="rep-card"><div class="rep-card-lbl">Agendamentos</div><div class="rep-card-val silver">${notCancelled.length}</div><div class="rep-card-sub">${filtered.filter(a=>a.status==='cancelled').length} cancelados</div></div>
+    <div class="rep-card"><div class="rep-card-lbl">Concluídos</div><div class="rep-card-val">${done.length}</div><div class="rep-card-sub">serviços realizados</div></div>
+    <div class="rep-card"><div class="rep-card-lbl">Receita</div><div class="rep-card-val green">R$ ${revenue.toFixed(2)}</div><div class="rep-card-sub">serviços concluídos</div></div>
+    <div class="rep-card"><div class="rep-card-lbl">Ticket Médio</div><div class="rep-card-val silver">R$ ${avgTicket.toFixed(2)}</div><div class="rep-card-sub">por atendimento</div></div>
+    <div class="rep-card"><div class="rep-card-lbl">Clientes Novos</div><div class="rep-card-val">${newClients.size}</div><div class="rep-card-sub">no período</div></div>
+    <div class="rep-card"><div class="rep-card-lbl">Clientes Únicos</div><div class="rep-card-val">${new Set(filtered.map(a=>a.client_phone)).size}</div><div class="rep-card-sub">no período</div></div>`
+
+  // Serviços chart
+  const svcCount = {}
+  const svcRevenue = {}
+  done.forEach(a=>{
+    const svc = A.services.find(s=>s.id===a.service_id)
+    const name = svc?svc.name:'Outros'
+    svcCount[name] = (svcCount[name]||0)+1
+    svcRevenue[name] = (svcRevenue[name]||0)+(svc?Number(svc.price):0)
+  })
+  const svcEntries = Object.entries(svcCount).sort((a,b)=>b[1]-a[1])
+  const maxSvc = svcEntries[0]?.[1]||1
+  svcChart.innerHTML = svcEntries.length ? svcEntries.map(([name,count])=>`
+    <div class="rep-bar-row">
+      <div class="rep-bar-label" title="${name}">${name}</div>
+      <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${Math.round(count/maxSvc*100)}%"></div></div>
+      <div class="rep-bar-val">${count}x · R$ ${(svcRevenue[name]||0).toFixed(0)}</div>
+    </div>`).join('') : `<div style="color:var(--muted);font-size:.82rem;padding:.5rem 0;">Nenhum dado no período.</div>`
+
+  // Origem chart
+  const srcCount = {}
+  notCancelled.forEach(a=>{ const s=SOURCE_LABELS[a.source]||a.source||'Outro'; srcCount[s]=(srcCount[s]||0)+1 })
+  const srcEntries = Object.entries(srcCount).sort((a,b)=>b[1]-a[1])
+  const maxSrc = srcEntries[0]?.[1]||1
+  srcChart.innerHTML = srcEntries.length ? srcEntries.map(([name,count])=>`
+    <div class="rep-bar-row">
+      <div class="rep-bar-label">${name}</div>
+      <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${Math.round(count/maxSrc*100)}%"></div></div>
+      <div class="rep-bar-val">${count} agend.</div>
+    </div>`).join('') : `<div style="color:var(--muted);font-size:.82rem;padding:.5rem 0;">Nenhum dado no período.</div>`
+}
+
+/* ══════════════════════════════════════════
+   INTEGRAÇÕES
+══════════════════════════════════════════ */
+const INT_KEY = 'mdn_integrations'
+
+function loadIntCreds(){
+  try{
+    const d = JSON.parse(localStorage.getItem(INT_KEY)||'{}')
+    if(d.mp_token){ document.getElementById('mp-token').value=d.mp_token; document.getElementById('mp-pubkey').value=d.mp_pubkey||''; setIntStatus('mp',true) }
+    if(d.zapi_id){ document.getElementById('zapi-id').value=d.zapi_id; document.getElementById('zapi-token').value=d.zapi_token||''; setIntStatus('zapi',true) }
+  }catch(e){}
+}
+
+function setIntStatus(key, on){
+  const el = document.getElementById(key+'-status')
+  if(!el) return
+  el.className = 'int-status '+(on?'int-status-on':'int-status-off')
+  el.innerHTML = `<span class="int-status-dot"></span>${on?'Conectado':'Não conectado'}`
+}
+
+function saveMpCreds(){
+  const token = document.getElementById('mp-token').value.trim()
+  const pubkey = document.getElementById('mp-pubkey').value.trim()
+  const ok = document.getElementById('mp-ok'), err = document.getElementById('mp-err')
+  ok.style.display='none'; err.style.display='none'
+  if(!token||!pubkey){ err.textContent='Preencha o Access Token e a Public Key.'; err.style.display='block'; return }
+  const d = JSON.parse(localStorage.getItem(INT_KEY)||'{}')
+  localStorage.setItem(INT_KEY, JSON.stringify({...d, mp_token:token, mp_pubkey:pubkey}))
+  setIntStatus('mp', true)
+  ok.style.display='block'; setTimeout(()=>ok.style.display='none',2500)
+}
+function clearMpCreds(){
+  document.getElementById('mp-token').value=''
+  document.getElementById('mp-pubkey').value=''
+  const d=JSON.parse(localStorage.getItem(INT_KEY)||'{}')
+  delete d.mp_token; delete d.mp_pubkey
+  localStorage.setItem(INT_KEY,JSON.stringify(d))
+  setIntStatus('mp',false)
+}
+
+function saveZapiCreds(){
+  const id2 = document.getElementById('zapi-id').value.trim()
+  const token = document.getElementById('zapi-token').value.trim()
+  const ok = document.getElementById('zapi-ok'), err = document.getElementById('zapi-err')
+  ok.style.display='none'; err.style.display='none'
+  if(!id2||!token){ err.textContent='Preencha o Instance ID e o Token.'; err.style.display='block'; return }
+  const d=JSON.parse(localStorage.getItem(INT_KEY)||'{}')
+  localStorage.setItem(INT_KEY, JSON.stringify({...d, zapi_id:id2, zapi_token:token}))
+  setIntStatus('zapi',true)
+  ok.style.display='block'; setTimeout(()=>ok.style.display='none',2500)
+}
+function clearZapiCreds(){
+  document.getElementById('zapi-id').value=''
+  document.getElementById('zapi-token').value=''
+  const d=JSON.parse(localStorage.getItem(INT_KEY)||'{}')
+  delete d.zapi_id; delete d.zapi_token
+  localStorage.setItem(INT_KEY,JSON.stringify(d))
+  setIntStatus('zapi',false)
+}
+
+/* ══════════════════════════════════════════
+   IA — QR CODE + PERSONALIDADE + CONFIG
+══════════════════════════════════════════ */
+const IA_KEY = 'mdn_ia_config'
+let IA_PERS = 'profissional'
+let qrTimer = null
+
+const IA_PERS_PREVIEWS = {
+  profissional: '💬 <strong style="color:var(--silver-l)">IA:</strong> Olá! Aqui é a Mister das Navalhas. Como posso te ajudar? Deseja agendar um horário?',
+  descontraido: '💬 <strong style="color:var(--silver-l)">IA:</strong> Oi! 😄 Tudo bem? Quer marcar um horário aqui na Mister das Navalhas? É só me dizer o dia e a hora!',
+  premium:      '💬 <strong style="color:var(--silver-l)">IA:</strong> Olá. Seja bem-vindo à Mister das Navalhas. Estou à disposição para auxiliá-lo no agendamento do seu atendimento.',
+  direto:       '💬 <strong style="color:var(--silver-l)">IA:</strong> Oi. Quer agendar? Me diz: qual serviço, dia e horário.',
+}
+
+// ── QR Code desenhado via canvas (padrão visual de QR, não funcional) ──
+function drawQr(seed){
+  const canvas = document.getElementById('ia-qr-canvas')
+  if(!canvas) return
+  const ctx = canvas.getContext('2d')
+  const size = 200, mod = 25, cell = size / mod
+  // seed pseudo-random
+  const s = seed || 0x5A4E3D
+  let rng = s
+  function rand(){ rng = (rng * 1664525 + 1013904223) & 0xFFFFFFFF; return (rng >>> 0) / 0xFFFFFFFF }
+
+  ctx.fillStyle = '#101010'
+  ctx.fillRect(0, 0, size, size)
+
+  function drawCell(x, y, color){
+    ctx.fillStyle = color
+    ctx.fillRect(x * cell + .5, y * cell + .5, cell - 1, cell - 1)
+  }
+
+  // Data modules (random inside safe area)
+  for(let y = 0; y < mod; y++){
+    for(let x = 0; x < mod; x++){
+      // skip finder pattern zones (corners 7x7 + 1 spacer)
+      if((x < 8 && y < 8)||(x >= mod-8 && y < 8)||(x < 8 && y >= mod-8)) continue
+      // skip timing strips
+      if(x === 6 || y === 6) continue
+      // skip alignment pattern area
+      if(x >= mod-9 && x <= mod-5 && y >= mod-9 && y <= mod-5) continue
+      if(rand() > 0.52) drawCell(x, y, '#E8E8E8')
+    }
+  }
+
+  // Timing strips
+  for(let i = 8; i < mod - 8; i++){
+    if(i % 2 === 0){ drawCell(i, 6, '#E8E8E8'); drawCell(6, i, '#E8E8E8') }
+  }
+
+  // Alignment pattern (bottom-right area)
+  const ap = mod - 7
+  ctx.fillStyle = '#E8E8E8'; ctx.fillRect(ap*cell-.5, ap*cell-.5, 5*cell+1, 5*cell+1)
+  ctx.fillStyle = '#101010'; ctx.fillRect((ap+1)*cell-.5, (ap+1)*cell-.5, 3*cell+1, 3*cell+1)
+  ctx.fillStyle = '#E8E8E8'; ctx.fillRect((ap+2)*cell-.5, (ap+2)*cell-.5, cell+1, cell+1)
+
+  // Finder pattern helper
+  function finder(ox, oy){
+    ctx.fillStyle = '#E8E8E8'; ctx.fillRect(ox*cell, oy*cell, 7*cell, 7*cell)
+    ctx.fillStyle = '#101010'; ctx.fillRect((ox+1)*cell, (oy+1)*cell, 5*cell, 5*cell)
+    ctx.fillStyle = '#E8E8E8'; ctx.fillRect((ox+2)*cell, (oy+2)*cell, 3*cell, 3*cell)
+  }
+  finder(0,0); finder(mod-7,0); finder(0,mod-7)
+
+  // Separator lines (1px spacer around finders)
+  ctx.fillStyle = '#101010'
+  ;[[7,0,1,8],[0,7,8,1],[mod-8,0,1,8],[mod-8,7,8,1],[0,mod-8,8,1],[7,mod-8,1,8]].forEach(([x,y,w,h])=>{
+    ctx.fillRect(x*cell, y*cell, w*cell, h*cell)
+  })
+}
+
+function refreshQr(){
+  const dot = document.getElementById('ia-qr-dot')
+  const txt = document.getElementById('ia-qr-status-txt')
+  const connectBtn = document.getElementById('ia-connect-btn')
+  if(!dot) return
+  clearTimeout(qrTimer)
+  drawQr(Date.now() & 0xFFFFFF)
+  dot.className = 'ia-qr-status-dot waiting'
+  txt.textContent = 'Aguardando leitura do QR Code…'
+  if(connectBtn) connectBtn.style.display = 'none'
+  // Simulate "scanned" state after 4s for demo purposes
+  qrTimer = setTimeout(()=>{
+    dot.className = 'ia-qr-status-dot waiting'
+    txt.textContent = 'QR Code escaneado — confirme no celular…'
+    if(connectBtn) connectBtn.style.display = 'block'
+  }, 4000)
+}
+
+function simulateConnect(){
+  const dot = document.getElementById('ia-qr-dot')
+  const txt = document.getElementById('ia-qr-status-txt')
+  const connectBtn = document.getElementById('ia-connect-btn')
+  dot.className = 'ia-qr-status-dot on'
+  txt.textContent = 'WhatsApp conectado com sucesso!'
+  if(connectBtn) connectBtn.style.display = 'none'
+}
+
+// ── Personalidade ──
+function selPers(id, el){
+  IA_PERS = id
+  document.querySelectorAll('.ia-pers-btn').forEach(b=>b.classList.remove('sel'))
+  if(el) el.classList.add('sel')
+  const preview = document.getElementById('ia-pers-preview')
+  if(preview) preview.innerHTML = IA_PERS_PREVIEWS[id] || ''
+}
+
+// ── Config save/load ──
+function saveIaConfig(){
+  const cfg = {
+    pers: IA_PERS,
+    reativacao: document.getElementById('tog-reativacao')?.checked,
+    confirmacao: document.getElementById('tog-confirmacao')?.checked,
+    foraHorario: document.getElementById('tog-fora-horario')?.checked,
+    autoBook:    document.getElementById('tog-auto-book')?.checked,
+    welcomeMsg:  document.getElementById('ia-welcome-msg')?.value,
+    reativDays:  document.getElementById('ia-reativ-days')?.value,
+  }
+  localStorage.setItem(IA_KEY, JSON.stringify(cfg))
+  const ok = document.getElementById('ia-save-ok')
+  if(ok){ ok.style.display='block'; setTimeout(()=>ok.style.display='none',2000) }
+}
+
+function loadIaConfig(){
+  try{
+    const cfg = JSON.parse(localStorage.getItem(IA_KEY)||'{}')
+    if(cfg.pers){
+      IA_PERS = cfg.pers
+      document.querySelectorAll('.ia-pers-btn').forEach(b=>b.classList.remove('sel'))
+      const btn = document.querySelector(`.ia-pers-btn[onclick*="${cfg.pers}"]`)
+      if(btn) btn.classList.add('sel')
+    }
+    const preview = document.getElementById('ia-pers-preview')
+    if(preview) preview.innerHTML = IA_PERS_PREVIEWS[IA_PERS]||IA_PERS_PREVIEWS['profissional']
+    if(cfg.reativacao  !== undefined){ const el=document.getElementById('tog-reativacao'); if(el) el.checked=cfg.reativacao }
+    if(cfg.confirmacao !== undefined){ const el=document.getElementById('tog-confirmacao'); if(el) el.checked=cfg.confirmacao }
+    if(cfg.foraHorario !== undefined){ const el=document.getElementById('tog-fora-horario'); if(el) el.checked=cfg.foraHorario }
+    if(cfg.autoBook    !== undefined){ const el=document.getElementById('tog-auto-book'); if(el) el.checked=cfg.autoBook }
+    if(cfg.welcomeMsg){ const el=document.getElementById('ia-welcome-msg'); if(el) el.value=cfg.welcomeMsg }
+    if(cfg.reativDays){ const el=document.getElementById('ia-reativ-days'); if(el) el.value=cfg.reativDays }
+  }catch(e){}
+  // init preview if not set
+  const preview = document.getElementById('ia-pers-preview')
+  if(preview && !preview.innerHTML) preview.innerHTML = IA_PERS_PREVIEWS[IA_PERS]||IA_PERS_PREVIEWS['profissional']
+  refreshQr()
+}
+
+/* SIDEBAR MOBILE */
+function toggleSidebar(){
+  const sb=document.querySelector('.sidebar')
+  const ov=document.getElementById('sb-overlay')
+  sb.classList.toggle('open')
+  ov.classList.toggle('on')
+}
+function closeSidebar(){
+  document.querySelector('.sidebar').classList.remove('open')
+  document.getElementById('sb-overlay').classList.remove('on')
+}
+// close sidebar on nav item click (mobile)
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.sb-item').forEach(el=>{
+    el.addEventListener('click',()=>{if(window.innerWidth<=600)closeSidebar()})
+  })
+})
 </script>
 </body>
 </html>
