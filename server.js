@@ -286,6 +286,41 @@ app.post('/api/barber_availability', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── WEBHOOK: MERCADO PAGO ────────────────────────────────────────────────
+app.post('/api/webhook/mercadopago', async (req, res) => {
+  try {
+    const { type, data } = req.body;
+    console.log('📩 Webhook MP recebido:', type, data?.id);
+
+    // Confirma recebimento imediatamente (MP exige resposta < 5s)
+    res.sendStatus(200);
+
+    if (type === 'payment' && data?.id) {
+      // Busca detalhes do pagamento na API do MP
+      const mpToken = process.env.MP_ACCESS_TOKEN;
+      if (!mpToken) return;
+
+      const response = await fetch(
+        `https://api.mercadopago.com/v1/payments/${data.id}`,
+        { headers: { Authorization: `Bearer ${mpToken}` } }
+      );
+      const payment = await response.json();
+      console.log('💳 Pagamento MP:', payment.status, payment.external_reference);
+
+      // Se aprovado e tem referência de agendamento, confirma automaticamente
+      if (payment.status === 'approved' && payment.external_reference) {
+        await pool.query(
+          `UPDATE appointments SET status='confirmed' WHERE id=$1`,
+          [payment.external_reference]
+        ).catch(e => console.error('Erro ao confirmar agendamento:', e.message));
+      }
+    }
+  } catch (e) {
+    console.error('Erro no webhook MP:', e.message);
+    res.sendStatus(200); // sempre retorna 200 para o MP
+  }
+});
+
 // ── PAGES ─────────────────────────────────────────────────────────────────
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/',      (_, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
