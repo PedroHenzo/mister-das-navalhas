@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<!-- SEO PRIMARY -->
+<title>Mister das Navalhas — Barbearia em Jurujuba | Wesley Barbeiro</title>
+<meta name="description" content="Barbearia Mister das Navalhas em Jurujuba, RJ, Niterói. Wesley, barbeiro especialista em corte, degradê e barba desde 2019. Agende online com facilidade!"/>
+<meta name="keywords" content="barbearia, barbeiro, Jurujuba, Wesley, Mister das Navalhas, corte de cabelo, degradê, barba, agendamento online"/>
+<meta name="robots" content="index, follow"/>
+<meta name="author" content="Wesley — Mister das Navalhas"/>
+<link rel="canonical" href="https://misterdosnavalhas.com.br/"/>
+
+<!-- OPEN GRAPH (WhatsApp / Facebook) -->
+<meta property="og:type" content="business.business"/>
+<meta property="og:title" content="Mister das Navalhas — Barbearia em Jurujuba"/>
+<meta property="og:description" content="Especialista em corte, degradê e barba. Agende seu horário online!"/>
+<meta property="og:locale" content="pt_BR"/>
+<meta property="og:site_name" content="Mister das Navalhas"/>
+<meta property="business:contact_data:locality" content="Jurujuba"/>
+<meta property="business:contact_data:region" content="RJ"/>
+<meta property="business:contact_data:country_name" content="Brasil"/>
+
+<!-- TWITTER CARD -->
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mister das Navalhas — Barbearia"/>
+<meta name="twitter:description" content="Barbearia em Jurujuba, RJ. Agende online!"/>
+
+<!-- SCHEMA.ORG STRUCTURED DATA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HairSalon",
+  "name": "Mister das Navalhas",
+  "description": "Barbearia especializada em corte masculino, degradê e barba em Jurujuba, RJ. Atendimento desde 2019.",
+  "url": "https://misterdosnavalhas.com.br",
+  "telephone": "",
+  "priceRange": "R$40 – R$75",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Jurujuba",
+    "addressRegion": "RJ",
+    "addressCountry": "BR"
+  },
+  "openingHoursSpecification": [
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "18:00" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "17:00" }
+  ],
+  "employee": {
+    "@type": "Person",
+    "name": "Wesley",
+    "jobTitle": "Barbeiro Especialista"
+  },
+  "foundingDate": "2019",
+  "sameAs": []
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Crimson+Pro:ital,wght@1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --black:#080808;--dark2:#101010;--dark3:#181818;--dark4:#222222;
+  --silver:#C8C8C8;--silver-l:#E8E8E8;--silver-d:#888888;
+  --white:#F2F2F2;--muted:#666666;--border:rgba(200,200,200,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;}
+
+/* ── SCROLL REVEAL BASE ─────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);}
+.reveal.from-left{transform:translateX(-36px);}
+.reveal.from-right{transform:translateX(36px);}
+.reveal.visible{opacity:1;transform:none;}
+.reveal-delay-1{transition-delay:.1s;}
+.reveal-delay-2{transition-delay:.2s;}
+.reveal-delay-3{transition-delay:.3s;}
+.reveal-delay-4{transition-delay:.4s;}
+.reveal-delay-5{transition-delay:.5s;}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 5vw;
+  transition:background .4s, box-shadow .4s;
+  overflow:visible;
+}
+nav.nav-expanded{ background:transparent; }
+nav.nav-scrolled{
+  background:rgba(8,8,8,0.97);
+  backdrop-filter:blur(12px);
+  box-shadow:0 2px 20px rgba(0,0,0,.55);
+}
+.nav-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  max-width:1200px;
+  margin:0 auto;
+  transition:padding .4s cubic-bezier(.4,0,.2,1);
+}
+nav.nav-expanded .nav-inner{ padding:1.2rem 0 0.5rem; }
+nav.nav-scrolled .nav-inner{ padding:.25rem 0; }
+
+/* Brand: logo + links juntos */
+.nav-brand{ display:flex;align-items:center;gap:1.8rem; }
+.nav-links{ display:flex;gap:1.8rem;list-style:none;align-items:center; }
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;transition:color .3s;font-weight:400;}
+.nav-links a:hover{color:var(--white);}
+
+/* Ações à direita */
+.nav-actions{ display:flex;align-items:center;gap:.9rem; }
+
+/* Logo */
+.nav-logo-wrap{ flex-shrink:0; transition:opacity .3s ease; }
+/* ── LOGO SIZE: ajuste height abaixo para mudar o tamanho inicial da logo ── */
+.logo-img{
+  height:130px;width:auto;object-fit:contain;display:block;
+  filter:drop-shadow(0 0 30px rgba(200,200,200,.15));
+  transition:height .4s cubic-bezier(.4,0,.2,1), filter .4s;
+}
+nav.nav-scrolled .logo-img{ height:34px; filter:drop-shadow(0 0 12px rgba(200,200,200,.1)); }
+
+.nav-cta{background:transparent;border:1px solid var(--silver-d);color:var(--silver);padding:.45rem 1.3rem;font-family:'Barlow',sans-serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:all .3s;font-weight:400;}
+.nav-cta:hover{background:var(--white);color:var(--black);border-color:var(--white);}
+
+/* Mobile menu */
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
+.nav-hamburger span{display:block;width:22px;height:1.5px;background:var(--silver);transition:all .3s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+.nav-mobile{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(8,8,8,.98);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;}
+.nav-mobile.open{display:flex;animation:fadeIn .25s ease;}
+.nav-mobile a{color:var(--silver);text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:.08em;transition:color .3s;}
+.nav-mobile a:hover{color:var(--white);}
+.nav-mobile .nav-cta-mob{background:var(--white);color:var(--black);border:none;padding:.9rem 3rem;font-family:'Barlow',sans-serif;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;margin-top:1rem;}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+#hero{min-height:100vh;padding-top:140px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 55% 70% at 50% 50%,rgba(200,200,200,.04) 0%,transparent 65%);}
+.hero-noise{position:absolute;inset:0;opacity:.018;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px;}
+.hero-lines{position:absolute;inset:0;opacity:.022;background-image:repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(200,200,200,1) 80px,rgba(200,200,200,1) 81px),repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(200,200,200,1) 80px,rgba(200,200,200,1) 81px);}
+.hero-content{position:relative;text-align:center;padding:0 2rem;animation:heroIn 1.3s cubic-bezier(.22,1,.36,1) forwards;}
+.hero-logo{max-width:240px;width:50vw;margin:0 auto 2.5rem;display:block;filter:drop-shadow(0 0 50px rgba(200,200,200,.18));animation:logoPulse 4s ease-in-out infinite;}
+.eyebrow{font-size:.62rem;letter-spacing:.38em;text-transform:uppercase;color:var(--silver-d);margin-bottom:1.2rem;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,9vw,7rem);letter-spacing:.06em;color:var(--white);line-height:.95;margin-bottom:.4rem;}
+.hero-title span{color:var(--silver);}
+.hero-sub{font-family:'Crimson Pro',serif;font-size:clamp(1rem,2.5vw,1.3rem);font-style:italic;color:var(--muted);margin:1.5rem 0 2.8rem;letter-spacing:.04em;}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:var(--white);color:var(--black);border:none;padding:.9rem 2.5rem;font-family:'Barlow',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .3s;}
+.btn-primary:hover{background:var(--silver);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-outline{background:transparent;color:var(--silver);border:1px solid rgba(200,200,200,.3);padding:.9rem 2.5rem;font-family:'Barlow',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.btn-outline:hover{border-color:var(--white);color:var(--white);transform:translateY(-2px);}
+.btn-wpp{display:inline-flex;align-items:center;text-decoration:none;}
+.btn-wpp:hover{border-color:#25D366;color:#25D366;box-shadow:0 0 18px rgba(37,211,102,.12);}
+.btn-insta{display:inline-flex;align-items:center;text-decoration:none;}
+.btn-insta:hover{border-color:#E1306C;color:#E1306C;box-shadow:0 0 18px rgba(225,48,108,.12);}
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--muted);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;animation:bounce 2.2s infinite;}
+.scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--silver-d),transparent);}
+
+/* ── SECTIONS ─────────────────────────────────────────────── */
+section{padding:6rem 5vw;}
+.sec-header{text-align:center;margin-bottom:4rem;}
+.sec-eye{font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;color:var(--silver-d);margin-bottom:.9rem;display:block;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.8rem);letter-spacing:.06em;color:var(--white);line-height:1.1;}
+.sec-title em{font-style:normal;color:var(--silver);}
+.sec-desc{font-family:'Crimson Pro',serif;font-size:1.1rem;font-style:italic;color:var(--muted);margin-top:.8rem;}
+
+/* ── SERVICES ─────────────────────────────────────────────── */
+#services{background:var(--black);}
+.svc-list{display:flex;flex-wrap:wrap;justify-content:center;gap:0;max-width:900px;margin:0 auto;}
+.svc-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.85rem 1.8rem;
+  border-bottom:1px solid rgba(200,200,200,.06);
+  color:var(--muted);
+  font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  transition:color .3s;
+  white-space:nowrap;
+}
+.svc-item:hover{color:var(--silver-l);}
+.svc-item-dot{width:4px;height:4px;border-radius:50%;background:rgba(200,200,200,.2);flex-shrink:0;transition:background .3s;}
+.svc-item:hover .svc-item-dot{background:var(--silver);}
+.svc-divider{width:100%;height:1px;background:rgba(200,200,200,.06);}
+/* svc-grid — usado pelo JS do agendamento (oculto visualmente na seção) */
+.svc-grid{display:none;}
+.svc-card{background:var(--dark2);padding:2.5rem 2rem;position:relative;overflow:hidden;transition:background .3s,transform .3s;}
+.svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--silver),transparent);transform:scaleX(0);transition:transform .45s;}
+.svc-card:hover{background:var(--dark3);transform:translateY(-4px);}
+.svc-card:hover::before{transform:scaleX(1);}
+.svc-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:rgba(200,200,200,.06);line-height:1;margin-bottom:.8rem;}
+.svc-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;color:var(--white);margin-bottom:.5rem;}
+.svc-desc{font-size:.78rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
+.svc-meta{display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid var(--border);}
+.svc-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.03em;color:var(--silver-l);}
+.svc-dur{font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+
+/* ── ABOUT ─────────────────────────────────────────────────── */
+#about{background:var(--dark2);}
+.about-wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:420px 1fr;gap:5rem;align-items:center;}
+.about-photo-frame{position:relative;flex-shrink:0;}
+.about-photo-deco{position:absolute;bottom:-16px;right:-16px;width:100%;height:100%;border:1px solid rgba(200,200,200,.12);z-index:0;pointer-events:none;}
+.about-photo{width:100%;display:block;object-fit:cover;object-position:top center;filter:grayscale(15%) contrast(1.06);border:1px solid var(--border);position:relative;z-index:1;max-height:560px;}
+.about-text .sec-eye{text-align:left;}
+.about-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,4.5vw,3.6rem);letter-spacing:.04em;color:var(--white);line-height:1;margin-bottom:.6rem;}
+.about-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,3.5vw,2.6rem);letter-spacing:.04em;color:var(--silver);display:block;margin-bottom:1.4rem;}
+.about-body{font-size:.9rem;color:var(--muted);line-height:1.95;margin-bottom:2rem;}
+.about-stats{display:flex;gap:2.5rem;flex-wrap:wrap;}
+.about-stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--white);line-height:1;letter-spacing:.03em;}
+.about-stat-lbl{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.2rem;}
+.about-divider{width:40px;height:1px;background:var(--border);margin-bottom:1.5rem;}
+
+/* ── BOOKING ─────────────────────────────────────────────── */
+#booking{background:var(--black);}
+.booking-wrap{max-width:740px;margin:0 auto;}
+.bk-steps{display:flex;border:1px solid var(--border);overflow:hidden;margin-bottom:2.5rem;}
+.bk-step{flex:1;padding:1rem;text-align:center;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--border);transition:all .3s;font-weight:400;}
+.bk-step:last-child{border-right:none;}
+.bk-step.active{color:var(--white);background:rgba(200,200,200,.05);}
+.bk-step.done{color:var(--silver-d);}
+.bk-step-num{display:block;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;margin-bottom:.1rem;}
+.sp{display:none;}.sp.on{display:block;}
+.sv-picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
+.sv-pick{background:var(--dark2);border:1px solid var(--border);padding:1.25rem 1.5rem;cursor:pointer;transition:all .25s;}
+.sv-pick:hover,.sv-pick.sel{border-color:var(--silver);background:var(--dark3);transform:translateY(-2px);}
+.sv-pick.sel{box-shadow:0 0 0 1px var(--silver-d);}
+.sv-pick-name{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.04em;color:var(--white);margin-bottom:.3rem;}
+.sv-pick-info{font-size:.72rem;color:var(--muted);}
+.sv-pick-price{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--silver-l);margin-top:.5rem;letter-spacing:.03em;}
+/* Calendar */
+.cal-box{background:var(--dark2);border:1px solid var(--border);}
+.cal-top{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);}
+.cal-nav-btn{background:transparent;border:1px solid rgba(200,200,200,.18);color:var(--silver);width:32px;height:32px;font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.cal-nav-btn:hover{background:rgba(200,200,200,.08);}
+.cal-month-lbl{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:var(--white);text-transform:capitalize;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-dn{padding:.7rem 0;text-align:center;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid rgba(200,200,200,.05);}
+.cal-d{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.82rem;cursor:default;position:relative;transition:all .2s;border:.5px solid rgba(200,200,200,.02);}
+.cal-d.other{color:rgba(100,100,100,.25);}.cal-d.past{color:rgba(100,100,100,.2);}
+.cal-d.today{color:var(--silver-l);font-weight:500;}
+.cal-d.today::after{content:'';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--silver);}
+.cal-d.avail{color:var(--white);cursor:pointer;}
+.cal-d.avail:hover{background:rgba(200,200,200,.08);color:var(--silver-l);}
+.cal-d.avail::before{content:'';position:absolute;top:5px;right:5px;width:5px;height:5px;border-radius:50%;background:rgba(200,200,200,.4);}
+.cal-d.sel{background:var(--white);color:var(--black);font-weight:500;}
+.cal-d.sel::before{background:var(--black);}.cal-d.sel.today::after{display:none;}
+.cal-leg{display:flex;gap:1.5rem;padding:.7rem 1.5rem;border-top:1px solid rgba(200,200,200,.05);flex-wrap:wrap;}
+.cal-leg-i{display:flex;align-items:center;gap:.4rem;font-size:.62rem;color:var(--muted);}
+.ld{width:6px;height:6px;border-radius:50%;}.ld-a{background:rgba(200,200,200,.4);}.ld-s{background:var(--white);}.ld-n{background:rgba(100,100,100,.25);}
+/* Slots */
+.slots-top{padding:1.2rem 0 .6rem;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--silver-d);}
+.slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:.4rem;}
+.slot{background:var(--dark3);border:1px solid var(--border);color:var(--muted);padding:.6rem .4rem;font-family:'Barlow',sans-serif;font-size:.78rem;text-align:center;cursor:pointer;transition:all .2s;line-height:1.3;}
+.slot:hover{border-color:var(--silver-d);color:var(--white);transform:translateY(-1px);}
+.slot.sel{background:var(--white);color:var(--black);border-color:var(--white);font-weight:500;}
+.slot.booked{background:var(--dark2);color:rgba(100,100,100,.18);border-color:rgba(200,200,200,.04);cursor:not-allowed;text-decoration:line-through;font-size:.7rem;}
+.no-avail{padding:2rem;text-align:center;color:var(--muted);font-size:.84rem;background:var(--dark3);border:1px solid var(--border);}
+.no-avail strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--white);margin-bottom:.4rem;}
+/* Form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.5rem;}
+.fg{display:flex;flex-direction:column;gap:.45rem;}.fg.full{grid-column:1/-1;}
+.flabel{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-d);}
+.fi{background:var(--dark3);border:1px solid rgba(200,200,200,.15);color:var(--white);padding:.8rem 1rem;font-family:'Barlow',sans-serif;font-size:.84rem;font-weight:300;outline:none;transition:border-color .3s;width:100%;}
+.fi:focus{border-color:var(--silver);}
+.summary-box{background:var(--dark3);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem;}
+.sum-title{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-d);margin-bottom:1rem;}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(200,200,200,.05);font-size:.82rem;}
+.sum-row:last-child{border-bottom:none;padding-top:.6rem;}.sum-k{color:var(--muted);}.sum-v{color:var(--white);}
+.sum-total .sum-v{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--silver-l);letter-spacing:.03em;}
+.step-acts{margin-top:1.5rem;display:flex;align-items:center;gap:.75rem;}
+.btn-back{background:transparent;border:1px solid rgba(200,200,200,.15);color:var(--muted);padding:.75rem 1.75rem;font-family:'Barlow',sans-serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.btn-back:hover{border-color:var(--white);color:var(--white);}
+.form-err{padding:.8rem 1rem;font-size:.8rem;background:rgba(239,68,68,.08);border-left:3px solid #ef4444;color:#f87171;display:none;margin-top:.75rem;}
+.cal-loading{padding:3rem;text-align:center;color:var(--muted);font-size:.8rem;}
+.ring{display:inline-block;width:22px;height:22px;border:2px solid rgba(200,200,200,.1);border-top-color:var(--silver);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:.5rem;}
+/* Modal */
+.overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:2rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+.overlay.on{opacity:1;pointer-events:all;}
+.modal{background:var(--dark2);border:1px solid rgba(200,200,200,.18);padding:2.5rem;max-width:400px;width:100%;transform:scale(.96);transition:transform .3s;}
+.overlay.on .modal{transform:scale(1);}
+.modal-icon{font-size:2rem;margin-bottom:1rem;text-align:center;color:var(--silver);}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;color:var(--white);margin-bottom:.5rem;text-align:center;}
+.modal-body{color:var(--muted);font-size:.82rem;line-height:1.7;text-align:center;}.modal-body strong{color:var(--silver-l);}
+.modal-close{margin-top:2rem;width:100%;background:transparent;border:1px solid var(--silver-d);color:var(--silver);padding:.75rem;font-family:'Barlow',sans-serif;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.modal-close:hover{background:var(--white);color:var(--black);border-color:var(--white);}
+/* ── LOCATION MAP ────────────────────────────────────────── */
+#location{background:var(--black);padding:0;}
+.location-wrap{display:grid;grid-template-columns:1fr 420px;max-width:1200px;margin:0 auto;}
+.location-info{padding:5rem 4rem;display:flex;flex-direction:column;justify-content:center;gap:1.8rem;}
+.location-label{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);}
+.location-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3rem);letter-spacing:.04em;color:var(--white);line-height:1.1;}
+.location-title em{color:var(--silver);font-style:normal;}
+.location-details{display:flex;flex-direction:column;gap:1rem;}
+.location-row{display:flex;align-items:flex-start;gap:.9rem;}
+.location-icon{font-size:.9rem;color:var(--silver-d);margin-top:.1rem;flex-shrink:0;}
+.location-text{font-size:.82rem;color:var(--muted);line-height:1.7;}
+.location-text strong{color:var(--silver-l);font-weight:400;}
+.map-frame{position:relative;min-height:420px;}
+.map-frame iframe{width:100%;height:100%;min-height:420px;border:0;display:block;filter:grayscale(60%) contrast(1.1) brightness(.85);}
+.map-frame::after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset -40px 0 60px rgba(8,8,8,.6);}
+@media(max-width:860px){
+  .location-wrap{grid-template-columns:1fr;}
+  .location-info{padding:3.5rem 2rem 2rem;}
+  .map-frame{min-height:300px;}
+  .map-frame iframe{min-height:300px;}
+  .map-frame::after{box-shadow:inset 0 -40px 60px rgba(8,8,8,.6);}
+}
+/* Footer */
+footer{background:var(--black);border-top:1px solid var(--border);padding:2.5rem 5vw;display:grid;grid-template-columns:1fr auto 1fr;gap:2rem;align-items:center;}
+.f-logo{height:42px;width:auto;object-fit:contain;margin-bottom:.5rem;display:block;}
+.f-copy{font-size:.7rem;color:var(--muted);}
+.f-credit{text-align:center;}
+.f-credit-txt{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,200,200,.4);}
+.f-credit-link{color:var(--silver-l);text-decoration:none;letter-spacing:.14em;transition:color .3s;}
+.f-credit-link:hover{color:var(--white);}
+.f-links{display:flex;gap:2rem;list-style:none;flex-wrap:wrap;justify-content:flex-end;}
+.f-links a{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;}
+.f-links a:hover{color:var(--white);}
+
+/* ── PAGE LOADER ─────────────────────────────────────────── */
+#page-loader{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--black);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2rem;
+  /* fades out after logo flies away */
+  transition:opacity .5s ease .1s, visibility .5s ease .1s;
+}
+#page-loader.fly-out{opacity:0;visibility:hidden;pointer-events:none;}
+
+/* the flying logo — starts centered, flies to nav */
+#loader-logo-flying{
+  position:fixed;
+  z-index:10000;
+  pointer-events:none;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:clamp(140px,28vw,220px);
+  filter:drop-shadow(0 0 50px rgba(200,200,200,.3));
+  object-fit:contain;
+  transition:none; /* JS will add transition when flying */
+  transform-style:preserve-3d;
+  perspective:600px;
+}
+#loader-logo-flying.pulse{
+  /* gira como moeda/pião (1.8s) e para — em seguida voa */
+  animation:loaderSpin 1.1s cubic-bezier(.25,.46,.45,.94) forwards;
+}
+#loader-logo-flying.flying{
+  /* JS sets top/left/width/height to match nav logo position */
+  transition:
+    top .75s cubic-bezier(.7,0,.3,1),
+    left .75s cubic-bezier(.7,0,.3,1),
+    width .75s cubic-bezier(.7,0,.3,1),
+    height .75s cubic-bezier(.7,0,.3,1),
+    filter .75s ease,
+    opacity .2s ease .6s;
+}
+#loader-logo-flying.gone{opacity:0;}
+
+.loader-bar-wrap{
+  width:clamp(100px,20vw,160px);
+  height:1px;
+  background:rgba(200,200,200,.1);
+  overflow:hidden;
+}
+.loader-bar{
+  height:100%;
+  background:linear-gradient(90deg,transparent,var(--silver),transparent);
+  width:40%;
+  animation:loaderSlide 1.2s ease-in-out infinite;
+}
+.loader-txt{
+  font-size:.56rem;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);
+}
+
+/* hide the nav logo while loader is active, show after */
+.nav-logo-wrap{ opacity:0; transition: opacity .3s ease; }
+.nav-logo-wrap.visible{ opacity:1; }
+
+/* body hidden until site revealed */
+body.loading { overflow:hidden; }
+body.revealed #hero,
+body.revealed nav,
+body.revealed footer { animation: siteReveal .8s cubic-bezier(.22,1,.36,1) both; }
+
+@keyframes loaderSpin{
+  0%  {transform:translate(-50%,-50%) rotateY(0deg)   rotateZ(0deg)  scale(.9);  filter:drop-shadow(0 0 20px rgba(200,200,200,.12));}
+  25% {transform:translate(-50%,-50%) rotateY(180deg) rotateZ(5deg)  scale(1.05);filter:drop-shadow(0 0 60px rgba(200,200,200,.42));}
+  50% {transform:translate(-50%,-50%) rotateY(360deg) rotateZ(-3deg) scale(1.02);filter:drop-shadow(0 0 45px rgba(200,200,200,.28));}
+  75% {transform:translate(-50%,-50%) rotateY(510deg) rotateZ(2deg)  scale(1.01);}
+  100%{transform:translate(-50%,-50%) rotateY(630deg) rotateZ(0deg)  scale(1);   filter:drop-shadow(0 0 32px rgba(200,200,200,.2));}
+}
+@keyframes loaderSlide{
+  0%{transform:translateX(-150%);}
+  100%{transform:translateX(400%);}
+}
+@keyframes siteReveal{
+  from{opacity:0;transform:translateY(18px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── BARBEARIA PREVIEW SECTION ───────────────────────────── */
+#barbearia{background:var(--dark2);}
+.barb-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  border:1px solid var(--border);
+  max-width:1100px;margin:0 auto;
+}
+.barb-card{
+  background:var(--dark3);
+  padding:3rem 2.5rem;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.barb-card:hover{background:rgba(30,30,30,1);}
+.barb-card-icon{font-size:1.8rem;margin-bottom:1.2rem;opacity:.55;}
+.barb-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.05em;color:var(--white);margin-bottom:.6rem;}
+.barb-card-body{font-size:.82rem;color:var(--muted);line-height:1.85;}
+.barb-card-tag{display:inline-block;margin-top:1.2rem;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-d);border:1px solid rgba(200,200,200,.12);padding:.3rem .8rem;}
+.barb-hero-img{
+  grid-column:1/-1;
+  position:relative;overflow:hidden;
+  min-height:320px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--dark4);
+}
+.barb-hero-img img{
+  width:100%;max-height:400px;object-fit:cover;object-position:center 20%;
+  filter:grayscale(20%) contrast(1.05);
+  display:block;
+}
+.barb-hero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(8,8,8,.85) 0%,rgba(8,8,8,.1) 60%);
+  display:flex;align-items:flex-end;padding:2.5rem;
+}
+.barb-hero-txt{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,4vw,2.8rem);letter-spacing:.06em;color:var(--white);line-height:1.1;}
+.barb-cta-row{grid-column:1/-1;padding:2.5rem;background:var(--dark3);display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
+.barb-cta-txt{font-family:'Crimson Pro',serif;font-style:italic;font-size:1.15rem;color:var(--muted);}
+@media(max-width:768px){
+  .barb-grid{grid-template-columns:1fr;}
+  .barb-hero-img{min-height:220px;}
+  .barb-cta-row{flex-direction:column;text-align:center;}
+}
+
+/* ── KEYFRAMES ───────────────────────────────────────────── */
+@keyframes heroIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 30px rgba(200,200,200,.12))}50%{filter:drop-shadow(0 0 60px rgba(200,200,200,.22))}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media(max-width:1024px){
+  .about-wrap{grid-template-columns:300px 1fr;gap:3rem;}
+  .nav-links{gap:1.2rem;}
+}
+@media(max-width:860px){
+  .nav-links li:nth-child(3){display:none;} /* Barbearia some no tablet médio */
+}
+@media(max-width:800px){
+  .about-wrap{grid-template-columns:1fr;gap:2.5rem;}
+  .about-photo{max-width:320px;margin:0 auto;}
+  .about-photo-deco{display:none;}
+  .about-text .sec-eye{text-align:center;}
+  .about-title{text-align:center;}
+  .about-name{text-align:center;}
+  .about-body{text-align:center;}
+  .about-stats{justify-content:center;}
+  .about-divider{margin:0 auto 1.5rem;}
+}
+@media(max-width:768px){
+  /* Nav: esconde links e cta, mostra hamburger */
+  .nav-links,.nav-cta{display:none;}
+  .nav-hamburger{display:flex;}
+  /* Hero */
+  #hero{padding-top:100px;}
+  .hero-title{font-size:clamp(2.5rem,12vw,5rem);}
+  /* Sections */
+  section{padding:4rem 6vw;}
+  .sec-title{font-size:clamp(1.8rem,8vw,3rem);}
+  /* Booking */
+  .form-grid{grid-template-columns:1fr;}
+  .fg.full{grid-column:1;}
+  .bk-step{padding:.75rem .35rem;font-size:.52rem;}
+  .sv-picks{grid-template-columns:1fr 1fr;}
+  /* Footer */
+  footer{grid-template-columns:1fr;text-align:center;gap:1.5rem;}
+  .f-links{gap:1rem;justify-content:center;}
+  .f-logo{margin:0 auto;}
+  /* Barb */
+  .barb-grid{grid-template-columns:1fr;}
+  .barb-hero-img{min-height:220px;}
+  .barb-cta-row{flex-direction:column;text-align:center;}
+}
+@media(max-width:540px){
+  nav{padding:0 4vw;}
+  section{padding:3.5rem 5vw;}
+  .hero-title{font-size:clamp(2.2rem,13vw,4rem);}
+  .hero-sub{font-size:.9rem;}
+  .hero-btns{flex-direction:column;align-items:center;}
+  .hero-btns .btn-primary,.hero-btns .btn-outline{width:100%;max-width:300px;}
+  .hero-logo{max-width:180px;}
+  .about-photo{max-width:240px;}
+  .sv-picks{grid-template-columns:1fr;}
+  .bk-step-num{font-size:1.1rem;}
+  .bk-step{font-size:.48rem;padding:.65rem .25rem;}
+  .logo-img{height:110px;}
+  /* Ajusta altura inicial da logo no loader em telas pequenas */
+  #loader-logo-flying{width:clamp(110px,55vw,180px);}
+  .slots-grid{grid-template-columns:repeat(auto-fill,minmax(66px,1fr));}
+  .cal-d{font-size:.75rem;}
+  .about-stat-num{font-size:2.2rem;}
+}
+@media(max-width:380px){
+  .bk-steps{display:grid;grid-template-columns:1fr 1fr 1fr;}
+  .hero-title{font-size:2rem;}
+  section{padding:3rem 4vw;}
+}
+
+/* ── SERVICES VER MAIS ───────────────────────────────────── */
+.svc-hidden{display:none;}
+.svc-more-btn{margin:1.5rem auto 0;display:block;background:transparent;border:1px solid rgba(200,200,200,.22);color:var(--silver-d);padding:.65rem 2rem;font-family:'Barlow',sans-serif;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.svc-more-btn:hover{border-color:var(--white);color:var(--white);}
+
+/* ── PLANS (ASSINATURAS) ─────────────────────────────────── */
+#plans{background:var(--dark2);}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto;}
+.plan-card{background:var(--dark3);border:1px solid var(--border);padding:2.5rem 2rem;position:relative;transition:transform .3s,border-color .3s;}
+.plan-card:hover{transform:translateY(-4px);border-color:rgba(200,200,200,.25);}
+.plan-card.featured{border-color:rgba(200,200,200,.35);background:rgba(30,30,30,1);}
+.plan-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--white);color:var(--black);font-family:'Barlow',sans-serif;font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;padding:.25rem 1rem;font-weight:600;white-space:nowrap;}
+.plan-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.05em;color:var(--white);margin-bottom:.3rem;}
+.plan-desc{font-size:.78rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+.plan-price{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:.03em;color:var(--silver-l);line-height:1;}
+.plan-price-period{font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;display:block;margin-top:.2rem;}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:.65rem;margin-bottom:2rem;}
+.plan-features li{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:.6rem;}
+.plan-features li::before{content:'✦';font-size:.58rem;color:var(--silver-d);flex-shrink:0;}
+.plan-cta{width:100%;background:transparent;border:1px solid rgba(200,200,200,.3);color:var(--silver);padding:.85rem;font-family:'Barlow',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.plan-cta:hover{background:var(--white);color:var(--black);border-color:var(--white);}
+.plan-card.featured .plan-cta{background:var(--white);color:var(--black);border-color:var(--white);}
+.plan-card.featured .plan-cta:hover{background:var(--silver-l);}
+.plans-empty{text-align:center;color:var(--muted);font-size:.84rem;padding:3rem 0;grid-column:1/-1;}
+
+/* ── FOOTER SOCIAL ───────────────────────────────────────── */
+.f-right{display:flex;flex-direction:column;align-items:flex-end;gap:.85rem;}
+.f-social{display:flex;gap:.6rem;}
+.f-social-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid rgba(200,200,200,.15);color:var(--muted);text-decoration:none;transition:all .3s;flex-shrink:0;}
+.f-social-btn:hover{border-color:var(--white);color:var(--white);}
+.f-social-btn.wpp:hover{border-color:#25D366;color:#25D366;}
+.f-social-btn.insta:hover{border-color:#E1306C;color:#E1306C;}
+@media(max-width:768px){
+  .f-right{align-items:center;}
+  .f-social{justify-content:center;}
+}
+</style>
+</head>
+<body class="loading">
+
+<!-- FLYING LOGO (lives outside loader, flies to nav) -->
+<img id="loader-logo-flying" src="logo.png" alt="Mister das Navalhas" class="pulse"/>
+
+<!-- PAGE LOADER (background + bar + text) -->
+<div id="page-loader">
+  <div style="width:clamp(140px,28vw,220px);height:clamp(140px,28vw,220px);"></div><!-- spacer where logo was -->
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <span class="loader-txt">Mister das Navalhas</span>
+</div>
+
+<!-- NAV MOBILE OVERLAY -->
+<div class="nav-mobile" id="nav-mobile">
+  <a href="#services" onclick="closeMenu()">Serviços</a>
+  <a href="#about" onclick="closeMenu()">Sobre</a>
+  <a href="#barbearia" onclick="closeMenu()">Barbearia</a>
+  <button class="nav-cta-mob" onclick="closeMenu();goTo('booking')">Agendar Horário</button>
+</div>
+
+<nav id="navbar" class="nav-expanded">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <div class="nav-logo-wrap">
+        <img class="logo-img" src="logo.png" alt="Mister das Navalhas — Barbearia"/>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#services">Serviços</a></li>
+        <li><a href="#about">Sobre</a></li>
+        <li><a href="#barbearia">Barbearia</a></li>
+      </ul>
+    </div>
+    <div class="nav-actions">
+      <button class="nav-cta" onclick="goTo('booking')">Reservar</button>
+      <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" aria-label="Mister das Navalhas — Barbearia">
+  <div class="hero-bg"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <!--img class="hero-logo" src="" alt="" width="240" height="240"/-->
+    <p class="eyebrow">✦ Barbearia · Desde 2019 · Jurujuba, RJ ✦</p>
+    <h1 class="hero-title">ARTE &amp;<br><span>ESTILO</span></h1>
+    <p class="hero-sub">Onde cada corte conta uma história.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="goTo('booking')">Agendar Horário</button>
+      <a class="btn-outline btn-wpp" href="https://wa.me/5521971865391" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:.45rem;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <a class="btn-outline btn-insta" href="https://www.instagram.com/mister.das_navalhas/" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:.45rem;"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Instagram
+      </a>
+    </div>
+  </div>
+  <div class="scroll-hint" aria-hidden="true"><div class="scroll-line"></div><span>Rolar</span></div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" aria-label="Nossos Serviços">
+  <div class="sec-header reveal">
+    <span class="sec-eye">O que oferecemos</span>
+    <h2 class="sec-title">Nossos <em>Serviços</em></h2>
+  </div>
+  <div class="svc-list reveal">
+    <div class="svc-item"><span class="svc-item-dot"></span>Corte de Cabelo</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Corte Infantil</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Barba</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Hidratação</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Relaxamento</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Coloração</div>
+    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Degradê</div>
+    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Sobrancelha</div>
+    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Limpeza de Pele</div>
+    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Massagem Facial</div>
+    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Depilação a Cera</div>
+    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Navalha</div>
+  </div>
+  <button class="svc-more-btn" id="svc-more-btn" onclick="toggleSvcMore()">Ver Mais ↓</button>
+  <div id="svc-grid" class="svc-grid" aria-hidden="true"></div>
+  <div style="text-align:center;margin-top:2.5rem;">
+    <button class="btn-outline" onclick="goTo('booking')">Ver preços & agendar →</button>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" aria-label="Sobre o Profissional">
+  <div class="about-wrap">
+    <div class="about-photo-frame reveal from-left">
+      <div class="about-photo-deco" aria-hidden="true"></div>
+      <img
+        class="about-photo"
+        src="wesley.png"
+        alt="Wesley — Barbeiro especialista da Mister das Navalhas em Jurujuba"
+        width="420"
+        loading="lazy"
+      />
+    </div>
+    <div class="about-text reveal from-right">
+      <span class="sec-eye">Conheça o profissional</span>
+      <div class="about-divider"></div>
+      <h2 class="about-title">MISTER DAS<br>NAVALHAS</h2>
+      <span class="about-name">Wesley</span>
+      <p class="about-body">
+        Com mais de 6 anos de experiência na arte da barbearia, Wesley transformou sua paixão pelo ofício em uma marca de excelência em Jurujuba. Cada corte é tratado como uma obra única, combinando técnica apurada, criatividade e atenção cirúrgica aos detalhes.<br><br>
+        Especialista em degradê, navalha e barba, Wesley atende com exclusividade na <strong style="color:var(--silver-l);">Mister das Navalhas</strong> — onde a tradição da barbearia clássica encontra o estilo contemporâneo. Seu compromisso é simples: você sai como sempre quis.
+      </p>
+      <div class="about-stats">
+        <div class="about-stat">
+          <div class="about-stat-num counter" data-target="6" data-suffix="+">0</div>
+          <div class="about-stat-lbl">Anos de<br>Experiência</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num counter" data-target="2019" data-suffix="">0</div>
+          <div class="about-stat-lbl">Fundação da<br>Barbearia</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num counter" data-target="100" data-suffix="%">0</div>
+          <div class="about-stat-lbl">Dedicação<br>Exclusiva</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BARBEARIA -->
+<section id="barbearia" aria-label="Conheça a Barbearia">
+  <div class="sec-header reveal">
+    <span class="sec-eye">Nosso espaço</span>
+    <h2 class="sec-title">A <em>Barbearia</em></h2>
+    <p class="sec-desc">Um espaço pensado para você se sentir em casa.</p>
+  </div>
+  <div class="barb-grid reveal">
+    <div class="barb-hero-img">
+      <img src="wesley.png" alt="Interior da Mister das Navalhas"/>
+      <div class="barb-hero-overlay">
+        <div class="barb-hero-txt">MISTER DAS NAVALHAS<br><span style="color:var(--silver);font-size:60%;">Jurujuba · Rio de Janeiro</span></div>
+      </div>
+    </div>
+    <div class="barb-card">
+      <div class="barb-card-icon">✦</div>
+      <div class="barb-card-title">Ambiente Exclusivo</div>
+      <div class="barb-card-body">Um espaço cuidadosamente preparado para proporcionar conforto e privacidade. Cada detalhe do ambiente foi pensado para fazer você relaxar e curtir o momento.</div>
+      <span class="barb-card-tag">Atendimento Individual</span>
+    </div>
+    <div class="barb-card">
+      <div class="barb-card-icon">◈</div>
+      <div class="barb-card-title">Localização</div>
+      <div class="barb-card-body">Situado no charmoso bairro de Jurujuba, em Niterói — RJ. Fácil acesso, estacionamento próximo e uma vista única que só a orla de Jurujuba oferece.</div>
+      <span class="barb-card-tag">Jurujuba · Niterói · RJ</span>
+    </div>
+    <div class="barb-card">
+      <div class="barb-card-icon">⧖</div>
+      <div class="barb-card-title">Horário de Funcionamento</div>
+      <div class="barb-card-body">
+        Terça-feira das <strong style="color:var(--silver-l);">10h às 16h30</strong><br>
+        Quarta-feira das <strong style="color:var(--silver-l);">09h às 19h50</strong><br>
+        Quinta-feira das <strong style="color:var(--silver-l);">09h às 17h20</strong><br>
+        Sexta-feira das <strong style="color:var(--silver-l);">09h às 21h20</strong><br>
+        Sábado das <strong style="color:var(--silver-l);">08h às 20h30</strong><br><br>
+        Atendimento exclusivo com agendamento online. Sem filas, sem espera.
+      </div>
+      <span class="barb-card-tag">Desde 2019</span>
+    </div>
+    <div class="barb-card">
+      <div class="barb-card-icon">◇</div>
+      <div class="barb-card-title">Ferramentas & Técnica</div>
+      <div class="barb-card-body">Equipamentos profissionais de alto nível, produtos premium e técnicas apuradas ao longo de mais de 6 anos. Do degradê clássico à navalha — cada ferramenta no lugar certo.</div>
+      <span class="barb-card-tag">Qualidade Premium</span>
+    </div>
+    <div class="barb-cta-row">
+      <p class="barb-cta-txt">"Onde cada corte conta uma história."</p>
+      <button class="btn-primary" onclick="goTo('booking')">Agendar Horário →</button>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="plans" aria-label="Planos de Assinatura">
+  <div class="sec-header reveal">
+    <span class="sec-eye">Economize todo mês</span>
+    <h2 class="sec-title">Planos de <em>Assinatura</em></h2>
+    <p class="sec-desc">Atendimento prioritário, preço fixo e desconto garantido todos os meses.</p>
+  </div>
+  <div class="plans-grid reveal" id="plans-grid">
+    <!-- rendered by renderPlans() -->
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section id="booking" aria-label="Agendamento Online">
+  <div class="sec-header reveal">
+    <span class="sec-eye">Reserve seu horário</span>
+    <h2 class="sec-title">Agendamento <em>Online</em></h2>
+    <p class="sec-desc">Escolha o serviço, data e horário disponíveis.</p>
+  </div>
+  <div class="booking-wrap reveal">
+    <div class="bk-steps">
+      <div class="bk-step active" id="si1"><span class="bk-step-num">1</span>Serviço</div>
+      <div class="bk-step" id="si2"><span class="bk-step-num">2</span>Data &amp; Hora</div>
+      <div class="bk-step" id="si3"><span class="bk-step-num">3</span>Confirmar</div>
+    </div>
+    <div class="sp on" id="sp1">
+      <div class="sv-picks" id="sv-picks"></div>
+      <div class="step-acts">
+        <button class="btn-primary" id="s1btn" onclick="goStep(2)" disabled>Próximo →</button>
+      </div>
+    </div>
+    <div class="sp" id="sp2">
+      <div class="cal-box">
+        <div class="cal-top">
+          <button class="cal-nav-btn" onclick="calMov(-1)" aria-label="Mês anterior">&#8249;</button>
+          <span class="cal-month-lbl" id="cal-lbl"></span>
+          <button class="cal-nav-btn" onclick="calMov(1)" aria-label="Próximo mês">&#8250;</button>
+        </div>
+        <div class="cal-grid" id="cal-grid" role="grid" aria-label="Calendário de datas"></div>
+        <div class="cal-leg" aria-hidden="true">
+          <div class="cal-leg-i"><div class="ld ld-a"></div>Disponível</div>
+          <div class="cal-leg-i"><div class="ld ld-s"></div>Selecionado</div>
+          <div class="cal-leg-i"><div class="ld ld-n"></div>Indisponível</div>
+        </div>
+      </div>
+      <div id="slots-sec" style="display:none;margin-top:1.5rem;">
+        <div class="slots-top" id="slots-lbl">Horários disponíveis</div>
+        <div class="slots-grid" id="slots-grid"></div>
+      </div>
+      <div class="step-acts">
+        <button class="btn-back" onclick="goStep(1)">← Voltar</button>
+        <button class="btn-primary" id="s2btn" onclick="goStep(3)" disabled>Próximo →</button>
+      </div>
+    </div>
+    <div class="sp" id="sp3">
+      <div class="summary-box" id="summary"></div>
+      <div class="form-grid">
+        <div class="fg"><label class="flabel">Seu Nome</label><input class="fi" type="text" id="cn" placeholder="Nome completo" autocomplete="name"/></div>
+        <div class="fg"><label class="flabel">Telefone / WhatsApp</label><input class="fi" type="tel" id="cp" placeholder="(21) 99999-9999" autocomplete="tel"/></div>
+        <div class="fg full"><label class="flabel">Email (opcional)</label><input class="fi" type="email" id="ce" placeholder="seu@email.com" autocomplete="email"/></div>
+      </div>
+      <div class="form-err" id="ferr"></div>
+      <div class="step-acts">
+        <button class="btn-back" onclick="goStep(2)">← Voltar</button>
+        <button class="btn-primary" id="cfmbtn" onclick="doBook()">Confirmar Agendamento</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section id="location" aria-label="Localização">
+  <div class="location-wrap">
+    <div class="location-info reveal from-left">
+      <span class="location-label">Como chegar</span>
+      <h2 class="location-title">Nos encontre em<br><em>Jurujuba</em></h2>
+      <div class="location-details">
+        <div class="location-row">
+          <span class="location-icon">◈</span>
+          <p class="location-text"><strong>Rua Santos Dumont, Jurujuba</strong><br>Niterói · Rio de Janeiro · RJ</p>
+        </div>
+        <div class="location-row">
+          <span class="location-icon">⧖</span>
+          <p class="location-text">
+            <strong>Terça-feira</strong> — 10h às 16h30<br>
+            <strong>Quarta-feira</strong> — 09h às 19h50<br>
+            <strong>Quinta-feira</strong> — 09h às 17h20<br>
+            <strong>Sexta-feira</strong> — 09h às 21h20<br>
+            <strong>Sábado</strong> — 08h às 20h30
+          </p>
+        </div>
+        <div class="location-row">
+          <span class="location-icon">✦</span>
+          <p class="location-text">Atendimento exclusivo com <strong>agendamento online</strong>.<br>Sem filas, sem espera.</p>
+        </div>
+      </div>
+      <div>
+        <button class="btn-primary" onclick="goTo('booking')">Agendar Horário →</button>
+      </div>
+    </div>
+    <div class="map-frame reveal">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3675.2!2d-43.1051!3d-22.9323!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU1JzU2LjMiUyA0M8KwMDYnMTguNCJX!5e0!3m2!1spt-BR!2sbr!4v1680000000000!5m2!1spt-BR!2sbr&q=Jurujuba,+Niter%C3%B3i,+RJ"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Localização Mister das Navalhas — Jurujuba, Niterói RJ">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <img class="f-logo" src="logo.png" alt="Mister das Navalhas" width="120" height="42" loading="lazy"/>
+    <p class="f-copy">© 2025 Mister das Navalhas · Jurujuba, RJ</p>
+  </div>
+  <div class="f-credit">
+    <p class="f-credit-txt">Desenvolvido por</p>
+    <a href="https://nxolab.io/" target="_blank" rel="noopener" class="f-credit-link">NXOlab</a>
+  </div>
+  <div class="f-right">
+    <ul class="f-links" aria-label="Links do rodapé">
+      <li><a href="#services">Serviços</a></li>
+      <li><a href="#plans">Planos</a></li>
+      <li><a href="#barbearia">Barbearia</a></li>
+      <li><a href="#about">Sobre</a></li>
+      <li><a href="#booking">Agendar</a></li>
+      <li><a href="admin.html">Área do Barbeiro</a></li>
+    </ul>
+    <div class="f-social">
+      <a href="https://wa.me/5521971865391" class="f-social-btn wpp" target="_blank" rel="noopener" aria-label="WhatsApp">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/mister.das_navalhas/" class="f-social-btn insta" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<div class="overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-el">
+  <div class="modal">
+    <div class="modal-icon" aria-hidden="true">✦</div>
+    <div class="modal-title" id="modal-title-el">Agendamento Confirmado!</div>
+    <div class="modal-body" id="mbody"></div>
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('on')">Fechar</button>
+  </div>
+</div>
+
+<script>
+/* ── PAGE LOADER + LOGO FLY ANIMATION ───────────── */
+(function(){
+  const MIN_MS = 1500 // mínimo de splash antes de voar (ms)
+  const flyingLogo  = document.getElementById('loader-logo-flying')
+  const loader      = document.getElementById('page-loader')
+  const navLogoWrap = document.querySelector('.nav-logo-wrap')
+  const navLogo     = document.querySelector('.logo-img')
+  const start       = Date.now()
+
+  function flyToNav(){
+    // Mede posição e tamanho da logo no nav
+    const navRect = navLogo.getBoundingClientRect()
+
+    // 1. Para a animação de spin mas mantém o translate(-50%,-50%) intacto
+    //    para que o elemento permaneça visualmente no mesmo lugar
+    flyingLogo.classList.remove('pulse')
+    flyingLogo.style.animation = 'none'
+    flyingLogo.style.transform = 'translate(-50%,-50%)'
+
+    // 2. Força reflow — agora o elemento está parado com transform centrado
+    flyingLogo.getBoundingClientRect()
+
+    // 3. Mede a posição real depois do reflow (sem a animação rodando)
+    const flyRect = flyingLogo.getBoundingClientRect()
+
+    // 4. Converte para top/left absolutos equivalentes e zera o transform
+    flyingLogo.style.transform = 'none'
+    flyingLogo.style.top    = flyRect.top    + 'px'
+    flyingLogo.style.left   = flyRect.left   + 'px'
+    flyingLogo.style.width  = flyRect.width  + 'px'
+    flyingLogo.style.height = flyRect.height + 'px'
+
+    // 5. Força mais um reflow para fixar a posição antes de iniciar a transição
+    flyingLogo.getBoundingClientRect()
+
+    // Inicia voo — destino é a posição e tamanho exatos da logo no nav
+    flyingLogo.classList.add('flying')
+    flyingLogo.style.top    = navRect.top    + 'px'
+    flyingLogo.style.left   = navRect.left   + 'px'
+    flyingLogo.style.width  = navRect.width  + 'px'
+    flyingLogo.style.height = navRect.height + 'px'
+    flyingLogo.style.filter = 'drop-shadow(0 0 20px rgba(200,200,200,.12))'
+
+    // Fade out loader background junto
+    loader.classList.add('fly-out')
+    document.body.classList.remove('loading')
+    document.body.classList.add('revealed')
+
+    // Depois que a logo chegou: mostra a logo real no nav e some a voadora
+    setTimeout(()=>{
+      navLogoWrap.classList.add('visible')
+      flyingLogo.classList.add('gone')
+      // Remove a logo voadora do DOM após fadeout
+      setTimeout(()=>flyingLogo.remove(), 300)
+    }, 780)
+  }
+
+  function tryFly(){
+    const elapsed = Date.now() - start
+    const wait    = Math.max(0, MIN_MS - elapsed)
+    setTimeout(flyToNav, wait)
+  }
+
+  if(document.readyState === 'complete') tryFly()
+  else window.addEventListener('load', tryFly)
+})()
+
+/* ── MOBILE MENU ─────────────────────────────── */
+function toggleMenu(){
+  const m=document.getElementById('nav-mobile'), h=document.getElementById('hamburger')
+  const open=m.classList.toggle('open')
+  h.classList.toggle('open',open)
+  document.body.style.overflow=open?'hidden':''
+}
+function closeMenu(){
+  document.getElementById('nav-mobile').classList.remove('open')
+  document.getElementById('hamburger').classList.remove('open')
+  document.body.style.overflow=''
+}
+
+/* ── NAVBAR SCROLL SHRINK ────────────────────── */
+(function(){
+  const nav=document.getElementById('navbar')
+  function onScroll(){
+    if(window.scrollY>90){
+      nav.classList.remove('nav-expanded')
+      nav.classList.add('nav-scrolled')
+    } else {
+      nav.classList.remove('nav-scrolled')
+      nav.classList.add('nav-expanded')
+    }
+  }
+  window.addEventListener('scroll',onScroll,{passive:true})
+  onScroll()
+})()
+
+/* ── SCROLL REVEAL ───────────────────────────── */
+const revObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revObs.unobserve(e.target)} })
+},{threshold:0.12,rootMargin:'0px 0px -40px 0px'})
+document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el))
+
+/* ── COUNTER ANIMATION ───────────────────────── */
+function animateCounter(el){
+  const target=parseInt(el.dataset.target)
+  const suffix=el.dataset.suffix||''
+  const duration=1600
+  const start=performance.now()
+  const startVal=target>100?1800:0
+  function step(now){
+    const elapsed=now-start
+    const progress=Math.min(elapsed/duration,1)
+    // Ease out cubic
+    const eased=1-Math.pow(1-progress,3)
+    const current=Math.round(startVal+(target-startVal)*eased)
+    el.textContent=current+suffix
+    if(progress<1) requestAnimationFrame(step)
+    else el.textContent=target+suffix
+  }
+  requestAnimationFrame(step)
+}
+const counterObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      animateCounter(e.target)
+      counterObs.unobserve(e.target)
+    }
+  })
+},{threshold:0.5})
+document.querySelectorAll('.counter').forEach(el=>counterObs.observe(el))
+
+/* ── SERVICE CARDS STAGGER ───────────────────── */
+function observeSvcCards(){
+  const cards=document.querySelectorAll('.svc-card')
+  cards.forEach((c,i)=>{
+    c.classList.add('reveal')
+    const rect=c.getBoundingClientRect()
+    const inView=rect.top < window.innerHeight && rect.bottom > 0
+    if(inView){
+      setTimeout(()=>c.classList.add('visible'),i*80)
+    } else {
+      revObs.observe(c)
+    }
+  })
+}
+
+/* ── API ──────────────────────── */
+const API = window.location.origin + '/api'
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  })
+  if (!res.ok) throw new Error('API error')
+  return res.json()
+}
+const MOCK = () => false
+
+const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+const DNAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
+
+// Estado global
+const S = { services:[], avail:{}, sel:{b:null,s:null,date:null,time:null}, cy:0, cm:0 }
+
+/* MOCK DATA */
+const MS = [
+  {id:'s1',name:'Corte Clássico',description:'Tesoura, pente e acabamento perfeito.',duration_min:30,price:45},
+  {id:'s2',name:'Corte + Barba',description:'Pacote completo com navalha.',duration_min:60,price:75},
+  {id:'s3',name:'Barba Completa',description:'Modelagem com toalha quente.',duration_min:30,price:40},
+  {id:'s4',name:'Degradê',description:'Fade do mais baixo ao alto.',duration_min:45,price:55},
+]
+const MB_MOCK = [{id:'b1',name:'Wsley',role:'Master Barber',experience:'6 anos',image_url:''}]
+
+function mockAvail() {
+  const a={}, t=new Date()
+  for(let i=1;i<=28;i++){
+    const d=new Date(t); d.setDate(t.getDate()+i)
+    if(d.getDay()===0) continue
+    if(i%5===0) continue
+    a[fd(d)]=['08:00','08:50','09:40','10:30','11:20','13:00','13:50','14:40','15:30','16:20','17:10']
+  }
+  return a
+}
+
+function fd(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function ptd(s){const[y,m,d]=s.split('-');return`${d}/${m}/${y}`}
+function goTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+
+// Calcula quantos slots adicionais o serviço ocupa (além do 1o)
+function slotsCount(duration_min){return Math.ceil((duration_min||50)/50)}
+
+// Lista todos os slots bloqueados por um agendamento (incluindo consecutivos)
+function blockedSlots(slot, duration_min, allSlots){
+  const idx = allSlots.indexOf(slot)
+  if(idx<0) return [slot]
+  const n = slotsCount(duration_min)
+  return allSlots.slice(idx, idx+n)
+}
+
+async function init(){
+  const now=new Date(); S.cy=now.getFullYear(); S.cm=now.getMonth()
+  const [rb,rs]=await Promise.all([
+    apiFetch('/barbers').catch(()=>[]),
+    apiFetch('/services?active=true').catch(()=>[])
+  ])
+  S.barber=(Array.isArray(rb)?rb:[])[0]||null
+  if(S.barber) S.sel.b=S.barber.id
+  S.services=Array.isArray(rs)?rs:[]
+  renderSvcSec(); renderSvPicks()
+}
+
+function renderSvcSec(){
+  document.getElementById('svc-grid').innerHTML=S.services.map((s,i)=>`
+    <div class="svc-card">
+      <div class="svc-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="svc-name">${s.name}</div>
+      <div class="svc-desc">${s.description||''}</div>
+      <div class="svc-meta"><span class="svc-price">R$ ${Number(s.price).toFixed(2)}</span><span class="svc-dur">${s.duration_min} min</span></div>
+    </div>`).join('')
+  observeSvcCards()
+}
+
+function renderSvPicks(){
+  document.getElementById('sv-picks').innerHTML=S.services.map(s=>`
+    <div class="sv-pick" id="svp${s.id}" onclick="selSvc('${s.id}')">
+      <div class="sv-pick-name">${s.name}</div>
+      <div class="sv-pick-info">${s.duration_min} min · ${s.description||''}</div>
+      <div class="sv-pick-price">R$ ${Number(s.price).toFixed(2)}</div>
+    </div>`).join('')
+}
+
+function selSvc(id){
+  S.sel.s=id
+  document.querySelectorAll('.sv-pick').forEach(e=>e.classList.remove('sel'))
+  document.getElementById('svp'+id)?.classList.add('sel')
+  document.getElementById('s1btn').disabled=false
+}
+
+function goStep(n){
+  document.querySelectorAll('.sp').forEach(p=>p.classList.remove('on'))
+  document.querySelectorAll('.bk-step').forEach(s=>s.classList.remove('active','done'))
+  document.getElementById('sp'+n).classList.add('on')
+  document.getElementById('si'+n).classList.add('active')
+  for(let i=1;i<n;i++) document.getElementById('si'+i).classList.add('done')
+  if(n===2) renderCal()
+  if(n===3) renderSummary()
+  goTo('booking')
+}
+
+async function loadAvail(){
+  if(!S.sel.b) return
+  if(false){S.avail={};return}
+  const start=`${S.cy}-${String(S.cm+1).padStart(2,'0')}-01`
+  const nm=S.cm===11?0:S.cm+1, ny=S.cm===11?S.cy+1:S.cy
+  const end=`${ny}-${String(nm+1).padStart(2,'0')}-01`
+  const data=await apiFetch(`/barber_availability?barber_id=${S.sel.b}&gte=${start}&lt=${end}`).catch(()=>[])
+  S.avail={}; (data||[]).forEach(r=>{S.avail[r.avail_date]=r.time_slots})
+}
+
+async function renderCal(){
+  document.getElementById('cal-lbl').textContent=`${MONTHS[S.cm]} ${S.cy}`
+  const g=document.getElementById('cal-grid')
+  g.innerHTML=`<div class="cal-loading"><span class="ring"></span> Carregando...</div>`
+  await loadAvail()
+  const today=new Date(); today.setHours(0,0,0,0)
+  const first=new Date(S.cy,S.cm,1), last=new Date(S.cy,S.cm+1,0)
+  let h=DNAMES.map(d=>`<div class="cal-dn">${d}</div>`).join('')
+  for(let i=0;i<first.getDay();i++) h+=`<div class="cal-d other"></div>`
+  for(let d=1;d<=last.getDate();d++){
+    const dt=new Date(S.cy,S.cm,d); const key=fd(dt)
+    const isToday=dt.getTime()===today.getTime()
+    const isPast=dt<today, isSel=key===S.sel.date
+    const hasSlots=!!S.avail[key]&&S.avail[key].length>0
+    let cls='cal-d'+(isSel?' sel':isPast?' past':hasSlots?' avail':' ')+(isToday&&!isSel?' today':'')
+    const click=(!isPast&&hasSlots)?`onclick="selDate('${key}')"`:''
+    h+=`<div class="${cls}" ${click}>${d}</div>`
+  }
+  const trail=6-last.getDay()
+  for(let i=0;i<trail;i++) h+=`<div class="cal-d other"></div>`
+  g.innerHTML=h
+}
+
+async function selDate(key){
+  S.sel.date=key; S.sel.time=null
+  document.getElementById('s2btn').disabled=true
+  renderCal()
+  const ss=document.getElementById('slots-sec'), sg=document.getElementById('slots-grid')
+  document.getElementById('slots-lbl').textContent=`Horários disponíveis — ${ptd(key)}`
+  ss.style.display='block'
+  sg.innerHTML=`<div class="cal-loading"><span class="ring"></span> Carregando horários...</div>`
+  const allSlots=S.avail[key]||[]
+  const sv=S.services.find(x=>x.id===S.sel.s)||{}
+  const needed=slotsCount(sv.duration_min||30)
+  let booked=[]
+  const _bookedData=await apiFetch(`/appointments?barber_id=${S.sel.b}&appt_date=${key}&status_neq=cancelled`).catch(()=>[])
+  ;(_bookedData||[]).forEach(a=>{
+    const svc=S.services.find(s=>s.id===a.service_id)||{duration_min:30}
+    blockedSlots(a.time_slot,svc.duration_min,allSlots).forEach(sl=>booked.push(sl))
+  })
+  const booked_unique=[...new Set(booked)]
+  // Horários onde ainda cabem "needed" slots consecutivos
+  const free=allSlots.filter((sl,i)=>{
+    if(booked_unique.includes(sl)) return false
+    for(let j=1;j<needed;j++){
+      const next=allSlots[i+j]
+      if(!next||booked_unique.includes(next)) return false
+    }
+    return true
+  })
+  if(free.length===0){
+    sg.innerHTML=`<div class="no-avail"><strong>Sem horários disponíveis</strong>Todos os horários já foram reservados.<br>Escolha outra data no calendário.</div>`
+    return
+  }
+  const durLabel=needed>1?` (+${needed-1} slot)`:'';
+  sg.innerHTML=allSlots.map(sl=>{
+    const isB=booked_unique.includes(sl)
+    const isFree=free.includes(sl)
+    return`<div class="slot${isB?' booked':''}${!isFree&&!isB?' booked':''}" ${isFree?`onclick="selSlot('${sl}',this)"`:''}>${sl}${isB?'<br><small>Ocupado</small>':(needed>1&&isFree?`<br><small>${sv.duration_min}min</small>`:'') }</div>`
+  }).join('')
+}
+
+function selSlot(t,el){
+  S.sel.time=t
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('sel'))
+  el.classList.add('sel')
+  document.getElementById('s2btn').disabled=false
+}
+
+function calMov(d){
+  S.cm+=d
+  if(S.cm<0){S.cm=11;S.cy--}
+  if(S.cm>11){S.cm=0;S.cy++}
+  renderCal()
+}
+
+function renderSummary(){
+  const sv=S.services.find(x=>x.id===S.sel.s)||{}
+  document.getElementById('summary').innerHTML=`
+    <div class="sum-title">Resumo do Agendamento</div>
+    <div class="sum-row"><span class="sum-k">Serviço</span><span class="sum-v">${sv.name||'—'}</span></div>
+    <div class="sum-row"><span class="sum-k">Duração</span><span class="sum-v">${sv.duration_min||30} min</span></div>
+    <div class="sum-row"><span class="sum-k">Data</span><span class="sum-v">${ptd(S.sel.date||'---')}</span></div>
+    <div class="sum-row"><span class="sum-k">Horário</span><span class="sum-v">${S.sel.time||'—'}</span></div>
+    <div class="sum-row sum-total"><span class="sum-k">Total</span><span class="sum-v">R$ ${Number(sv.price||0).toFixed(2)}</span></div>`
+}
+
+async function doBook(){
+  const name=document.getElementById('cn').value.trim()
+  const phone=document.getElementById('cp').value.trim()
+  const email=document.getElementById('ce').value.trim()
+  const err=document.getElementById('ferr')
+  err.style.display='none'
+  if(!name||!phone){err.textContent='Preencha nome e telefone.';err.style.display='block';return}
+  const btn=document.getElementById('cfmbtn')
+  btn.disabled=true; btn.textContent='Aguarde...'
+  const payload={client_name:name,client_phone:phone,client_email:email||null,barber_id:S.sel.b,service_id:S.sel.s,appt_date:S.sel.date,time_slot:S.sel.time,status:'pending',source:'online'}
+  try {
+    await apiFetch('/appointments', {method:'POST', body:payload})
+  } catch(e) {
+    err.textContent='Erro ao agendar: '+e.message; err.style.display='block'
+    btn.disabled=false; btn.textContent='Confirmar Agendamento'; return
+  }
+  const sv=S.services.find(x=>x.id===S.sel.s)||{}
+  document.getElementById('mbody').innerHTML=`<p>Reserva confirmada com sucesso!</p><br><p><strong>${sv.name}</strong></p><p><strong>${ptd(S.sel.date)}</strong> às <strong>${S.sel.time}</strong></p><p style="margin-top:.75rem;font-size:.78rem">Entraremos em contato pelo WhatsApp para confirmar. ✦</p>`
+  document.getElementById('modal').classList.add('on')
+  btn.disabled=false; btn.textContent='Confirmar Agendamento'
+  document.getElementById('cn').value=''; document.getElementById('cp').value=''; document.getElementById('ce').value=''
+  S.sel.s=null; S.sel.date=null; S.sel.time=null
+  goStep(1)
+  document.querySelectorAll('.sv-pick').forEach(e=>e.classList.remove('sel'))
+  document.getElementById('s1btn').disabled=true
+}
+
+/* ── SERVICES VER MAIS ─────────────────────────────────── */
+let svcExpanded = false
+function toggleSvcMore(){
+  svcExpanded = !svcExpanded
+  document.querySelectorAll('.svc-hidden').forEach(el=>{
+    el.style.display = svcExpanded ? 'flex' : ''
+  })
+  const btn = document.getElementById('svc-more-btn')
+  if(btn) btn.textContent = svcExpanded ? 'Ver Menos ↑' : 'Ver Mais ↓'
+}
+
+/* ── PLANS / ASSINATURAS ───────────────────────────────── */
+const PLANS_KEY = 'mdn_plans'
+
+function loadPlans(){
+  try{ return JSON.parse(localStorage.getItem(PLANS_KEY)||'null') }catch(e){ return null }
+}
+
+function renderPlans(){
+  const grid = document.getElementById('plans-grid')
+  if(!grid) return
+  const plans = loadPlans()
+
+  // default plans when admin hasn't configured any
+  const defaultPlans = [
+    {id:'p1', name:'Básico', desc:'Ideal para quem busca praticidade todo mês.', price:'50', period:'mês', featured:false,
+     features:['1 corte por mês','Agendamento prioritário','Sem taxa de cancelamento']},
+    {id:'p2', name:'Padrão', desc:'Mais atendimentos com desconto exclusivo.', price:'90', period:'mês', featured:true,
+     features:['2 cortes por mês','Agendamento prioritário','Desconto em serviços avulsos','Sem taxa de cancelamento']},
+    {id:'p3', name:'Premium', desc:'Cuidado completo sem limite de atendimentos.', price:'140', period:'mês', featured:false,
+     features:['Cortes ilimitados','Barba inclusa','Atendimento VIP','Desconto em todos os serviços','Sem taxa de cancelamento']},
+  ]
+
+  const list = (plans && plans.length) ? plans : defaultPlans
+  if(!list.length){
+    grid.innerHTML='<p class="plans-empty">Planos em breve. Fale conosco pelo WhatsApp!</p>'
+    return
+  }
+
+  grid.innerHTML = list.map(p=>`
+    <div class="plan-card${p.featured?' featured':''}">
+      ${p.featured?'<div class="plan-badge">Mais Popular</div>':''}
+      <div class="plan-name">${p.name}</div>
+      <div class="plan-desc">${p.desc}</div>
+      <div class="plan-price">R$ ${p.price}</div>
+      <span class="plan-price-period">por ${p.period||'mês'}</span>
+      <ul class="plan-features">
+        ${(p.features||[]).map(f=>`<li>${f}</li>`).join('')}
+      </ul>
+      <button class="plan-cta" onclick="planCta('${p.name}')">Assinar Plano →</button>
+    </div>`).join('')
+}
+
+function planCta(planName){
+  window.open('https://wa.me/5521971865391?text='+encodeURIComponent('Olá! Gostaria de contratar o '+planName+' da Mister das Navalhas.'),'_blank')
+}
+
+init()
+renderPlans()
+</script>
+</body>
+</html>
