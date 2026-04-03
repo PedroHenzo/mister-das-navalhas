@@ -1303,49 +1303,34 @@ async function doBook(){
 }
 
 /* ── PLANS / ASSINATURAS ───────────────────────────────── */
-const PLANS_KEY = 'mdn_plans'
-
-function loadPlans(){
-  try{ return JSON.parse(localStorage.getItem(PLANS_KEY)||'null') }catch(e){ return null }
-}
-
-function renderPlans(){
+async function renderPlans(){
   const grid = document.getElementById('plans-grid')
   if(!grid) return
-  const plans = loadPlans()
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;"><span class="ring"></span></div>'
 
-  // default plans when admin hasn't configured any
-  const defaultPlans = [
-    {id:'p1', name:'Básico', desc:'Ideal para quem busca praticidade todo mês.', price:'50', period:'mês', featured:false,
-     features:['1 corte por mês','Agendamento prioritário','Sem taxa de cancelamento']},
-    {id:'p2', name:'Padrão', desc:'Mais atendimentos com desconto exclusivo.', price:'90', period:'mês', featured:true,
-     features:['2 cortes por mês','Agendamento prioritário','Desconto em serviços avulsos','Sem taxa de cancelamento']},
-    {id:'p3', name:'Premium', desc:'Cuidado completo sem limite de atendimentos.', price:'140', period:'mês', featured:false,
-     features:['Cortes ilimitados','Barba inclusa','Atendimento VIP','Desconto em todos os serviços','Sem taxa de cancelamento']},
-  ]
+  let plans = []
+  try { plans = await apiFetch('/plans?active=true') } catch(e) { plans = [] }
 
-  const list = (plans && plans.length) ? plans : defaultPlans
-  if(!list.length){
+  if(!plans.length){
     grid.innerHTML='<p class="plans-empty">Planos em breve. Fale conosco pelo WhatsApp!</p>'
     return
   }
 
-  grid.innerHTML = list.map(p=>`
+  grid.innerHTML = plans.map(p=>`
     <div class="plan-card${p.featured?' featured':''}">
       ${p.featured?'<div class="plan-badge">Mais Popular</div>':''}
       <div class="plan-name">${p.name}</div>
-      <div class="plan-desc">${p.desc}</div>
-      <div class="plan-price">R$ ${p.price}</div>
-      <span class="plan-price-period">por ${p.period||'mês'}</span>
+      <div class="plan-desc">${p.description||''}</div>
+      <div class="plan-price">R$ ${Number(p.price).toFixed(2)}</div>
+      <span class="plan-price-period">por mês</span>
       <ul class="plan-features">
         ${(p.features||[]).map(f=>`<li>${f}</li>`).join('')}
       </ul>
-      <button class="plan-cta" onclick="planCta('${p.name}')">Assinar Plano →</button>
+      ${p.init_point
+        ? `<a class="plan-cta" href="${p.init_point}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;">Assinar Plano →</a>`
+        : `<button class="plan-cta" onclick="window.open('https://wa.me/5521971865391?text='+encodeURIComponent('Olá! Gostaria de assinar o plano ${p.name} da Mister das Navalhas.'),'_blank')">Assinar via WhatsApp →</button>`
+      }
     </div>`).join('')
-}
-
-function planCta(planName){
-  window.open('https://wa.me/5521971865391?text='+encodeURIComponent('Olá! Gostaria de contratar o '+planName+' da Mister das Navalhas.'),'_blank')
 }
 
 init()

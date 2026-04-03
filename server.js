@@ -101,6 +101,36 @@ async function initDb() {
       );
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS plans (
+        id           TEXT PRIMARY KEY,
+        mp_plan_id   TEXT,
+        name         TEXT NOT NULL,
+        description  TEXT,
+        price        NUMERIC(10,2) NOT NULL DEFAULT 0,
+        features     TEXT NOT NULL DEFAULT '[]',
+        featured     BOOLEAN NOT NULL DEFAULT FALSE,
+        init_point   TEXT,
+        active       BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at   TEXT NOT NULL
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS subscriptions (
+        id                  TEXT PRIMARY KEY,
+        mp_subscription_id  TEXT,
+        plan_id             TEXT,
+        mp_plan_id          TEXT,
+        client_name         TEXT,
+        client_phone        TEXT,
+        client_email        TEXT,
+        status              TEXT NOT NULL DEFAULT 'pending',
+        created_at          TEXT NOT NULL,
+        updated_at          TEXT NOT NULL
+      );
+    `);
+
     // Seed inicial — só insere se não existir nenhum barbeiro
     const { rows } = await client.query('SELECT COUNT(*) AS c FROM barbers');
     if (parseInt(rows[0].c) === 0) {
@@ -286,38 +316,211 @@ app.post('/api/barber_availability', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── HELPERS MP ─────────────────────────────────────────────────────────────
+async function mpFetch(path, opts = {}) {
+  const token = process.env.MP_ACCESS_TOKEN;
+  if (!token) throw new Error('MP_ACCESS_TOKEN não configurado');
+  const res = await fetch('https://api.mercadopago.com' + path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...(opts.headers || {}),
+    },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.message || json.error || `MP API ${res.status}`);
+  return json;
+}
+
+// ── API: PLANS ─────────────────────────────────────────────────────────────
+app.get('/api/plans', async (req, res) => {
+  try {
+    const where = req.query.active === 'true' ? 'WHERE active = TRUE' : '';
+    const { rows } = await pool.query(`SELECT * FROM plans ${where} ORDER BY price ASC`);
+    res.json(rows.map(r => ({ ...r, features: typeof r.features === 'string' ? JSON.parse(r.features) : r.features })));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/plans', async (req, res) => {
+  try {
+    const { name, description = '', price, features = [], featured = false } = req.body;
+    if (!name || price == null) return res.status(400).json({ error: 'name e price obrigatórios' });
+
+    const siteUrl = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
+    let mp_plan_id = null, init_point = null;
+
+    try {
+      const mpRes = await mpFetch('/preapproval_plan', {
+        method: 'POST',
+        body: {
+          reason: name,
+          auto_recurring: {
+            frequency: 1,
+            frequency_type: 'months',
+            transaction_amount: parseFloat(price),
+            currency_id: 'BRL',
+          },
+          payment_methods_allowed: { payment_types: [{ id: 'credit_card' }] },
+          back_url: siteUrl + '/?payment=success',
+        },
+      });
+      mp_plan_id = mpRes.id || null;
+      init_point = mpRes.init_point || null;
+      console.log('✅ Plano MP criado:', mp_plan_id);
+    } catch (mpErr) {
+      console.warn('⚠️ Plano não criado no MP:', mpErr.message);
+    }
+
+    const id = uuid();
+    await pool.query(
+      `INSERT INTO plans (id,mp_plan_id,name,description,price,features,featured,init_point,active,created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,TRUE,$9)`,
+      [id, mp_plan_id, name, description, price, JSON.stringify(features), featured, init_point, nowStr()]
+    );
+    const { rows } = await pool.query('SELECT * FROM plans WHERE id=$1', [id]);
+    const r = rows[0];
+    res.status(201).json({ ...r, features: typeof r.features === 'string' ? JSON.parse(r.features) : r.features });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.patch('/api/plans/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const fields = [], vals = [];
+    const allowed = ['name','description','price','features','featured','active','init_point'];
+    allowed.forEach(k => {
+      if (req.body[k] !== undefined) {
+        fields.push(`${k}=$${fields.length + 1}`);
+        vals.push(k === 'features' ? JSON.stringify(req.body[k]) : req.body[k]);
+      }
+    });
+    if (!fields.length) return res.status(400).json({ error: 'Nada para atualizar' });
+    vals.push(id);
+    await pool.query(`UPDATE plans SET ${fields.join(',')} WHERE id=$${vals.length}`, vals);
+    const { rows } = await pool.query('SELECT * FROM plans WHERE id=$1', [id]);
+    const r = rows[0];
+    res.json({ ...r, features: typeof r.features === 'string' ? JSON.parse(r.features) : r.features });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/api/plans/:id', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT mp_plan_id FROM plans WHERE id=$1', [req.params.id]);
+    if (rows[0]?.mp_plan_id) {
+      await mpFetch(`/preapproval_plan/${rows[0].mp_plan_id}`, {
+        method: 'PUT',
+        body: { status: 'inactive' },
+      }).catch(e => console.warn('Aviso ao desativar plano MP:', e.message));
+    }
+    await pool.query('DELETE FROM plans WHERE id=$1', [req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── API: SUBSCRIPTIONS ─────────────────────────────────────────────────────
+app.get('/api/subscriptions', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM subscriptions ORDER BY created_at DESC');
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/subscriptions', async (req, res) => {
+  try {
+    const { plan_id, client_name, client_phone, client_email } = req.body;
+    if (!plan_id || !client_name || !client_phone)
+      return res.status(400).json({ error: 'plan_id, client_name e client_phone obrigatórios' });
+    const { rows: planRows } = await pool.query('SELECT * FROM plans WHERE id=$1', [plan_id]);
+    const plan = planRows[0];
+    const id = uuid();
+    const now2 = nowStr();
+    await pool.query(
+      `INSERT INTO subscriptions (id,mp_subscription_id,plan_id,mp_plan_id,client_name,client_phone,client_email,status,created_at,updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'manual',$8,$9)`,
+      [id, null, plan_id, plan?.mp_plan_id || null, client_name, client_phone, client_email || null, now2, now2]
+    );
+    const { rows } = await pool.query('SELECT * FROM subscriptions WHERE id=$1', [id]);
+    res.status(201).json(rows[0]);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.patch('/api/subscriptions/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+    await pool.query('UPDATE subscriptions SET status=$1, updated_at=$2 WHERE id=$3', [status, nowStr(), req.params.id]);
+    const { rows } = await pool.query('SELECT * FROM subscriptions WHERE id=$1', [req.params.id]);
+    res.json(rows[0]);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/api/subscriptions/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM subscriptions WHERE id=$1', [req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // ── WEBHOOK: MERCADO PAGO ────────────────────────────────────────────────
 app.post('/api/webhook/mercadopago', async (req, res) => {
   try {
-    const { type, data } = req.body;
-    console.log('📩 Webhook MP recebido:', type, data?.id);
+    const { type, data, action } = req.body;
+    console.log('📩 Webhook MP recebido:', type, action, data?.id);
 
-    // Confirma recebimento imediatamente (MP exige resposta < 5s)
-    res.sendStatus(200);
+    res.sendStatus(200); // MP exige resposta < 5s
 
-    if (type === 'payment' && data?.id) {
-      // Busca detalhes do pagamento na API do MP
-      const mpToken = process.env.MP_ACCESS_TOKEN;
-      if (!mpToken) return;
+    const mpToken = process.env.MP_ACCESS_TOKEN;
+    if (!mpToken || !data?.id) return;
 
-      const response = await fetch(
-        `https://api.mercadopago.com/v1/payments/${data.id}`,
-        { headers: { Authorization: `Bearer ${mpToken}` } }
-      );
-      const payment = await response.json();
+    // Pagamento avulso (agendamentos)
+    if (type === 'payment') {
+      const payment = await mpFetch(`/v1/payments/${data.id}`).catch(() => null);
+      if (!payment) return;
       console.log('💳 Pagamento MP:', payment.status, payment.external_reference);
-
-      // Se aprovado e tem referência de agendamento, confirma automaticamente
       if (payment.status === 'approved' && payment.external_reference) {
+        await pool.query(`UPDATE appointments SET status='confirmed' WHERE id=$1`, [payment.external_reference])
+          .catch(e => console.error('Erro ao confirmar agendamento:', e.message));
+      }
+      return;
+    }
+
+    // Assinatura criada / atualizada
+    if (type === 'subscription_preapproval' || type === 'preapproval') {
+      const sub = await mpFetch(`/preapproval/${data.id}`).catch(() => null);
+      if (!sub) return;
+      console.log('📋 Assinatura MP:', sub.status, sub.preapproval_plan_id);
+      const { rows: planRows } = await pool.query('SELECT id FROM plans WHERE mp_plan_id=$1', [sub.preapproval_plan_id]);
+      const localPlanId = planRows[0]?.id || null;
+      const existing = await pool.query('SELECT id FROM subscriptions WHERE mp_subscription_id=$1', [sub.id]);
+      if (existing.rows.length) {
+        await pool.query('UPDATE subscriptions SET status=$1, updated_at=$2 WHERE mp_subscription_id=$3', [sub.status, nowStr(), sub.id]);
+        console.log('🔄 Assinatura atualizada:', sub.id, sub.status);
+      } else {
+        const clientName = sub.payer_first_name
+          ? `${sub.payer_first_name} ${sub.payer_last_name || ''}`.trim()
+          : (sub.payer_email || 'Cliente MP');
         await pool.query(
-          `UPDATE appointments SET status='confirmed' WHERE id=$1`,
-          [payment.external_reference]
-        ).catch(e => console.error('Erro ao confirmar agendamento:', e.message));
+          `INSERT INTO subscriptions (id,mp_subscription_id,plan_id,mp_plan_id,client_name,client_phone,client_email,status,created_at,updated_at)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+          [uuid(), sub.id, localPlanId, sub.preapproval_plan_id, clientName, null, sub.payer_email || null, sub.status, nowStr(), nowStr()]
+        );
+        console.log('✅ Nova assinatura salva:', sub.id);
+      }
+      return;
+    }
+
+    // Pagamento de assinatura aprovado
+    if (type === 'subscription_authorized_payment') {
+      const payment = await mpFetch(`/v1/payments/${data.id}`).catch(() => null);
+      if (payment?.status === 'approved' && payment.metadata?.preapproval_id) {
+        await pool.query('UPDATE subscriptions SET status=$1, updated_at=$2 WHERE mp_subscription_id=$3',
+          ['authorized', nowStr(), payment.metadata.preapproval_id]).catch(e => console.error(e.message));
+        console.log('💚 Pagamento de assinatura aprovado:', payment.metadata.preapproval_id);
       }
     }
   } catch (e) {
     console.error('Erro no webhook MP:', e.message);
-    res.sendStatus(200); // sempre retorna 200 para o MP
   }
 });
 

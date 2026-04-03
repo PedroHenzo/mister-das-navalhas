@@ -1311,7 +1311,7 @@ function showPage(name, el){
       if(name==='relatorios') renderReports()
       if(name==='integracoes') loadIntCreds()
       if(name==='ia'){ loadIaConfig(); drawQr(); }
-      if(name==='assinaturas'){ renderPlanList(); renderSubTable(); populateSubPlanSelect(); }
+      if(name==='assinaturas'){ renderPlanList(); renderSubTable(); }
     }
   }
 
@@ -1731,24 +1731,22 @@ function loadIaConfig(){
 /* ══════════════════════════════════════════
    ASSINATURAS
 ══════════════════════════════════════════ */
-const PLANS_KEY_A = 'mdn_plans'
-const SUBS_KEY = 'mdn_subscriptions'
-
-function loadAdminPlans(){ try{ return JSON.parse(localStorage.getItem(PLANS_KEY_A)||'[]') }catch(e){ return [] } }
-function saveAdminPlans(list){ localStorage.setItem(PLANS_KEY_A, JSON.stringify(list)) }
-function loadSubs(){ try{ return JSON.parse(localStorage.getItem(SUBS_KEY)||'[]') }catch(e){ return [] } }
-function saveSubs(list){ localStorage.setItem(SUBS_KEY, JSON.stringify(list)) }
-
-function renderPlanList(){
+async function renderPlanList(){
   const el = document.getElementById('plan-items-list')
   if(!el) return
-  const plans = loadAdminPlans()
-  if(!plans.length){ el.innerHTML=`<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.84rem;">Nenhum plano cadastrado.</div>`; return }
+  el.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--muted);"><span class="ring"></span> Carregando...</div>'
+  let plans
+  try { plans = await apiFetch('/plans') } catch(e){ plans = [] }
+  if(!plans.length){ el.innerHTML=`<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.84rem;">Nenhum plano cadastrado.</div>`; populateSubPlanSelect([]); return }
   el.innerHTML = plans.map(p=>`
     <div class="plan-list-item">
-      <div>
+      <div style="flex:1;">
         <div class="plan-item-name">${p.name}${p.featured?'<span class="plan-featured-badge">Popular</span>':''}</div>
-        <div class="plan-item-meta">${p.desc||''}</div>
+        <div class="plan-item-meta">${p.description||''}</div>
+        ${p.init_point
+          ? `<div style="margin-top:.4rem;"><a href="${p.init_point}" target="_blank" style="font-size:.65rem;color:var(--silver-d);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(200,200,200,.15);padding:.2rem .55rem;">🔗 Link de assinatura</a></div>`
+          : '<div style="font-size:.65rem;color:rgba(248,113,113,.6);margin-top:.3rem;">⚠ Configure MP_ACCESS_TOKEN para gerar o link</div>'
+        }
       </div>
       <div class="plan-item-price">R$ ${Number(p.price).toFixed(2)}</div>
       <div style="display:flex;gap:.4rem;">
@@ -1756,71 +1754,77 @@ function renderPlanList(){
         <button class="act-btn danger" onclick="confirmDeletePlan('${p.id}')">Excluir</button>
       </div>
     </div>`).join('')
-  populateSubPlanSelect()
+  populateSubPlanSelect(plans)
 }
 
-function populateSubPlanSelect(){
+function populateSubPlanSelect(plans){
   const sel = document.getElementById('sub-plan')
   if(!sel) return
-  const plans = loadAdminPlans()
-  sel.innerHTML = '<option value="">Selecione o plano</option>' + plans.map(p=>`<option value="${p.id}">${p.name} — R$ ${Number(p.price).toFixed(2)}/mês</option>`).join('')
+  sel.innerHTML = '<option value="">Selecione o plano</option>' + (plans||[]).map(p=>`<option value="${p.id}">${p.name} — R$ ${Number(p.price).toFixed(2)}/mês</option>`).join('')
 }
 
-function renderSubTable(){
+async function renderSubTable(){
   const body = document.getElementById('sub-table-body')
   if(!body) return
-  const subs = loadSubs()
-  const plans = loadAdminPlans()
-  if(!subs.length){ body.innerHTML=`<div style="padding:2.5rem;text-align:center;color:var(--muted);font-size:.84rem;">Nenhum assinante cadastrado.</div>`; return }
+  body.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--muted);"><span class="ring"></span> Carregando...</div>'
+  let subs, plans
+  try { [subs, plans] = await Promise.all([apiFetch('/subscriptions'), apiFetch('/plans')]) }
+  catch(e){ subs=[]; plans=[] }
+  if(!subs.length){ body.innerHTML=`<div style="padding:2.5rem;text-align:center;color:var(--muted);font-size:.84rem;">Nenhum assinante ainda.</div>`; return }
+  const statusMap = {authorized:'Ativo', manual:'Manual', pending:'Pendente', paused:'Pausado', cancelled:'Cancelado', rejected:'Rejeitado'}
+  const statusCls = {authorized:'badge-confirmed', manual:'badge-online', pending:'badge-pending', paused:'badge-pending', cancelled:'badge-cancelled', rejected:'badge-cancelled'}
   body.innerHTML = subs.map(s=>{
     const plan = plans.find(p=>p.id===s.plan_id)||{}
-    const statusCls = s.active!==false ? 'badge-confirmed' : 'badge-cancelled'
-    const statusLbl = s.active!==false ? 'Ativo' : 'Cancelado'
+    const st = s.status||'pending'
     return `<div class="sub-row">
-      <div><div class="sub-name">${s.name}</div><div class="sub-phone">${s.phone||'—'}</div></div>
+      <div><div class="sub-name">${s.client_name||'—'}</div><div class="sub-phone">${s.client_phone||s.client_email||'—'}</div></div>
       <div style="font-size:.8rem;color:var(--white);">${plan.name||'—'}</div>
-      <div style="font-size:.75rem;color:var(--muted);">${s.start?ptd(s.start):'—'}</div>
-      <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
-        <span class="badge ${statusCls}">${statusLbl}</span>
+      <div style="font-size:.75rem;color:var(--muted);">${(s.created_at||'').slice(0,10)}</div>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;">
+        <span class="badge ${statusCls[st]||'badge-pending'}">${statusMap[st]||st}</span>
         <button class="act-btn danger" style="padding:.2rem .45rem;font-size:.62rem;" onclick="deleteSub('${s.id}')">✕</button>
       </div>
     </div>`
   }).join('')
 }
 
-function savePlan(){
+async function savePlan(){
   const editId = document.getElementById('plan-edit-id').value
   const name = document.getElementById('plan-name').value.trim()
   const desc = document.getElementById('plan-desc').value.trim()
   const price = document.getElementById('plan-price').value.trim()
-  const period = document.getElementById('plan-period').value.trim()||'mês'
   const featuresRaw = document.getElementById('plan-features').value.trim()
   const featured = document.getElementById('plan-featured').checked
   const ok = document.getElementById('plan-ok'), err = document.getElementById('plan-err')
   ok.style.display='none'; err.style.display='none'
   if(!name||!price||isNaN(parseFloat(price))){ err.textContent='Preencha nome e preço válidos.'; err.style.display='block'; return }
   const features = featuresRaw ? featuresRaw.split('\n').map(f=>f.trim()).filter(Boolean) : []
-  const plans = loadAdminPlans()
-  if(editId){
-    const idx = plans.findIndex(p=>p.id===editId)
-    if(idx>=0) plans[idx] = {...plans[idx], name, desc, price, period, features, featured}
-  } else {
-    plans.push({id:'plan_'+Date.now(), name, desc, price, period, features, featured})
+  const saveBtn = document.querySelector('[onclick="savePlan()"]')
+  if(saveBtn){ saveBtn.disabled=true; saveBtn.textContent='Salvando...' }
+  try {
+    if(editId){
+      await apiFetch('/plans/'+editId, {method:'PATCH', body:{name, description:desc, price:parseFloat(price), features, featured}})
+    } else {
+      await apiFetch('/plans', {method:'POST', body:{name, description:desc, price:parseFloat(price), features, featured}})
+    }
+    ok.style.display='block'
+    await renderPlanList()
+    setTimeout(()=>{ clearPlanForm(); ok.style.display='none' }, 1800)
+  } catch(e) {
+    err.textContent='Erro: '+e.message; err.style.display='block'
+  } finally {
+    if(saveBtn){ saveBtn.disabled=false; saveBtn.textContent='Salvar Plano' }
   }
-  saveAdminPlans(plans)
-  ok.style.display='block'
-  renderPlanList()
-  setTimeout(()=>{ clearPlanForm(); ok.style.display='none' }, 1800)
 }
 
-function editPlan(id){
-  const plans = loadAdminPlans()
+async function editPlan(id){
+  let plans
+  try { plans = await apiFetch('/plans') } catch(e){ plans=[] }
   const p = plans.find(x=>x.id===id); if(!p) return
   document.getElementById('plan-edit-id').value = id
   document.getElementById('plan-name').value = p.name||''
-  document.getElementById('plan-desc').value = p.desc||''
+  document.getElementById('plan-desc').value = p.description||''
   document.getElementById('plan-price').value = p.price||''
-  document.getElementById('plan-period').value = p.period||'mês'
   document.getElementById('plan-features').value = (p.features||[]).join('\n')
   document.getElementById('plan-featured').checked = !!p.featured
   document.getElementById('plan-form-title').textContent = 'Editar Plano'
@@ -1836,28 +1840,27 @@ function clearPlanForm(){
 }
 
 function confirmDeletePlan(id){
-  const plans = loadAdminPlans()
-  const p = plans.find(x=>x.id===id)||{}
-  showConfModal('Excluir Plano',`Deseja excluir o plano <strong style="color:var(--silver-l)">${p.name}</strong>?`,()=>{
-    saveAdminPlans(plans.filter(x=>x.id!==id))
+  showConfModal('Excluir Plano','Deseja excluir este plano? O plano também será desativado no Mercado Pago.',async ()=>{
+    await apiFetch('/plans/'+id,{method:'DELETE'}).catch(e=>console.error(e))
     renderPlanList()
   })
 }
 
-function saveSub(){
+async function saveSub(){
   const name = document.getElementById('sub-name').value.trim()
   const phone = document.getElementById('sub-phone').value.trim()
   const plan_id = document.getElementById('sub-plan').value
-  const start = document.getElementById('sub-start').value
   const ok = document.getElementById('sub-ok'), err = document.getElementById('sub-err')
   ok.style.display='none'; err.style.display='none'
   if(!name||!phone||!plan_id){ err.textContent='Preencha nome, telefone e plano.'; err.style.display='block'; return }
-  const subs = loadSubs()
-  subs.push({id:'sub_'+Date.now(), name, phone, plan_id, start:start||fd(new Date()), active:true})
-  saveSubs(subs)
-  ok.style.display='block'
-  renderSubTable()
-  setTimeout(()=>{ clearSubForm(); ok.style.display='none' }, 1800)
+  try {
+    await apiFetch('/subscriptions', {method:'POST', body:{plan_id, client_name:name, client_phone:phone}})
+    ok.style.display='block'
+    await renderSubTable()
+    setTimeout(()=>{ clearSubForm(); ok.style.display='none' }, 1800)
+  } catch(e) {
+    err.textContent='Erro: '+e.message; err.style.display='block'
+  }
 }
 
 function clearSubForm(){
@@ -1865,9 +1868,8 @@ function clearSubForm(){
   const sel=document.getElementById('sub-plan'); if(sel) sel.value=''
 }
 
-function deleteSub(id){
-  const subs = loadSubs().filter(s=>s.id!==id)
-  saveSubs(subs)
+async function deleteSub(id){
+  await apiFetch('/subscriptions/'+id,{method:'DELETE'}).catch(()=>{})
   renderSubTable()
 }
 
