@@ -524,6 +524,54 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
   }
 });
 
+// ── API: CHECK SUBSCRIBER ─────────────────────────────────────────────────
+app.get('/api/subscriptions/check', async (req, res) => {
+  try {
+    const { phone } = req.query;
+    if (!phone) return res.json({ subscriber: false });
+    const normalized = phone.replace(/\D/g, '');
+    const { rows } = await pool.query(
+      `SELECT s.*, p.name AS plan_name FROM subscriptions s
+       LEFT JOIN plans p ON s.plan_id = p.id
+       WHERE REGEXP_REPLACE(COALESCE(s.client_phone,''), '[^0-9]', '', 'g') = $1
+         AND s.status IN ('authorized','manual')
+       LIMIT 1`,
+      [normalized]
+    );
+    res.json({ subscriber: rows.length > 0, subscription: rows[0] || null });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── API: SIGNAL PAYMENT (sinal de agendamento) ────────────────────────────
+app.post('/api/payment/signal', async (req, res) => {
+  try {
+    const { appointment_id, client_name, client_email } = req.body;
+    if (!appointment_id) return res.status(400).json({ error: 'appointment_id obrigatório' });
+    const siteUrl = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
+    const pref = await mpFetch('/checkout/preferences', {
+      method: 'POST',
+      body: {
+        items: [{
+          title: 'Sinal de Agendamento — Mister das Navalhas',
+          quantity: 1,
+          unit_price: 10.00,
+          currency_id: 'BRL',
+        }],
+        payer: client_email ? { email: client_email, name: client_name } : undefined,
+        external_reference: appointment_id,
+        back_urls: {
+          success: `${siteUrl}/?payment=success&appt=${appointment_id}`,
+          failure: `${siteUrl}/?payment=failure&appt=${appointment_id}`,
+          pending: `${siteUrl}/?payment=pending&appt=${appointment_id}`,
+        },
+        auto_return: 'approved',
+        statement_descriptor: 'MISTER DAS NAVALHAS',
+      },
+    });
+    res.json({ init_point: pref.init_point, sandbox_init_point: pref.sandbox_init_point });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // ── PAGES ─────────────────────────────────────────────────────────────────
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/',      (_, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));

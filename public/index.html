@@ -552,6 +552,22 @@ body.revealed footer { animation: siteReveal .8s cubic-bezier(.22,1,.36,1) both;
 .plan-card.featured .plan-cta:hover{background:var(--silver-l);}
 .plans-empty{text-align:center;color:var(--muted);font-size:.84rem;padding:3rem 0;grid-column:1/-1;}
 
+/* ── SIGNAL PAYMENT (etapa 4) ────────────────────────────── */
+.signal-box{background:var(--dark3);border:1px solid var(--border);padding:2rem;text-align:center;margin-bottom:1.5rem;}
+.signal-icon{font-size:2.2rem;margin-bottom:.75rem;}
+.signal-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.04em;color:var(--white);margin-bottom:.4rem;}
+.signal-desc{font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
+.signal-amount{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--silver-l);letter-spacing:.03em;margin-bottom:.2rem;}
+.signal-period{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+.signal-subscriber{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.85rem;}
+.signal-subscriber-icon{font-size:1.4rem;flex-shrink:0;}
+.signal-subscriber-text{font-size:.82rem;color:#4ade80;line-height:1.6;text-align:left;}
+.signal-subscriber-text strong{color:#86efac;}
+.btn-pay{background:var(--white);color:var(--black);border:none;padding:1rem 2.5rem;font-family:'Barlow',sans-serif;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .3s;width:100%;display:flex;align-items:center;justify-content:center;gap:.6rem;text-decoration:none;}
+.btn-pay:hover{background:var(--silver);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.btn-pay:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.signal-note{font-size:.68rem;color:var(--muted);margin-top:.85rem;line-height:1.6;}
+
 /* ── FOOTER SOCIAL ───────────────────────────────────────── */
 .f-right{display:flex;flex-direction:column;align-items:flex-end;gap:.85rem;}
 .f-social{display:flex;gap:.6rem;}
@@ -770,7 +786,8 @@ body.revealed footer { animation: siteReveal .8s cubic-bezier(.22,1,.36,1) both;
     <div class="bk-steps">
       <div class="bk-step active" id="si1"><span class="bk-step-num">1</span>Serviço</div>
       <div class="bk-step" id="si2"><span class="bk-step-num">2</span>Data &amp; Hora</div>
-      <div class="bk-step" id="si3"><span class="bk-step-num">3</span>Confirmar</div>
+      <div class="bk-step" id="si3"><span class="bk-step-num">3</span>Seus Dados</div>
+      <div class="bk-step" id="si4"><span class="bk-step-num">4</span>Sinal</div>
     </div>
     <div class="sp on" id="sp1">
       <div class="sv-picks" id="sv-picks"></div>
@@ -811,7 +828,15 @@ body.revealed footer { animation: siteReveal .8s cubic-bezier(.22,1,.36,1) both;
       <div class="form-err" id="ferr"></div>
       <div class="step-acts">
         <button class="btn-back" onclick="goStep(2)">← Voltar</button>
-        <button class="btn-primary" id="cfmbtn" onclick="doBook()">Confirmar Agendamento</button>
+        <button class="btn-primary" id="s3btn" onclick="goToSignal()">Próximo →</button>
+      </div>
+    </div>
+    <div class="sp" id="sp4">
+      <div id="signal-content">
+        <!-- rendered by renderSignalStep() -->
+      </div>
+      <div class="step-acts" style="margin-top:0;">
+        <button class="btn-back" onclick="goStep(3)">← Voltar</button>
       </div>
     </div>
   </div>
@@ -1178,6 +1203,161 @@ function goStep(n){
   goTo('booking')
 }
 
+async function goToSignal(){
+  const name=document.getElementById('cn').value.trim()
+  const phone=document.getElementById('cp').value.trim()
+  const err=document.getElementById('ferr')
+  err.style.display='none'
+  if(!name||!phone){err.textContent='Preencha nome e telefone.';err.style.display='block';return}
+  // Advance to step 4 and render
+  document.querySelectorAll('.sp').forEach(p=>p.classList.remove('on'))
+  document.querySelectorAll('.bk-step').forEach(s=>s.classList.remove('active','done'))
+  document.getElementById('sp4').classList.add('on')
+  document.getElementById('si4').classList.add('active')
+  ;[1,2,3].forEach(i=>document.getElementById('si'+i).classList.add('done'))
+  goTo('booking')
+  await renderSignalStep()
+}
+
+async function renderSignalStep(){
+  const box = document.getElementById('signal-content')
+  const phone = document.getElementById('cp').value.trim()
+  box.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);"><span class="ring"></span> Verificando...</div>'
+
+  // Check if subscriber
+  let isSubscriber = false, subInfo = null
+  try {
+    const res = await apiFetch('/subscriptions/check?phone='+encodeURIComponent(phone))
+    isSubscriber = res.subscriber
+    subInfo = res.subscription
+  } catch(e) { isSubscriber = false }
+
+  if(isSubscriber){
+    box.innerHTML = `
+      <div class="signal-subscriber">
+        <div class="signal-subscriber-icon">✦</div>
+        <div class="signal-subscriber-text">
+          <strong>Você é assinante do plano ${subInfo?.plan_name||''}!</strong><br>
+          Como assinante, você não precisa pagar o sinal. Seu agendamento será confirmado automaticamente.
+        </div>
+      </div>`
+    const actDiv = document.createElement('div')
+    actDiv.className = 'step-acts'
+    actDiv.style.marginTop = '0'
+    actDiv.innerHTML = '<button class="btn-primary" id="cfmbtn" onclick="doBook(true)">Confirmar Agendamento →</button>'
+    box.appendChild(actDiv)
+  } else {
+    const sv = S.services.find(x=>x.id===S.sel.s)||{}
+    box.innerHTML = `
+      <div class="signal-box">
+        <div class="signal-icon">💳</div>
+        <div class="signal-title">Sinal de Confirmação</div>
+        <div class="signal-desc">Para garantir seu horário, é cobrado um sinal de confirmação. O valor é descontado do total no dia do atendimento.</div>
+        <div class="signal-amount">R$ 10,00</div>
+        <div class="signal-period">sinal único · descontado no atendimento</div>
+      </div>
+      <div class="summary-box" style="margin-top:0;margin-bottom:1.5rem;">
+        <div class="sum-title">Resumo</div>
+        <div class="sum-row"><span class="sum-k">Serviço</span><span class="sum-v">${sv.name||'—'}</span></div>
+        <div class="sum-row"><span class="sum-k">Data</span><span class="sum-v">${ptd(S.sel.date||'---')}</span></div>
+        <div class="sum-row"><span class="sum-k">Horário</span><span class="sum-v">${S.sel.time||'—'}</span></div>
+        <div class="sum-row sum-total"><span class="sum-k">Sinal agora</span><span class="sum-v">R$ 10,00</span></div>
+      </div>
+      <div class="form-err" id="ferr4" style="display:none;"></div>
+      <button class="btn-pay" id="paybtn" onclick="doBookAndPay()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+        Pagar Sinal · R$ 10,00
+      </button>
+      <p class="signal-note">Pagamento seguro via Mercado Pago. Após a confirmação do pagamento, seu agendamento será reservado automaticamente.</p>`
+  }
+}
+
+async function doBook(isSub = false){
+  const name=document.getElementById('cn').value.trim()
+  const phone=document.getElementById('cp').value.trim()
+  const email=document.getElementById('ce').value.trim()
+  const btn=document.getElementById('cfmbtn')
+  if(btn){ btn.disabled=true; btn.textContent='Aguarde...' }
+  const payload={client_name:name,client_phone:phone,client_email:email||null,barber_id:S.sel.b,service_id:S.sel.s,appt_date:S.sel.date,time_slot:S.sel.time,status:'confirmed',source:'online'}
+  try {
+    await apiFetch('/appointments', {method:'POST', body:payload})
+  } catch(e) {
+    if(btn){ btn.disabled=false; btn.textContent='Confirmar Agendamento →' }
+    const errEl = document.getElementById('ferr')
+    if(errEl){ errEl.textContent='Erro ao agendar: '+e.message; errEl.style.display='block' }
+    return
+  }
+  const sv=S.services.find(x=>x.id===S.sel.s)||{}
+  document.getElementById('mbody').innerHTML=`<p>Agendamento confirmado!</p><br><p><strong>${sv.name}</strong></p><p><strong>${ptd(S.sel.date)}</strong> às <strong>${S.sel.time}</strong></p><p style="margin-top:.75rem;font-size:.78rem;">✦ Você é assinante — sem cobrança de sinal.</p>`
+  document.getElementById('modal').classList.add('on')
+  resetBooking()
+}
+
+async function doBookAndPay(){
+  const name=document.getElementById('cn').value.trim()
+  const phone=document.getElementById('cp').value.trim()
+  const email=document.getElementById('ce').value.trim()
+  const btn=document.getElementById('paybtn')
+  const err4=document.getElementById('ferr4')
+  err4.style.display='none'
+  btn.disabled=true; btn.textContent='Aguarde...'
+  // Save appointment as pending_payment first
+  let appt
+  try {
+    appt = await apiFetch('/appointments', {method:'POST', body:{
+      client_name:name, client_phone:phone, client_email:email||null,
+      barber_id:S.sel.b, service_id:S.sel.s, appt_date:S.sel.date,
+      time_slot:S.sel.time, status:'pending_payment', source:'online'
+    }})
+  } catch(e) {
+    err4.textContent='Erro ao reservar: '+e.message; err4.style.display='block'
+    btn.disabled=false; btn.textContent='Pagar Sinal · R$ 10,00'; return
+  }
+  // Create MP preference
+  let initPoint
+  try {
+    const pref = await apiFetch('/payment/signal', {method:'POST', body:{
+      appointment_id: appt.id, client_name: name, client_email: email||undefined
+    }})
+    initPoint = pref.init_point
+  } catch(e) {
+    err4.textContent='Erro ao gerar pagamento: '+e.message; err4.style.display='block'
+    btn.disabled=false; btn.textContent='Pagar Sinal · R$ 10,00'; return
+  }
+  // Redirect to MP
+  window.location.href = initPoint
+}
+
+function resetBooking(){
+  document.getElementById('cn').value=''; document.getElementById('cp').value=''; document.getElementById('ce').value=''
+  S.sel.s=null; S.sel.date=null; S.sel.time=null
+  svPicksExpanded=false
+  goStep(1)
+  document.querySelectorAll('.sv-pick').forEach(e=>e.classList.remove('sel'))
+  document.getElementById('s1btn').disabled=true
+}
+
+// Handle return from MP payment (e.g. ?payment=success&appt=ID)
+;(function checkPaymentReturn(){
+  const params = new URLSearchParams(window.location.search)
+  const status = params.get('payment')
+  const apptId = params.get('appt')
+  if(!status) return
+  // Clean URL
+  history.replaceState(null,'', window.location.pathname)
+  if(status==='success'){
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('mbody').innerHTML=`<p>Sinal pago com sucesso!</p><br><p>Seu agendamento está <strong>confirmado</strong>. ✦</p><p style="margin-top:.75rem;font-size:.78rem;">Entraremos em contato pelo WhatsApp para lembrar seu horário.</p>`
+      document.getElementById('modal').classList.add('on')
+    }, {once:true})
+  } else if(status==='failure'){
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('mbody').innerHTML=`<p style="color:#f87171;">Pagamento não aprovado.</p><br><p style="font-size:.82rem;color:var(--muted);">Tente novamente ou entre em contato pelo WhatsApp.</p>`
+      document.getElementById('modal').classList.add('on')
+    }, {once:true})
+  }
+})()
+
 async function loadAvail(){
   if(!S.sel.b) return
   if(false){S.avail={};return}
@@ -1275,32 +1455,6 @@ function renderSummary(){
     <div class="sum-row sum-total"><span class="sum-k">Total</span><span class="sum-v">R$ ${Number(sv.price||0).toFixed(2)}</span></div>`
 }
 
-async function doBook(){
-  const name=document.getElementById('cn').value.trim()
-  const phone=document.getElementById('cp').value.trim()
-  const email=document.getElementById('ce').value.trim()
-  const err=document.getElementById('ferr')
-  err.style.display='none'
-  if(!name||!phone){err.textContent='Preencha nome e telefone.';err.style.display='block';return}
-  const btn=document.getElementById('cfmbtn')
-  btn.disabled=true; btn.textContent='Aguarde...'
-  const payload={client_name:name,client_phone:phone,client_email:email||null,barber_id:S.sel.b,service_id:S.sel.s,appt_date:S.sel.date,time_slot:S.sel.time,status:'pending',source:'online'}
-  try {
-    await apiFetch('/appointments', {method:'POST', body:payload})
-  } catch(e) {
-    err.textContent='Erro ao agendar: '+e.message; err.style.display='block'
-    btn.disabled=false; btn.textContent='Confirmar Agendamento'; return
-  }
-  const sv=S.services.find(x=>x.id===S.sel.s)||{}
-  document.getElementById('mbody').innerHTML=`<p>Reserva confirmada com sucesso!</p><br><p><strong>${sv.name}</strong></p><p><strong>${ptd(S.sel.date)}</strong> às <strong>${S.sel.time}</strong></p><p style="margin-top:.75rem;font-size:.78rem">Entraremos em contato pelo WhatsApp para confirmar. ✦</p>`
-  document.getElementById('modal').classList.add('on')
-  btn.disabled=false; btn.textContent='Confirmar Agendamento'
-  document.getElementById('cn').value=''; document.getElementById('cp').value=''; document.getElementById('ce').value=''
-  S.sel.s=null; S.sel.date=null; S.sel.time=null
-  goStep(1)
-  document.querySelectorAll('.sv-pick').forEach(e=>e.classList.remove('sel'))
-  document.getElementById('s1btn').disabled=true
-}
 
 /* ── PLANS / ASSINATURAS ───────────────────────────────── */
 async function renderPlans(){
