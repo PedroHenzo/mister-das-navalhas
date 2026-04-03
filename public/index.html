@@ -642,14 +642,13 @@ body.revealed footer { animation: siteReveal .8s cubic-bezier(.22,1,.36,1) both;
     <div class="svc-item"><span class="svc-item-dot"></span>Hidratação</div>
     <div class="svc-item"><span class="svc-item-dot"></span>Relaxamento</div>
     <div class="svc-item"><span class="svc-item-dot"></span>Coloração</div>
-    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Degradê</div>
-    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Sobrancelha</div>
-    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Limpeza de Pele</div>
-    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Massagem Facial</div>
-    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Depilação a Cera</div>
-    <div class="svc-item svc-hidden"><span class="svc-item-dot"></span>Navalha</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Degradê</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Sobrancelha</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Limpeza de Pele</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Massagem Facial</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Depilação a Cera</div>
+    <div class="svc-item"><span class="svc-item-dot"></span>Navalha</div>
   </div>
-  <button class="svc-more-btn" id="svc-more-btn" onclick="toggleSvcMore()">Ver Mais ↓</button>
   <div id="svc-grid" class="svc-grid" aria-hidden="true"></div>
   <div style="text-align:center;margin-top:2.5rem;">
     <button class="btn-outline" onclick="goTo('booking')">Ver preços & agendar →</button>
@@ -1122,13 +1121,43 @@ function renderSvcSec(){
   observeSvcCards()
 }
 
+const SV_PICKS_LIMIT = 4
+let svPicksExpanded = false
+
 function renderSvPicks(){
-  document.getElementById('sv-picks').innerHTML=S.services.map(s=>`
-    <div class="sv-pick" id="svp${s.id}" onclick="selSvc('${s.id}')">
+  const container = document.getElementById('sv-picks')
+  const total = S.services.length
+  container.innerHTML = S.services.map((s, i) => `
+    <div class="sv-pick${i >= SV_PICKS_LIMIT ? ' sv-pick-extra' : ''}" id="svp${s.id}" onclick="selSvc('${s.id}')" style="${i >= SV_PICKS_LIMIT && !svPicksExpanded ? 'display:none' : ''}">
       <div class="sv-pick-name">${s.name}</div>
       <div class="sv-pick-info">${s.duration_min} min · ${s.description||''}</div>
       <div class="sv-pick-price">R$ ${Number(s.price).toFixed(2)}</div>
     </div>`).join('')
+
+  // Remove botão antigo se existir
+  const oldBtn = document.getElementById('sv-more-btn')
+  if(oldBtn) oldBtn.remove()
+
+  if(total > SV_PICKS_LIMIT){
+    const btn = document.createElement('button')
+    btn.id = 'sv-more-btn'
+    btn.className = 'svc-more-btn'
+    btn.style.cssText = 'width:100%;margin-top:.75rem;'
+    btn.textContent = svPicksExpanded ? 'Ver Menos ↑' : `Ver Mais (${total - SV_PICKS_LIMIT} serviços) ↓`
+    btn.onclick = toggleSvPicks
+    container.parentNode.insertBefore(btn, container.nextSibling)
+  }
+}
+
+function toggleSvPicks(){
+  svPicksExpanded = !svPicksExpanded
+  document.querySelectorAll('.sv-pick-extra').forEach(el => {
+    el.style.display = svPicksExpanded ? '' : 'none'
+  })
+  const btn = document.getElementById('sv-more-btn')
+  if(btn) btn.textContent = svPicksExpanded
+    ? 'Ver Menos ↑'
+    : `Ver Mais (${S.services.length - SV_PICKS_LIMIT} serviços) ↓`
 }
 
 function selSvc(id){
@@ -1271,17 +1300,6 @@ async function doBook(){
   goStep(1)
   document.querySelectorAll('.sv-pick').forEach(e=>e.classList.remove('sel'))
   document.getElementById('s1btn').disabled=true
-}
-
-/* ── SERVICES VER MAIS ─────────────────────────────────── */
-let svcExpanded = false
-function toggleSvcMore(){
-  svcExpanded = !svcExpanded
-  document.querySelectorAll('.svc-hidden').forEach(el=>{
-    el.style.display = svcExpanded ? 'flex' : ''
-  })
-  const btn = document.getElementById('svc-more-btn')
-  if(btn) btn.textContent = svcExpanded ? 'Ver Menos ↑' : 'Ver Mais ↓'
 }
 
 /* ── PLANS / ASSINATURAS ───────────────────────────────── */
