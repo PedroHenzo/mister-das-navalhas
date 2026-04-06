@@ -285,6 +285,22 @@ tr:hover td{background:rgba(200,200,200,.02);}
 .ia-toggle input:checked+.ia-toggle-slider::before{transform:translateX(18px);background:var(--ok);}
 .ia-save-ok{color:var(--ok);font-size:.78rem;display:none;padding:.4rem 0;}
 .ia-full{grid-column:1/-1;}
+.ia-top-bar{display:flex;align-items:center;justify-content:space-between;background:var(--dark2);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:1.25rem;}
+.ia-status-row{display:flex;align-items:center;gap:.6rem;}
+.ia-conv-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .85rem;background:var(--dark3);border:1px solid var(--border);cursor:pointer;transition:border-color .2s;}
+.ia-conv-item:hover{border-color:var(--silver-d);}
+.ia-conv-item.takeover{border-color:rgba(251,191,36,.4);}
+.ia-conv-name{font-size:.82rem;color:var(--white);font-weight:500;}
+.ia-conv-preview{font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
+.ia-conv-badge{background:var(--warn);color:#000;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0;}
+.ia-test-msg{padding:.55rem .75rem;border-radius:2px;font-size:.8rem;line-height:1.55;max-width:85%;word-break:break-word;}
+.ia-test-msg.user{background:var(--dark3);border:1px solid var(--border);align-self:flex-end;}
+.ia-test-msg.bot{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);align-self:flex-start;}
+.ia-test-msg.loading{color:var(--muted);font-style:italic;}
+.ia-chat-msg{padding:.5rem .7rem;font-size:.8rem;line-height:1.55;max-width:82%;word-break:break-word;border-radius:2px;}
+.ia-chat-msg.user{background:var(--dark3);border:1px solid var(--border);align-self:flex-end;}
+.ia-chat-msg.bot{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);align-self:flex-start;}
+.ia-chat-msg.manual{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);align-self:flex-end;}
 @media(max-width:900px){.ia-layout{grid-template-columns:1fr;}}
 @media(max-width:480px){.ia-pers-grid{grid-template-columns:1fr;}.ia-layout{grid-template-columns:1fr;}}
 /* ── MOBILE HAMBURGER TOGGLE ── */
@@ -739,64 +755,74 @@ tr:hover td{background:rgba(200,200,200,.02);}
 <script id="tmpl-ia" type="text/template">
 <div class="page" id="page-ia">
   <div class="page-title">IA do WhatsApp</div>
-  <p class="page-sub">Configure e conecte a inteligência artificial da sua barbearia.</p>
+  <p class="page-sub">Configure e gerencie a inteligência artificial da sua barbearia.</p>
+
+  <!-- LINHA 1: Liga/desliga + status -->
+  <div class="ia-top-bar">
+    <div class="ia-status-row">
+      <div id="ia-status-dot" class="ia-qr-status-dot off"></div>
+      <span id="ia-status-label" style="font-size:.82rem;color:var(--muted);">IA Desligada</span>
+    </div>
+    <div style="display:flex;gap:.75rem;align-items:center;">
+      <button class="btn-sec" id="ia-toggle-btn" onclick="toggleIaAtiva()">Ligar IA</button>
+      <button class="btn-sec" onclick="loadIaConfig()">↻ Recarregar</button>
+    </div>
+  </div>
 
   <div class="ia-layout">
 
-    <!-- COL 1: QR CODE -->
-    <div>
+    <!-- COL 1: CONVERSAS WA + LIVECHAT -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+      <!-- CONVERSAS WHATSAPP -->
       <div class="ia-card">
-        <div class="ia-card-title">Conexão WhatsApp</div>
-        <div class="ia-card-sub">Escaneie o QR Code com o WhatsApp do número que a IA usará para atender seus clientes.</div>
-        <div class="ia-qr-wrap">
-          <div class="ia-qr-box">
-            <canvas id="ia-qr-canvas" width="200" height="200"></canvas>
-            <div class="ia-qr-corner tl"></div>
-            <div class="ia-qr-corner tr"></div>
-            <div class="ia-qr-corner bl"></div>
-            <div class="ia-qr-corner br"></div>
-          </div>
-          <div class="ia-qr-label">Escaneie com o WhatsApp → Dispositivos conectados → Conectar dispositivo</div>
-          <div class="ia-qr-status" id="ia-qr-status-row">
-            <span class="ia-qr-status-dot waiting" id="ia-qr-dot"></span>
-            <span id="ia-qr-status-txt">Aguardando leitura do QR Code…</span>
-          </div>
-          <button class="ia-qr-btn" onclick="refreshQr()">↻ Gerar novo QR Code</button>
-          <button class="ia-qr-btn primary" id="ia-connect-btn" onclick="simulateConnect()" style="display:none">✓ Confirmar Conexão</button>
+        <div class="ia-card-title">Conversas WhatsApp</div>
+        <div class="ia-card-sub">Mensagens recebidas via Z-API. Assuma o controle quando quiser responder pessoalmente.</div>
+        <div id="ia-conv-list" style="display:flex;flex-direction:column;gap:.5rem;max-height:320px;overflow-y:auto;">
+          <div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem;">Nenhuma conversa ainda.</div>
         </div>
       </div>
+
+      <!-- LIVECHAT SESSÕES -->
+      <div class="ia-card">
+        <div class="ia-card-title">Livechat — Sessões Ativas</div>
+        <div class="ia-card-sub">Clientes iniciaram chat no site. Responda diretamente ou deixe para a IA.</div>
+        <div id="ia-lc-list" style="display:flex;flex-direction:column;gap:.5rem;max-height:260px;overflow-y:auto;">
+          <div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem;">Nenhuma sessão ativa.</div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- COL 2: PERSONALIDADE + CONFIGURAÇÕES -->
+    <!-- COL 2: PERSONALIDADE + CONFIGURAÇÕES + TESTE -->
     <div style="display:flex;flex-direction:column;gap:1.25rem;">
 
       <!-- PERSONALIDADE -->
       <div class="ia-card">
         <div class="ia-card-title">Personalidade da IA</div>
-        <div class="ia-card-sub">Escolha como a IA vai interagir com seus clientes pelo WhatsApp.</div>
+        <div class="ia-card-sub">Escolha como a IA vai interagir com seus clientes.</div>
         <div class="ia-pers-grid">
-          <button class="ia-pers-btn sel" onclick="selPers('profissional',this)">
+          <button class="ia-pers-btn sel" id="pers-profissional" onclick="selPers('profissional',this)">
             <span class="ia-pers-icon">🧔</span>
             <span class="ia-pers-name">Profissional</span>
-            <span class="ia-pers-desc">Responde com objetividade e cordialidade. Foco em agendamentos rápidos e sem enrolação.</span>
+            <span class="ia-pers-desc">Objetivo e cordial. Foco em agendamentos rápidos.</span>
           </button>
-          <button class="ia-pers-btn" onclick="selPers('descontraido',this)">
+          <button class="ia-pers-btn" id="pers-descontraido" onclick="selPers('descontraido',this)">
             <span class="ia-pers-icon">😎</span>
             <span class="ia-pers-name">Descontraído</span>
-            <span class="ia-pers-desc">Tom casual, emojis moderados e linguagem do dia a dia. Deixa o cliente à vontade.</span>
+            <span class="ia-pers-desc">Tom casual e emojis. Deixa o cliente à vontade.</span>
           </button>
-          <button class="ia-pers-btn" onclick="selPers('premium',this)">
+          <button class="ia-pers-btn" id="pers-premium" onclick="selPers('premium',this)">
             <span class="ia-pers-icon">✦</span>
             <span class="ia-pers-name">Premium</span>
-            <span class="ia-pers-desc">Linguagem refinada e exclusiva. Transmite sofisticação e cuidado com cada detalhe.</span>
+            <span class="ia-pers-desc">Linguagem refinada. Sofisticação em cada resposta.</span>
           </button>
-          <button class="ia-pers-btn" onclick="selPers('direto',this)">
+          <button class="ia-pers-btn" id="pers-direto" onclick="selPers('direto',this)">
             <span class="ia-pers-icon">⚡</span>
             <span class="ia-pers-name">Direto ao ponto</span>
-            <span class="ia-pers-desc">Respostas curtíssimas. Apenas o essencial — data, hora e confirmação. Zero papo.</span>
+            <span class="ia-pers-desc">Respostas curtíssimas. Zero papo.</span>
           </button>
         </div>
-        <div id="ia-pers-preview" style="margin-top:1.1rem;background:var(--dark3);border:1px solid var(--border);border-left:2px solid var(--silver-d);padding:.9rem 1.1rem;font-size:.78rem;color:var(--muted);line-height:1.75;"></div>
       </div>
 
       <!-- CONFIGURAÇÕES -->
@@ -804,49 +830,53 @@ tr:hover td{background:rgba(200,200,200,.02);}
         <div class="ia-card-title">Configurações</div>
         <div class="ia-settings-grid">
           <div class="ia-toggle-row">
-            <div>
-              <div class="ia-toggle-label">Reativação automática</div>
-              <div class="ia-toggle-sub">Envia mensagem para clientes sem visita há +30 dias</div>
-            </div>
-            <label class="ia-toggle"><input type="checkbox" id="tog-reativacao" checked/><span class="ia-toggle-slider"></span></label>
-          </div>
-          <div class="ia-toggle-row">
-            <div>
-              <div class="ia-toggle-label">Confirmação de agendamento</div>
-              <div class="ia-toggle-sub">Confirma o horário 24h antes pelo WhatsApp</div>
-            </div>
-            <label class="ia-toggle"><input type="checkbox" id="tog-confirmacao" checked/><span class="ia-toggle-slider"></span></label>
-          </div>
-          <div class="ia-toggle-row">
-            <div>
-              <div class="ia-toggle-label">Responder fora do horário</div>
-              <div class="ia-toggle-sub">IA atende mensagens mesmo quando a barbearia está fechada</div>
-            </div>
-            <label class="ia-toggle"><input type="checkbox" id="tog-fora-horario"/><span class="ia-toggle-slider"></span></label>
-          </div>
-          <div class="ia-toggle-row">
-            <div>
-              <div class="ia-toggle-label">Agendamento automático</div>
-              <div class="ia-toggle-sub">IA cria o agendamento direto pelo chat sem intervenção</div>
-            </div>
+            <div><div class="ia-toggle-label">Agendamento automático</div><div class="ia-toggle-sub">IA cria o agendamento direto pelo chat</div></div>
             <label class="ia-toggle"><input type="checkbox" id="tog-auto-book"/><span class="ia-toggle-slider"></span></label>
           </div>
-        </div>
-        <div style="margin-top:1.1rem;">
-          <div class="fg" style="margin-bottom:.75rem;"><label class="flabel">Mensagem de boas-vindas personalizada</label><input class="fi" type="text" id="ia-welcome-msg" placeholder="Ex: Olá! Bem-vindo à Mister das Navalhas 🪒"/></div>
-          <div class="fg"><label class="flabel">Intervalo de reativação (dias)</label>
-            <div class="sel-wrap"><select class="fi" id="ia-reativ-days">
-              <option value="30">30 dias</option><option value="45">45 dias</option><option value="60">60 dias</option><option value="90">90 dias</option>
-            </select></div>
+          <div class="ia-toggle-row">
+            <div><div class="ia-toggle-label">Responder fora do horário</div><div class="ia-toggle-sub">IA atende mesmo quando a barbearia está fechada</div></div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-fora-horario"/><span class="ia-toggle-slider"></span></label>
           </div>
         </div>
-        <div class="ia-save-ok" id="ia-save-ok">✓ Configurações salvas!</div>
-        <div class="add-actions" style="margin-top:1.1rem;">
+        <div style="margin-top:1rem;">
+          <div class="fg"><label class="flabel">Mensagem de boas-vindas (Livechat)</label><input class="fi" type="text" id="ia-welcome-msg" placeholder="Olá! Bem-vindo à Mister das Navalhas 🪒"/></div>
+        </div>
+        <div class="ia-save-ok" id="ia-save-ok">✓ Salvo!</div>
+        <div class="add-actions" style="margin-top:1rem;">
           <button class="btn-primary" onclick="saveIaConfig()">Salvar Configurações</button>
-          <button class="btn-sec" onclick="loadIaConfig()">Restaurar</button>
         </div>
       </div>
 
+      <!-- TESTE DE IA -->
+      <div class="ia-card">
+        <div class="ia-card-title">Testar IA</div>
+        <div class="ia-card-sub">Simule uma conversa com a IA antes de ativá-la.</div>
+        <div id="ia-test-msgs" style="background:var(--dark3);border:1px solid var(--border);min-height:120px;max-height:220px;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem;"></div>
+        <div style="display:flex;gap:.5rem;">
+          <input class="fi" type="text" id="ia-test-input" placeholder="Digite uma mensagem..." style="flex:1;" onkeydown="if(event.key==='Enter')sendIaTest()"/>
+          <button class="btn-primary" onclick="sendIaTest()" style="padding:.7rem 1.2rem;white-space:nowrap;">Enviar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JANELA DE CONVERSA (slide-in) -->
+  <div id="ia-chat-panel" style="display:none;position:fixed;right:0;top:0;bottom:0;width:360px;background:var(--dark2);border-left:1px solid var(--border);z-index:200;display:none;flex-direction:column;">
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div id="ia-chat-name" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;"></div>
+        <div id="ia-chat-phone" style="font-size:.7rem;color:var(--muted);"></div>
+      </div>
+      <div style="display:flex;gap:.5rem;">
+        <button id="ia-takeover-btn" class="btn-sec" style="font-size:.68rem;padding:.4rem .8rem;" onclick="toggleTakeover()">Assumir</button>
+        <button class="btn-sec" style="font-size:.68rem;padding:.4rem .8rem;" onclick="closeIaChat()">✕</button>
+      </div>
+    </div>
+    <div id="ia-chat-msgs" style="flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;"></div>
+    <div id="ia-chat-input-row" style="padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;display:none;">
+      <input class="fi" type="text" id="ia-chat-send-input" placeholder="Responder..." style="flex:1;" onkeydown="if(event.key==='Enter')sendFromAdmin()"/>
+      <button class="btn-primary" onclick="sendFromAdmin()" style="padding:.6rem 1rem;">Enviar</button>
     </div>
   </div>
 </div>
@@ -1352,7 +1382,7 @@ function showPage(name, el){
       if(name==='clientes') renderCliTable()
       if(name==='relatorios') renderReports()
       if(name==='integracoes') loadIntCreds()
-      if(name==='ia'){ loadIaConfig(); drawQr(); }
+      if(name==='ia'){ loadIaConfig(); }
       if(name==='assinaturas'){ renderPlanList(); renderSubTable(); }
     }
   }
@@ -1679,102 +1709,29 @@ function clearZapiCreds(){
 }
 
 /* ══════════════════════════════════════════
-   IA — QR CODE + PERSONALIDADE + CONFIG
+   IA — CONFIG, CONVERSAS, LIVECHAT, TESTE
 ══════════════════════════════════════════ */
-const IA_KEY = 'mdn_ia_config'
 let IA_PERS = 'profissional'
-let qrTimer = null
+let _iaChatTarget = null   // { type:'wa'|'lc', id:phone|sessionId }
+let _iaConvPollTimer = null
 
-const IA_PERS_PREVIEWS = {
-  profissional: '💬 <strong style="color:var(--silver-l)">IA:</strong> Olá! Aqui é a Mister das Navalhas. Como posso te ajudar? Deseja agendar um horário?',
-  descontraido: '💬 <strong style="color:var(--silver-l)">IA:</strong> Oi! 😄 Tudo bem? Quer marcar um horário aqui na Mister das Navalhas? É só me dizer o dia e a hora!',
-  premium:      '💬 <strong style="color:var(--silver-l)">IA:</strong> Olá. Seja bem-vindo à Mister das Navalhas. Estou à disposição para auxiliá-lo no agendamento do seu atendimento.',
-  direto:       '💬 <strong style="color:var(--silver-l)">IA:</strong> Oi. Quer agendar? Me diz: qual serviço, dia e horário.',
+// ── Toggle liga/desliga ──
+async function toggleIaAtiva(){
+  const btn = document.getElementById('ia-toggle-btn')
+  const isOn = btn?.textContent?.trim() === 'Desligar IA'
+  try {
+    await apiFetch('/ia/config', { method:'POST', body:{ ia_ativa: isOn ? 'false' : 'true' } })
+    updateIaStatusUI(!isOn)
+  } catch(e) { alert('Erro: ' + e.message) }
 }
 
-// ── QR Code desenhado via canvas (padrão visual de QR, não funcional) ──
-function drawQr(seed){
-  const canvas = document.getElementById('ia-qr-canvas')
-  if(!canvas) return
-  const ctx = canvas.getContext('2d')
-  const size = 200, mod = 25, cell = size / mod
-  // seed pseudo-random
-  const s = seed || 0x5A4E3D
-  let rng = s
-  function rand(){ rng = (rng * 1664525 + 1013904223) & 0xFFFFFFFF; return (rng >>> 0) / 0xFFFFFFFF }
-
-  ctx.fillStyle = '#101010'
-  ctx.fillRect(0, 0, size, size)
-
-  function drawCell(x, y, color){
-    ctx.fillStyle = color
-    ctx.fillRect(x * cell + .5, y * cell + .5, cell - 1, cell - 1)
-  }
-
-  // Data modules (random inside safe area)
-  for(let y = 0; y < mod; y++){
-    for(let x = 0; x < mod; x++){
-      // skip finder pattern zones (corners 7x7 + 1 spacer)
-      if((x < 8 && y < 8)||(x >= mod-8 && y < 8)||(x < 8 && y >= mod-8)) continue
-      // skip timing strips
-      if(x === 6 || y === 6) continue
-      // skip alignment pattern area
-      if(x >= mod-9 && x <= mod-5 && y >= mod-9 && y <= mod-5) continue
-      if(rand() > 0.52) drawCell(x, y, '#E8E8E8')
-    }
-  }
-
-  // Timing strips
-  for(let i = 8; i < mod - 8; i++){
-    if(i % 2 === 0){ drawCell(i, 6, '#E8E8E8'); drawCell(6, i, '#E8E8E8') }
-  }
-
-  // Alignment pattern (bottom-right area)
-  const ap = mod - 7
-  ctx.fillStyle = '#E8E8E8'; ctx.fillRect(ap*cell-.5, ap*cell-.5, 5*cell+1, 5*cell+1)
-  ctx.fillStyle = '#101010'; ctx.fillRect((ap+1)*cell-.5, (ap+1)*cell-.5, 3*cell+1, 3*cell+1)
-  ctx.fillStyle = '#E8E8E8'; ctx.fillRect((ap+2)*cell-.5, (ap+2)*cell-.5, cell+1, cell+1)
-
-  // Finder pattern helper
-  function finder(ox, oy){
-    ctx.fillStyle = '#E8E8E8'; ctx.fillRect(ox*cell, oy*cell, 7*cell, 7*cell)
-    ctx.fillStyle = '#101010'; ctx.fillRect((ox+1)*cell, (oy+1)*cell, 5*cell, 5*cell)
-    ctx.fillStyle = '#E8E8E8'; ctx.fillRect((ox+2)*cell, (oy+2)*cell, 3*cell, 3*cell)
-  }
-  finder(0,0); finder(mod-7,0); finder(0,mod-7)
-
-  // Separator lines (1px spacer around finders)
-  ctx.fillStyle = '#101010'
-  ;[[7,0,1,8],[0,7,8,1],[mod-8,0,1,8],[mod-8,7,8,1],[0,mod-8,8,1],[7,mod-8,1,8]].forEach(([x,y,w,h])=>{
-    ctx.fillRect(x*cell, y*cell, w*cell, h*cell)
-  })
-}
-
-function refreshQr(){
-  const dot = document.getElementById('ia-qr-dot')
-  const txt = document.getElementById('ia-qr-status-txt')
-  const connectBtn = document.getElementById('ia-connect-btn')
-  if(!dot) return
-  clearTimeout(qrTimer)
-  drawQr(Date.now() & 0xFFFFFF)
-  dot.className = 'ia-qr-status-dot waiting'
-  txt.textContent = 'Aguardando leitura do QR Code…'
-  if(connectBtn) connectBtn.style.display = 'none'
-  // Simulate "scanned" state after 4s for demo purposes
-  qrTimer = setTimeout(()=>{
-    dot.className = 'ia-qr-status-dot waiting'
-    txt.textContent = 'QR Code escaneado — confirme no celular…'
-    if(connectBtn) connectBtn.style.display = 'block'
-  }, 4000)
-}
-
-function simulateConnect(){
-  const dot = document.getElementById('ia-qr-dot')
-  const txt = document.getElementById('ia-qr-status-txt')
-  const connectBtn = document.getElementById('ia-connect-btn')
-  dot.className = 'ia-qr-status-dot on'
-  txt.textContent = 'WhatsApp conectado com sucesso!'
-  if(connectBtn) connectBtn.style.display = 'none'
+function updateIaStatusUI(isOn){
+  const dot = document.getElementById('ia-status-dot')
+  const lbl = document.getElementById('ia-status-label')
+  const btn = document.getElementById('ia-toggle-btn')
+  if(dot){ dot.className = 'ia-qr-status-dot ' + (isOn ? 'on' : 'off') }
+  if(lbl) lbl.textContent = isOn ? 'IA Ligada' : 'IA Desligada'
+  if(btn) btn.textContent = isOn ? 'Desligar IA' : 'Ligar IA'
 }
 
 // ── Personalidade ──
@@ -1782,49 +1739,188 @@ function selPers(id, el){
   IA_PERS = id
   document.querySelectorAll('.ia-pers-btn').forEach(b=>b.classList.remove('sel'))
   if(el) el.classList.add('sel')
-  const preview = document.getElementById('ia-pers-preview')
-  if(preview) preview.innerHTML = IA_PERS_PREVIEWS[id] || ''
 }
 
-// ── Config save/load ──
-function saveIaConfig(){
-  const cfg = {
-    pers: IA_PERS,
-    reativacao: document.getElementById('tog-reativacao')?.checked,
-    confirmacao: document.getElementById('tog-confirmacao')?.checked,
-    foraHorario: document.getElementById('tog-fora-horario')?.checked,
-    autoBook:    document.getElementById('tog-auto-book')?.checked,
-    welcomeMsg:  document.getElementById('ia-welcome-msg')?.value,
-    reativDays:  document.getElementById('ia-reativ-days')?.value,
-  }
-  localStorage.setItem(IA_KEY, JSON.stringify(cfg))
-  const ok = document.getElementById('ia-save-ok')
-  if(ok){ ok.style.display='block'; setTimeout(()=>ok.style.display='none',2000) }
+// ── Config save/load (backend) ──
+async function saveIaConfig(){
+  try {
+    await apiFetch('/ia/config', { method:'POST', body:{
+      personality:    IA_PERS,
+      fora_horario:   String(document.getElementById('tog-fora-horario')?.checked || false),
+      auto_book:      String(document.getElementById('tog-auto-book')?.checked || false),
+      welcome_msg:    document.getElementById('ia-welcome-msg')?.value || '',
+    }})
+    const ok = document.getElementById('ia-save-ok')
+    if(ok){ ok.style.display='block'; setTimeout(()=>ok.style.display='none',2000) }
+  } catch(e) { alert('Erro ao salvar: ' + e.message) }
 }
 
-function loadIaConfig(){
-  try{
-    const cfg = JSON.parse(localStorage.getItem(IA_KEY)||'{}')
-    if(cfg.pers){
-      IA_PERS = cfg.pers
-      document.querySelectorAll('.ia-pers-btn').forEach(b=>b.classList.remove('sel'))
-      const btn = document.querySelector(`.ia-pers-btn[onclick*="${cfg.pers}"]`)
-      if(btn) btn.classList.add('sel')
+async function loadIaConfig(){
+  try {
+    const cfg = await apiFetch('/ia/config')
+    updateIaStatusUI(cfg.ia_ativa === 'true')
+    IA_PERS = cfg.personality || 'profissional'
+    document.querySelectorAll('.ia-pers-btn').forEach(b=>b.classList.remove('sel'))
+    const pb = document.getElementById('pers-' + IA_PERS)
+    if(pb) pb.classList.add('sel')
+    const fh = document.getElementById('tog-fora-horario')
+    if(fh) fh.checked = cfg.fora_horario === 'true'
+    const ab = document.getElementById('tog-auto-book')
+    if(ab) ab.checked = cfg.auto_book === 'true'
+    const wm = document.getElementById('ia-welcome-msg')
+    if(wm && cfg.welcome_msg) wm.value = cfg.welcome_msg
+  } catch(e) {}
+  loadIaConversations()
+  loadLivechatSessions()
+  startIaPolling()
+}
+
+// ── Conversas WhatsApp ──
+async function loadIaConversations(){
+  const el = document.getElementById('ia-conv-list'); if(!el) return
+  try {
+    const convs = await apiFetch('/ia/conversations')
+    if(!convs.length){ el.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem;">Nenhuma conversa ainda.</div>'; return }
+    el.innerHTML = convs.map(c=>`
+      <div class="ia-conv-item${c.takeover?' takeover':''}" onclick="openIaChat('wa','${c.phone}','${(c.name||c.phone).replace(/'/g,"\\'")}')">
+        <div style="flex:1;min-width:0;">
+          <div class="ia-conv-name">${c.name||c.phone} ${c.takeover?'<span style="font-size:.6rem;color:var(--warn);letter-spacing:.1em;text-transform:uppercase;">· Assumida</span>':''}</div>
+          <div class="ia-conv-preview">${c.last_message||'—'}</div>
+        </div>
+        ${c.unread>0?`<div class="ia-conv-badge">${c.unread}</div>`:''}
+      </div>`).join('')
+  } catch(e) { el.innerHTML='<div style="padding:1rem;color:var(--muted);font-size:.78rem;">Erro ao carregar.</div>' }
+}
+
+// ── Sessões livechat ──
+async function loadLivechatSessions(){
+  const el = document.getElementById('ia-lc-list'); if(!el) return
+  try {
+    const sessions = await apiFetch('/livechat/sessions')
+    if(!sessions.length){ el.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem;">Nenhuma sessão ativa.</div>'; return }
+    el.innerHTML = sessions.map(s=>`
+      <div class="ia-conv-item${s.takeover?' takeover':''}" onclick="openIaChat('lc','${s.id}','${(s.name||'Visitante').replace(/'/g,"\\'")}')">
+        <div style="flex:1;min-width:0;">
+          <div class="ia-conv-name">${s.name||'Visitante'} ${s.takeover?'<span style="font-size:.6rem;color:var(--warn);letter-spacing:.1em;text-transform:uppercase;">· Assumida</span>':''}</div>
+          <div class="ia-conv-preview">${s.last_message||'—'}</div>
+        </div>
+        ${s.unread>0?`<div class="ia-conv-badge">${s.unread}</div>`:''}
+      </div>`).join('')
+  } catch(e) {}
+}
+
+function startIaPolling(){
+  clearInterval(_iaConvPollTimer)
+  _iaConvPollTimer = setInterval(()=>{ loadIaConversations(); loadLivechatSessions(); if(_iaChatTarget) refreshIaChatMsgs() }, 5000)
+}
+
+// ── Janela de conversa ──
+async function openIaChat(type, id, name){
+  _iaChatTarget = { type, id, name }
+  const panel = document.getElementById('ia-chat-panel')
+  if(!panel) return
+  panel.style.display = 'flex'
+  document.getElementById('ia-chat-name').textContent = name
+  document.getElementById('ia-chat-phone').textContent = type==='wa' ? id : 'Livechat'
+  await refreshIaChatMsgs()
+  const inputRow = document.getElementById('ia-chat-input-row')
+  if(inputRow) inputRow.style.display = 'flex'
+}
+
+async function refreshIaChatMsgs(){
+  if(!_iaChatTarget) return
+  const el = document.getElementById('ia-chat-msgs'); if(!el) return
+  try {
+    let msgs = []
+    if(_iaChatTarget.type === 'wa'){
+      const convs = await apiFetch('/ia/conversations')
+      const conv = convs.find(c=>c.phone===_iaChatTarget.id)
+      msgs = (conv?.history||[]).map(m=>({ role:m.role, content:m.content, manual:m.manual }))
+      const tbtn = document.getElementById('ia-takeover-btn')
+      if(tbtn) tbtn.textContent = conv?.takeover ? 'Liberar' : 'Assumir'
+    } else {
+      const raw = await apiFetch('/livechat/'+_iaChatTarget.id)
+      msgs = raw.map(m=>({ role:m.role, content:m.content }))
+      const sess = await apiFetch('/livechat/sessions')
+      const s = sess.find(x=>x.id===_iaChatTarget.id)
+      const tbtn = document.getElementById('ia-takeover-btn')
+      if(tbtn) tbtn.textContent = s?.takeover ? 'Liberar' : 'Assumir'
     }
-    const preview = document.getElementById('ia-pers-preview')
-    if(preview) preview.innerHTML = IA_PERS_PREVIEWS[IA_PERS]||IA_PERS_PREVIEWS['profissional']
-    if(cfg.reativacao  !== undefined){ const el=document.getElementById('tog-reativacao'); if(el) el.checked=cfg.reativacao }
-    if(cfg.confirmacao !== undefined){ const el=document.getElementById('tog-confirmacao'); if(el) el.checked=cfg.confirmacao }
-    if(cfg.foraHorario !== undefined){ const el=document.getElementById('tog-fora-horario'); if(el) el.checked=cfg.foraHorario }
-    if(cfg.autoBook    !== undefined){ const el=document.getElementById('tog-auto-book'); if(el) el.checked=cfg.autoBook }
-    if(cfg.welcomeMsg){ const el=document.getElementById('ia-welcome-msg'); if(el) el.value=cfg.welcomeMsg }
-    if(cfg.reativDays){ const el=document.getElementById('ia-reativ-days'); if(el) el.value=cfg.reativDays }
-  }catch(e){}
-  // init preview if not set
-  const preview = document.getElementById('ia-pers-preview')
-  if(preview && !preview.innerHTML) preview.innerHTML = IA_PERS_PREVIEWS[IA_PERS]||IA_PERS_PREVIEWS['profissional']
-  refreshQr()
+    const scrolled = el.scrollTop + el.clientHeight >= el.scrollHeight - 20
+    el.innerHTML = msgs.map(m=>{
+      const cls = m.role==='user' ? 'user' : (m.manual ? 'manual' : 'bot')
+      return `<div class="ia-chat-msg ${cls}">${m.content.replace(/\n/g,'<br>')}</div>`
+    }).join('')
+    if(scrolled || msgs.length<3) el.scrollTop = el.scrollHeight
+  } catch(e) {}
 }
+
+async function toggleTakeover(){
+  if(!_iaChatTarget) return
+  const tbtn = document.getElementById('ia-takeover-btn')
+  const isAssumed = tbtn?.textContent?.trim() === 'Liberar'
+  const action = isAssumed ? 'release' : 'takeover'
+  try {
+    if(_iaChatTarget.type === 'wa'){
+      await apiFetch(`/ia/conversations/${_iaChatTarget.id}/${action}`, { method:'POST' })
+    } else {
+      await apiFetch(`/livechat/${_iaChatTarget.id}/${action}`, { method:'POST' })
+    }
+    if(tbtn) tbtn.textContent = isAssumed ? 'Assumir' : 'Liberar'
+  } catch(e) { alert('Erro: '+e.message) }
+}
+
+async function sendFromAdmin(){
+  if(!_iaChatTarget) return
+  const input = document.getElementById('ia-chat-send-input')
+  const msg = input?.value?.trim(); if(!msg) return
+  input.value = ''
+  try {
+    if(_iaChatTarget.type === 'wa'){
+      await apiFetch('/ia/send', { method:'POST', body:{ phone:_iaChatTarget.id, message:msg } })
+    } else {
+      await apiFetch(`/livechat/${_iaChatTarget.id}/send`, { method:'POST', body:{ content:msg } })
+    }
+    await refreshIaChatMsgs()
+  } catch(e) { alert('Erro: '+e.message) }
+}
+
+function closeIaChat(){
+  _iaChatTarget = null
+  const panel = document.getElementById('ia-chat-panel')
+  if(panel) panel.style.display = 'none'
+}
+
+// ── Teste de IA ──
+let _iaTestHistory = []
+async function sendIaTest(){
+  const input = document.getElementById('ia-test-input')
+  const msgs  = document.getElementById('ia-test-msgs')
+  const msg   = input?.value?.trim(); if(!msg||!msgs) return
+  input.value = ''
+  const userDiv = document.createElement('div')
+  userDiv.className = 'ia-test-msg user'; userDiv.textContent = msg
+  msgs.appendChild(userDiv)
+  const loadDiv = document.createElement('div')
+  loadDiv.className = 'ia-test-msg bot loading'; loadDiv.textContent = '...'
+  msgs.appendChild(loadDiv)
+  msgs.scrollTop = msgs.scrollHeight
+  try {
+    const data = await apiFetch('/ia/test', { method:'POST', body:{ message:msg, history:_iaTestHistory, personality:IA_PERS } })
+    loadDiv.className = 'ia-test-msg bot'
+    loadDiv.innerHTML = data.response.replace(/\n/g,'<br>')
+    _iaTestHistory = data.history
+  } catch(e) {
+    loadDiv.className = 'ia-test-msg bot'
+    loadDiv.textContent = '⚠️ Erro: ' + e.message
+  }
+  msgs.scrollTop = msgs.scrollHeight
+}
+
+// stub para compatibilidade (chamado em showPage para ia)
+function drawQr(){}
+function refreshQr(){}
+function simulateConnect(){}
 
 /* ══════════════════════════════════════════
    ASSINATURAS

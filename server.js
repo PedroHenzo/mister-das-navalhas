@@ -143,6 +143,53 @@ async function initDb() {
       );
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS ia_config (
+        key   TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      );
+    `);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('ia_ativa','false') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('personality','profissional') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('welcome_msg','Olá! Bem-vindo à Mister das Navalhas 🪒 Como posso ajudar?') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('auto_book','false') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('fora_horario','false') ON CONFLICT (key) DO NOTHING`);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS ia_conversations (
+        phone         TEXT PRIMARY KEY,
+        name          TEXT,
+        history       TEXT NOT NULL DEFAULT '[]',
+        takeover      BOOLEAN NOT NULL DEFAULT FALSE,
+        last_message  TEXT,
+        last_at       TEXT,
+        unread        INTEGER NOT NULL DEFAULT 0
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS livechat_sessions (
+        id          TEXT PRIMARY KEY,
+        name        TEXT,
+        phone       TEXT,
+        started_at  TEXT NOT NULL,
+        last_at     TEXT,
+        status      TEXT DEFAULT 'active',
+        takeover    BOOLEAN NOT NULL DEFAULT FALSE,
+        unread      INTEGER NOT NULL DEFAULT 0
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS livechat_messages (
+        id          TEXT PRIMARY KEY,
+        session_id  TEXT NOT NULL,
+        role        TEXT NOT NULL,
+        content     TEXT NOT NULL,
+        created_at  TEXT NOT NULL
+      );
+    `);
+
     // Seed inicial — só insere se não existir nenhum barbeiro
     const { rows } = await client.query('SELECT COUNT(*) AS c FROM barbers');
     if (parseInt(rows[0].c) === 0) {
@@ -734,6 +781,351 @@ app.post('/api/payment/signal', async (req, res) => {
       },
     });
     res.json({ init_point: pref.init_point, sandbox_init_point: pref.sandbox_init_point });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── IA HELPERS ────────────────────────────────────────────────────────────
+async function getIaConfig(key) {
+  const { rows } = await pool.query(`SELECT value FROM ia_config WHERE key=$1`, [key]);
+  return rows[0]?.value ?? null;
+}
+async function setIaConfig(key, value) {
+  await pool.query(
+    `INSERT INTO ia_config (key,value) VALUES ($1,$2) ON CONFLICT (key) DO UPDATE SET value=$2`,
+    [key, String(value)]
+  );
+}
+
+async function buildSystemPrompt(personality) {
+  const { rows: services } = await pool.query(`SELECT * FROM services WHERE active=TRUE ORDER BY price ASC`);
+  const { rows: barbers }  = await pool.query(`SELECT name FROM barbers WHERE active=TRUE LIMIT 1`);
+  const barberName = barbers[0]?.name || 'Wesley';
+  const siteUrl = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
+
+  const persMap = {
+    profissional: 'Seja objetivo, cordial e direto. Foco em agendamentos rápidos.',
+    descontraido: 'Use linguagem casual, emojis moderados. Seja amigável e descontraído.',
+    premium:      'Use linguagem refinada. Transmita sofisticação e atenção aos detalhes.',
+    direto:       'Respostas curtíssimas. Apenas o essencial — sem papo.',
+  };
+  const persText = persMap[personality] || persMap.profissional;
+  const svcText  = services.map(s =>
+    `• ${s.name} — R$ ${parseFloat(s.price).toFixed(2)} (${s.duration_min} min)${s.description ? ': ' + s.description : ''}`
+  ).join('\n');
+
+  return `Você é a IA da barbearia "Mister das Navalhas", Jurujuba/Niterói-RJ. Barbeiro: ${barberName}.
+Estilo: ${persText}
+
+## SERVIÇOS
+${svcText}
+
+## HORÁRIOS
+- Terça: 10:00–16:30 | Quarta: 09:00–19:50 | Quinta: 09:00–17:20 | Sexta: 09:00–21:20 | Sábado: 08:00–20:30
+
+## O QUE VOCÊ PODE FAZER
+- Informar serviços, preços e horários
+- Tirar dúvidas sobre a barbearia
+- Auxiliar o cliente a agendar (colete: nome, serviço, data, horário)
+- Direcionar para o site: ${siteUrl}
+
+## REGRAS
+- Responda de forma curta (é WhatsApp/chat, não e-mail)
+- Nunca invente preços ou serviços fora da lista
+- Quando o cliente confirmar agendamento com todos os dados, finalize com:
+AGENDAMENTO_SOLICITADO:{"client_name":"nome","service":"serviço","appt_date":"YYYY-MM-DD","time_slot":"HH:MM"}`;
+}
+
+async function callMistral(messages, personality) {
+  const apiKey = process.env.MISTRAL_API_KEY;
+  if (!apiKey) throw new Error('MISTRAL_API_KEY não configurada no servidor.');
+  const systemPrompt = await buildSystemPrompt(personality || 'profissional');
+  const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model:       process.env.MISTRAL_MODEL || 'mistral-small-latest',
+      messages:    [{ role: 'system', content: systemPrompt }, ...messages],
+      temperature: 0.7,
+      max_tokens:  512,
+    }),
+  });
+  if (!r.ok) { const t = await r.text(); throw new Error('Mistral: ' + t); }
+  const d = await r.json();
+  return d.choices[0].message.content;
+}
+
+async function zapiSend(phone, message) {
+  const [inst, tok, ctok] = await Promise.all([
+    getIaConfig('zapi_instance'), getIaConfig('zapi_token'), getIaConfig('zapi_client_token'),
+  ]);
+  if (!inst || !tok) throw new Error('Z-API não configurado em Integrações.');
+  const r = await fetch(`https://api.z-api.io/instances/${inst}/token/${tok}/send-text`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Client-Token': ctok || '' },
+    body: JSON.stringify({ phone, message }),
+  });
+  if (!r.ok) { const t = await r.text(); throw new Error('Z-API: ' + t); }
+  return r.json();
+}
+
+// ── IA: CONFIG ────────────────────────────────────────────────────────────
+app.get('/api/ia/config', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`SELECT key, value FROM ia_config`);
+    const cfg = {};
+    rows.forEach(r => { cfg[r.key] = r.value; });
+    res.json(cfg);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/ia/config', async (req, res) => {
+  try {
+    const allowed = ['ia_ativa','personality','welcome_msg','auto_book','fora_horario',
+                     'reativacao','confirmacao','reativ_days','zapi_instance','zapi_token','zapi_client_token'];
+    for (const [k, v] of Object.entries(req.body)) {
+      if (allowed.includes(k)) await setIaConfig(k, v);
+    }
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── IA: TEST ──────────────────────────────────────────────────────────────
+app.post('/api/ia/test', async (req, res) => {
+  try {
+    const { message, history = [], personality } = req.body;
+    if (!message) return res.status(400).json({ error: 'message obrigatório' });
+    const pers = personality || await getIaConfig('personality') || 'profissional';
+    const hist = [...history, { role: 'user', content: message }];
+    const raw  = await callMistral(hist, pers);
+    const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\{.*?\}/s, '').trim();
+    hist.push({ role: 'assistant', content: clean });
+    res.json({ response: clean, history: hist });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── IA: WHATSAPP CONVERSATIONS ────────────────────────────────────────────
+app.get('/api/ia/conversations', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`SELECT * FROM ia_conversations ORDER BY last_at DESC NULLS LAST LIMIT 100`);
+    res.json(rows.map(r => ({ ...r, history: typeof r.history==='string'?JSON.parse(r.history):r.history })));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/ia/conversations/:phone/takeover', async (req, res) => {
+  try {
+    await pool.query(`UPDATE ia_conversations SET takeover=TRUE, unread=0 WHERE phone=$1`, [req.params.phone]);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/ia/conversations/:phone/release', async (req, res) => {
+  try {
+    await pool.query(`UPDATE ia_conversations SET takeover=FALSE WHERE phone=$1`, [req.params.phone]);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/ia/send', async (req, res) => {
+  try {
+    const { phone, message } = req.body;
+    if (!phone || !message) return res.status(400).json({ error: 'phone e message obrigatórios' });
+    await zapiSend(phone, message);
+    const { rows } = await pool.query(`SELECT history FROM ia_conversations WHERE phone=$1`, [phone]);
+    const history = typeof rows[0]?.history==='string' ? JSON.parse(rows[0].history) : (rows[0]?.history || []);
+    history.push({ role: 'assistant', content: message, manual: true });
+    await pool.query(
+      `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3 WHERE phone=$4`,
+      [JSON.stringify(history), message, nowStr(), phone]
+    );
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── WEBHOOK: Z-API (WhatsApp incoming) ────────────────────────────────────
+app.post('/api/webhook/zapi', async (req, res) => {
+  res.json({ ok: true });
+  try {
+    const body = req.body;
+    if (body.fromMe || body.isGroup) return;
+    const textMsg = body.text?.message || body.body || '';
+    if (!textMsg) return;
+    const phone = body.phone;
+    const senderName = body.senderName || phone;
+
+    const iaAtiva = await getIaConfig('ia_ativa');
+    if (iaAtiva !== 'true') return;
+
+    // Upsert conversation
+    const { rows } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
+    let conv = rows[0];
+    if (!conv) {
+      await pool.query(
+        `INSERT INTO ia_conversations (phone,name,history,takeover,last_message,last_at,unread)
+         VALUES ($1,$2,'[]',FALSE,$3,$4,1)`,
+        [phone, senderName, textMsg, nowStr()]
+      );
+      const { rows: r } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
+      conv = r[0];
+    }
+
+    if (conv.takeover) {
+      const history = typeof conv.history==='string'?JSON.parse(conv.history):conv.history;
+      history.push({ role: 'user', content: textMsg });
+      await pool.query(
+        `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3, unread=unread+1 WHERE phone=$4`,
+        [JSON.stringify(history), textMsg, nowStr(), phone]
+      );
+      return;
+    }
+
+    const history = typeof conv.history==='string'?JSON.parse(conv.history):conv.history;
+    history.push({ role: 'user', content: textMsg });
+
+    const pers = await getIaConfig('personality') || 'profissional';
+    const raw  = await callMistral(history.slice(-20), pers);
+    const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\{.*?\}/s, '').trim();
+    history.push({ role: 'assistant', content: clean });
+
+    await zapiSend(phone, clean);
+
+    await pool.query(
+      `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3, name=$4, unread=0 WHERE phone=$5`,
+      [JSON.stringify(history), clean, nowStr(), senderName, phone]
+    );
+
+    // Auto-book if requested
+    const apptMatch = raw.match(/AGENDAMENTO_SOLICITADO:(\{.*?\})/s);
+    const autoBook  = await getIaConfig('auto_book');
+    if (apptMatch && autoBook === 'true') {
+      try {
+        const apptData = JSON.parse(apptMatch[1]);
+        const { rows: brs } = await pool.query(`SELECT id FROM barbers WHERE active=TRUE LIMIT 1`);
+        const { rows: srs } = await pool.query(`SELECT id FROM services WHERE name ILIKE $1 LIMIT 1`, [`%${apptData.service}%`]);
+        if (brs.length && srs.length) {
+          const apptId = uuid();
+          await pool.query(
+            `INSERT INTO appointments (id,barber_id,service_id,client_name,client_phone,appt_date,time_slot,status,source,created_at)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed','whatsapp',$8)`,
+            [apptId, brs[0].id, srs[0].id, apptData.client_name, phone, apptData.appt_date, apptData.time_slot, nowStr()]
+          );
+          await zapiSend(phone, `✅ Agendamento confirmado!\n📅 ${apptData.appt_date} às ${apptData.time_slot}\n💈 ${apptData.service}`);
+        }
+      } catch (e) { console.warn('Auto-book:', e.message); }
+    }
+  } catch (e) { console.error('Webhook Z-API:', e.message); }
+});
+
+// ── LIVECHAT ──────────────────────────────────────────────────────────────
+app.post('/api/livechat/start', async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+    const id  = uuid();
+    const now = nowStr();
+    await pool.query(
+      `INSERT INTO livechat_sessions (id,name,phone,started_at,last_at,status,takeover,unread)
+       VALUES ($1,$2,$3,$4,$4,'active',FALSE,0)`,
+      [id, name || 'Visitante', phone || null, now]
+    );
+    const welcomeMsg = await getIaConfig('welcome_msg') || 'Olá! Bem-vindo à Mister das Navalhas 🪒 Como posso ajudar?';
+    await pool.query(
+      `INSERT INTO livechat_messages (id,session_id,role,content,created_at) VALUES ($1,$2,'assistant',$3,$4)`,
+      [uuid(), id, welcomeMsg, now]
+    );
+    res.json({ session_id: id, welcome: welcomeMsg });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/livechat/message', async (req, res) => {
+  try {
+    const { session_id, content } = req.body;
+    if (!session_id || !content) return res.status(400).json({ error: 'session_id e content obrigatórios' });
+    const { rows: sess } = await pool.query(`SELECT * FROM livechat_sessions WHERE id=$1`, [session_id]);
+    if (!sess.length) return res.status(404).json({ error: 'Sessão não encontrada' });
+    const session = sess[0];
+
+    await pool.query(
+      `INSERT INTO livechat_messages (id,session_id,role,content,created_at) VALUES ($1,$2,'user',$3,$4)`,
+      [uuid(), session_id, content, nowStr()]
+    );
+
+    if (session.takeover) {
+      await pool.query(`UPDATE livechat_sessions SET last_at=$1, unread=unread+1 WHERE id=$2`, [nowStr(), session_id]);
+      return res.json({ pending: true });
+    }
+
+    const { rows: msgs } = await pool.query(
+      `SELECT role, content FROM livechat_messages WHERE session_id=$1 ORDER BY created_at ASC`,
+      [session_id]
+    );
+    const history = msgs.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }));
+
+    const pers  = await getIaConfig('personality') || 'profissional';
+    const raw   = await callMistral(history.slice(-20), pers);
+    const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\{.*?\}/s, '').trim();
+
+    const respId = uuid();
+    await pool.query(
+      `INSERT INTO livechat_messages (id,session_id,role,content,created_at) VALUES ($1,$2,'assistant',$3,$4)`,
+      [respId, session_id, clean, nowStr()]
+    );
+    await pool.query(`UPDATE livechat_sessions SET last_at=$1 WHERE id=$2`, [nowStr(), session_id]);
+
+    res.json({ message: clean, message_id: respId });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/livechat/sessions', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT s.*, (SELECT content FROM livechat_messages WHERE session_id=s.id ORDER BY created_at DESC LIMIT 1) AS last_message
+       FROM livechat_sessions s WHERE s.status='active' ORDER BY s.last_at DESC NULLS LAST`
+    );
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/livechat/:sessionId', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, role, content, created_at FROM livechat_messages WHERE session_id=$1 ORDER BY created_at ASC`,
+      [req.params.sessionId]
+    );
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/livechat/:sessionId/takeover', async (req, res) => {
+  try {
+    await pool.query(`UPDATE livechat_sessions SET takeover=TRUE, unread=0 WHERE id=$1`, [req.params.sessionId]);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/livechat/:sessionId/release', async (req, res) => {
+  try {
+    await pool.query(`UPDATE livechat_sessions SET takeover=FALSE WHERE id=$1`, [req.params.sessionId]);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/livechat/:sessionId/send', async (req, res) => {
+  try {
+    const { content } = req.body;
+    if (!content) return res.status(400).json({ error: 'content obrigatório' });
+    const msgId = uuid();
+    await pool.query(
+      `INSERT INTO livechat_messages (id,session_id,role,content,created_at) VALUES ($1,$2,'assistant',$3,$4)`,
+      [msgId, req.params.sessionId, content, nowStr()]
+    );
+    await pool.query(`UPDATE livechat_sessions SET last_at=$1, takeover=TRUE WHERE id=$2`, [nowStr(), req.params.sessionId]);
+    res.json({ ok: true, message_id: msgId });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/livechat/:sessionId/close', async (req, res) => {
+  try {
+    await pool.query(`UPDATE livechat_sessions SET status='closed' WHERE id=$1`, [req.params.sessionId]);
+    res.json({ ok: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
