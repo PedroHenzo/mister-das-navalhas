@@ -710,16 +710,16 @@ app.get('/api/subscriptions/check', async (req, res) => {
 // ── API: SIGNAL PAYMENT (sinal de agendamento) ────────────────────────────
 app.post('/api/payment/signal', async (req, res) => {
   try {
-    const { appointment_id, client_name, client_email } = req.body;
+    const { appointment_id, client_name, client_email, amount, item_title } = req.body;
     if (!appointment_id) return res.status(400).json({ error: 'appointment_id obrigatório' });
     const siteUrl = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
     const pref = await mpFetch('/checkout/preferences', {
       method: 'POST',
       body: {
         items: [{
-          title: 'Sinal de Agendamento — Mister das Navalhas',
+          title: item_title || 'Sinal de Agendamento — Mister das Navalhas',
           quantity: 1,
-          unit_price: 10.00,
+          unit_price: amount || 10.00,
           currency_id: 'BRL',
         }],
         payer: client_email ? { email: client_email, name: client_name } : undefined,

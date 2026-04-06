@@ -567,6 +567,10 @@ body.revealed footer { animation: siteReveal .8s cubic-bezier(.22,1,.36,1) both;
 .btn-pay:hover{background:var(--silver);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
 .btn-pay:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
 .signal-note{font-size:.68rem;color:var(--muted);margin-top:.85rem;line-height:1.6;}
+.signal-options{display:flex;flex-direction:column;gap:.5rem;}
+.signal-option-note{font-size:.68rem;color:var(--muted);margin:.1rem 0 .6rem;line-height:1.5;}
+.btn-pay-full{background:var(--dark3);color:var(--silver-l);border:1px solid var(--border);}
+.btn-pay-full:hover{background:var(--dark2);color:var(--white);border-color:var(--silver);}
 
 /* ── FOOTER SOCIAL ───────────────────────────────────────── */
 .f-right{display:flex;flex-direction:column;align-items:flex-end;gap:.85rem;}
@@ -1248,27 +1252,37 @@ async function renderSignalStep(){
     box.appendChild(actDiv)
   } else {
     const sv = S.services.find(x=>x.id===S.sel.s)||{}
+    const svPrice = sv.price ? Number(sv.price) : null
+    const svPriceFmt = svPrice ? svPrice.toLocaleString('pt-BR',{minimumFractionDigits:2}) : null
     box.innerHTML = `
       <div class="signal-box">
         <div class="signal-icon">💳</div>
-        <div class="signal-title">Sinal de Confirmação</div>
-        <div class="signal-desc">Para garantir seu horário, é cobrado um sinal de confirmação. O valor é descontado do total no dia do atendimento.</div>
-        <div class="signal-amount">R$ 10,00</div>
-        <div class="signal-period">sinal único · descontado no atendimento</div>
+        <div class="signal-title">Pagamento do Agendamento</div>
+        <div class="signal-desc">Escolha como deseja confirmar seu horário.</div>
       </div>
       <div class="summary-box" style="margin-top:0;margin-bottom:1.5rem;">
         <div class="sum-title">Resumo</div>
         <div class="sum-row"><span class="sum-k">Serviço</span><span class="sum-v">${sv.name||'—'}</span></div>
         <div class="sum-row"><span class="sum-k">Data</span><span class="sum-v">${ptd(S.sel.date||'---')}</span></div>
         <div class="sum-row"><span class="sum-k">Horário</span><span class="sum-v">${S.sel.time||'—'}</span></div>
-        <div class="sum-row sum-total"><span class="sum-k">Sinal agora</span><span class="sum-v">R$ 10,00</span></div>
+        ${svPriceFmt?`<div class="sum-row"><span class="sum-k">Valor do serviço</span><span class="sum-v">R$ ${svPriceFmt}</span></div>`:''}
       </div>
       <div class="form-err" id="ferr4" style="display:none;"></div>
-      <button class="btn-pay" id="paybtn" onclick="doBookAndPay()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-        Pagar Sinal · R$ 10,00
-      </button>
-      <p class="signal-note">Pagamento seguro via Mercado Pago. Após a confirmação do pagamento, seu agendamento será reservado automaticamente.</p>`
+      <div class="signal-options">
+        <button class="btn-pay" id="paybtn" onclick="doBookAndPay('signal')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+          Pagar apenas o Sinal · R$ 10,00
+        </button>
+        <p class="signal-option-note">Sinal descontado no total no dia do atendimento.</p>
+        ${svPriceFmt ? `
+        <button class="btn-pay btn-pay-full" id="paybtn-full" onclick="doBookAndPay('full')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+          Pagar o Serviço Completo · R$ ${svPriceFmt}
+        </button>
+        <p class="signal-option-note">Pague o valor total agora e chegue tranquilo na barbearia.</p>
+        ` : ''}
+      </div>
+      <p class="signal-note">Pagamento seguro via Mercado Pago. Após a confirmação, seu agendamento será reservado automaticamente.</p>`
   }
 }
 
@@ -1293,14 +1307,20 @@ async function doBook(isSub = false){
   resetBooking()
 }
 
-async function doBookAndPay(){
+async function doBookAndPay(mode='signal'){
   const name=document.getElementById('cn').value.trim()
   const phone=document.getElementById('cp').value.trim()
   const email=document.getElementById('ce').value.trim()
-  const btn=document.getElementById('paybtn')
+  const isFull = mode==='full'
+  const btn=document.getElementById(isFull?'paybtn-full':'paybtn')
   const err4=document.getElementById('ferr4')
   err4.style.display='none'
   btn.disabled=true; btn.textContent='Aguarde...'
+  const sv = S.services.find(x=>x.id===S.sel.s)||{}
+  const amount = isFull ? Number(sv.price||0) : 10.00
+  const itemTitle = isFull
+    ? `Pagamento — ${sv.name||'Serviço'} · Mister das Navalhas`
+    : 'Sinal de Agendamento — Mister das Navalhas'
   // Save appointment as pending_payment first
   let appt
   try {
@@ -1311,18 +1331,19 @@ async function doBookAndPay(){
     }})
   } catch(e) {
     err4.textContent='Erro ao reservar: '+e.message; err4.style.display='block'
-    btn.disabled=false; btn.textContent='Pagar Sinal · R$ 10,00'; return
+    btn.disabled=false; btn.textContent=isFull?'Pagar o Serviço Completo':'Pagar apenas o Sinal'; return
   }
   // Create MP preference
   let initPoint
   try {
     const pref = await apiFetch('/payment/signal', {method:'POST', body:{
-      appointment_id: appt.id, client_name: name, client_email: email||undefined
+      appointment_id: appt.id, client_name: name, client_email: email||undefined,
+      amount, item_title: itemTitle
     }})
     initPoint = pref.init_point
   } catch(e) {
     err4.textContent='Erro ao gerar pagamento: '+e.message; err4.style.display='block'
-    btn.disabled=false; btn.textContent='Pagar Sinal · R$ 10,00'; return
+    btn.disabled=false; btn.textContent=isFull?'Pagar o Serviço Completo':'Pagar apenas o Sinal'; return
   }
   // Redirect to MP
   window.location.href = initPoint
