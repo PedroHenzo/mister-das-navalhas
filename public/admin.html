@@ -1288,7 +1288,11 @@ async function openSlotEditor(key){
   ed.style.display='block'
   const bid=A.barber?.id
   const savedSlots=A.avail[key]
-  const currentSlots=savedSlots||defaultSlotsForDate(key)
+  const schedDefaults=defaultSlotsForDate(key)
+  // Se há slots salvos, filtra os que estão fora do horário do dia; senão usa os padrões
+  const currentSlots=savedSlots
+    ? savedSlots.filter(s=>schedDefaults.includes(s))
+    : schedDefaults
   A.avOccupied=[]
   const occData=await apiFetch(`/appointments?barber_id=${bid}&appt_date=${key}&status_neq=cancelled`).catch(()=>[])
   A.avOccupied=occData.map(r=>r.time_slot)
