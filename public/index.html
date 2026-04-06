@@ -1402,7 +1402,12 @@ async function renderCal(){
     const dt=new Date(S.cy,S.cm,d); const key=fd(dt)
     const isToday=dt.getTime()===today.getTime()
     const isPast=dt<today, isSel=key===S.sel.date
-    const hasSlots=!!S.avail[key]&&S.avail[key].length>0
+    let daySlots=S.avail[key]||[]
+    if(isToday&&daySlots.length>0){
+      const now2=new Date(); const nowM=now2.getHours()*60+now2.getMinutes()
+      daySlots=daySlots.filter(sl=>{const[h,m]=sl.split(':').map(Number);return h*60+m>nowM})
+    }
+    const hasSlots=daySlots.length>0
     let cls='cal-d'+(isSel?' sel':isPast?' past':hasSlots?' avail':' ')+(isToday&&!isSel?' today':'')
     const click=(!isPast&&hasSlots)?`onclick="selDate('${key}')"`:''
     h+=`<div class="${cls}" ${click}>${d}</div>`
@@ -1420,7 +1425,13 @@ async function selDate(key){
   document.getElementById('slots-lbl').textContent=`Horários disponíveis — ${ptd(key)}`
   ss.style.display='block'
   sg.innerHTML=`<div class="cal-loading"><span class="ring"></span> Carregando horários...</div>`
-  const allSlots=S.avail[key]||[]
+  const rawSlots=S.avail[key]||[]
+  // Filter out past slots when viewing today
+  const todayKey=fd(new Date())
+  const allSlots=key===todayKey?rawSlots.filter(sl=>{
+    const [h,m]=sl.split(':').map(Number)
+    const now=new Date(); return h*60+m>now.getHours()*60+now.getMinutes()
+  }):rawSlots
   const sv=S.services.find(x=>x.id===S.sel.s)||{}
   const needed=slotsCount(sv.duration_min||30)
   let booked=[]

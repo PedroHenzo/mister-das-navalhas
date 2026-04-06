@@ -961,6 +961,15 @@ async function apiFetch(path, opts = {}) {
 const MOCK = () => false
 
 const ALL_SLOTS = ['08:00','08:50','09:40','10:30','11:20','12:10','13:00','13:50','14:40','15:30','16:20','17:10','18:00']
+function defaultSlotsForDate(dateKey){
+  const dow=new Date(dateKey+'T12:00:00').getDay() // 0=Sun,2=Tue,6=Sat
+  let startTime
+  if(dow===2) startTime='10:00'
+  else if(dow===6) startTime='08:00'
+  else startTime='09:00'
+  const idx=ALL_SLOTS.indexOf(startTime)
+  return idx>=0?ALL_SLOTS.slice(idx):ALL_SLOTS
+}
 const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 const DNAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 const STATUS_LABELS = {pending:'Pendente',confirmed:'Confirmado',done:'Concluído',cancelled:'Cancelado'}
@@ -1278,7 +1287,8 @@ async function openSlotEditor(key){
   document.getElementById('av-ed-title').textContent=`Horários — ${ptd(key)}`
   ed.style.display='block'
   const bid=A.barber?.id
-  const currentSlots=A.avail[key]||[]
+  const savedSlots=A.avail[key]
+  const currentSlots=savedSlots||defaultSlotsForDate(key)
   A.avOccupied=[]
   const occData=await apiFetch(`/appointments?barber_id=${bid}&appt_date=${key}&status_neq=cancelled`).catch(()=>[])
   A.avOccupied=occData.map(r=>r.time_slot)
@@ -1292,7 +1302,11 @@ async function openSlotEditor(key){
     </div>`
   }).join('')
 }
-function checkAll(){document.querySelectorAll('.slot-chk:not(.occupied) input').forEach(cb=>cb.checked=true)}
+function checkAll(){
+  const key=A.avSelDate
+  const defaults=key?defaultSlotsForDate(key):ALL_SLOTS
+  document.querySelectorAll('.slot-chk:not(.occupied) input').forEach(cb=>cb.checked=defaults.includes(cb.value))
+}
 function uncheckAll(){document.querySelectorAll('.slot-chk:not(.occupied) input').forEach(cb=>cb.checked=false)}
 
 async function saveAvailSlots(){
