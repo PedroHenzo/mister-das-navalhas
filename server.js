@@ -102,6 +102,18 @@ async function initDb() {
     `);
 
     await client.query(`
+      CREATE TABLE IF NOT EXISTS oauth_tokens (
+        id            TEXT PRIMARY KEY DEFAULT 'mp',
+        access_token  TEXT,
+        refresh_token TEXT,
+        user_id       TEXT,
+        scope         TEXT,
+        expires_at    TEXT,
+        updated_at    TEXT NOT NULL
+      );
+    `);
+
+    await client.query(`
       CREATE TABLE IF NOT EXISTS plans (
         id           TEXT PRIMARY KEY,
         mp_plan_id   TEXT,
@@ -317,9 +329,19 @@ app.post('/api/barber_availability', async (req, res) => {
 });
 
 // ── HELPERS MP ─────────────────────────────────────────────────────────────
+async function getMpToken() {
+  // 1. Prefer OAuth token stored in DB
+  try {
+    const { rows } = await pool.query(`SELECT access_token FROM oauth_tokens WHERE id='mp' AND access_token IS NOT NULL`);
+    if (rows[0]?.access_token) return rows[0].access_token;
+  } catch (_) {}
+  // 2. Fallback to env var
+  if (process.env.MP_ACCESS_TOKEN) return process.env.MP_ACCESS_TOKEN;
+  throw new Error('Mercado Pago não conectado. Acesse Admin → Integrações para autorizar.');
+}
+
 async function mpFetch(path, opts = {}) {
-  const token = process.env.MP_ACCESS_TOKEN;
-  if (!token) throw new Error('MP_ACCESS_TOKEN não configurado');
+  const token = await getMpToken();
   const res = await fetch('https://api.mercadopago.com' + path, {
     ...opts,
     headers: {
@@ -333,6 +355,90 @@ async function mpFetch(path, opts = {}) {
   if (!res.ok) throw new Error(json.message || json.error || `MP API ${res.status}`);
   return json;
 }
+
+// ── OAUTH: MERCADO PAGO ────────────────────────────────────────────────────
+// GET /auth/mercadopago  →  redireciona para tela de autorização do MP
+app.get('/auth/mercadopago', (req, res) => {
+  const clientId   = process.env.MP_CLIENT_ID;
+  const siteUrl    = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
+  const redirectUri = `${siteUrl}/auth/mercadopago/callback`;
+  if (!clientId) return res.status(500).send('MP_CLIENT_ID não configurado no servidor.');
+  const url = `https://auth.mercadopago.com/authorization?client_id=${clientId}&response_type=code&platform_id=mp&redirect_uri=${encodeURIComponent(redirectUri)}`;
+  res.redirect(url);
+});
+
+// GET /auth/mercadopago/callback  →  troca code por access_token
+app.get('/auth/mercadopago/callback', async (req, res) => {
+  const { code, error } = req.query;
+  const siteUrl    = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
+  const redirectUri = `${siteUrl}/auth/mercadopago/callback`;
+  if (error || !code) {
+    console.error('OAuth MP erro:', error);
+    return res.redirect('/admin.html?mp_oauth=error');
+  }
+  try {
+    const resp = await fetch('https://api.mercadopago.com/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        client_id:     process.env.MP_CLIENT_ID,
+        client_secret: process.env.MP_CLIENT_SECRET,
+        grant_type:    'authorization_code',
+        code,
+        redirect_uri:  redirectUri,
+      }),
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.access_token) {
+      console.error('OAuth MP token error:', data);
+      return res.redirect('/admin.html?mp_oauth=error');
+    }
+    const expiresAt = data.expires_in
+      ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+      : null;
+    await pool.query(`
+      INSERT INTO oauth_tokens (id, access_token, refresh_token, user_id, scope, expires_at, updated_at)
+      VALUES ('mp', $1, $2, $3, $4, $5, $6)
+      ON CONFLICT (id) DO UPDATE SET
+        access_token  = EXCLUDED.access_token,
+        refresh_token = EXCLUDED.refresh_token,
+        user_id       = EXCLUDED.user_id,
+        scope         = EXCLUDED.scope,
+        expires_at    = EXCLUDED.expires_at,
+        updated_at    = EXCLUDED.updated_at
+    `, [data.access_token, data.refresh_token || null, String(data.user_id || ''), data.scope || '', expiresAt, nowStr()]);
+    console.log('✅ OAuth MP conectado. user_id:', data.user_id);
+    res.redirect('/admin.html?mp_oauth=success');
+  } catch (e) {
+    console.error('Erro callback OAuth MP:', e.message);
+    res.redirect('/admin.html?mp_oauth=error');
+  }
+});
+
+// GET /api/mp/status  →  retorna status da conexão OAuth
+app.get('/api/mp/status', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`SELECT user_id, scope, expires_at, updated_at FROM oauth_tokens WHERE id='mp'`);
+    if (!rows.length || !rows[0]) return res.json({ connected: false });
+    res.json({ connected: true, user_id: rows[0].user_id, scope: rows[0].scope, expires_at: rows[0].expires_at, updated_at: rows[0].updated_at });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE /api/mp/disconnect  →  revoga e remove token
+app.delete('/api/mp/disconnect', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`SELECT access_token FROM oauth_tokens WHERE id='mp'`);
+    if (rows[0]?.access_token) {
+      // Best-effort revoke on MP side
+      await fetch(`https://api.mercadopago.com/oauth/token`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${rows[0].access_token}`, 'Content-Type': 'application/json' },
+      }).catch(() => {});
+    }
+    await pool.query(`DELETE FROM oauth_tokens WHERE id='mp'`);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
 
 // ── API: PLANS ─────────────────────────────────────────────────────────────
 app.get('/api/plans', async (req, res) => {

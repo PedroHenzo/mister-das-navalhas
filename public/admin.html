@@ -633,28 +633,36 @@ tr:hover td{background:rgba(200,200,200,.02);}
   <p class="page-sub">Conecte serviços externos à sua barbearia.</p>
   <div class="int-grid">
 
-    <!-- MERCADO PAGO -->
+    <!-- MERCADO PAGO OAuth -->
     <div class="int-card">
       <div class="int-card-top">
         <div class="int-card-icon">💳</div>
         <div>
           <div class="int-card-title">Mercado Pago</div>
-          <span class="int-status int-status-off" id="mp-status"><span class="int-status-dot"></span>Não conectado</span>
+          <span class="int-status int-status-off" id="mp-status"><span class="int-status-dot"></span>Verificando...</span>
         </div>
       </div>
-      <p class="int-card-desc">Receba pagamentos online pelo Mercado Pago. Os clientes poderão pagar no momento do agendamento via Pix, cartão de crédito ou débito.</p>
-      <div class="int-form">
-        <div class="fg"><label class="flabel">Access Token de Produção</label><input class="fi" type="password" id="mp-token" placeholder="APP_USR-…" autocomplete="off"/></div>
-        <div class="fg"><label class="flabel">Public Key</label><input class="fi" type="text" id="mp-pubkey" placeholder="APP_USR-…"/></div>
-        <div class="int-save-ok" id="mp-ok">✓ Credenciais salvas com sucesso!</div>
-        <div class="int-save-err" id="mp-err"></div>
-        <div class="add-actions">
-          <button class="btn-primary" onclick="saveMpCreds()">Salvar & Ativar</button>
-          <button class="btn-sec" onclick="clearMpCreds()">Limpar</button>
+      <p class="int-card-desc">Conecte sua conta do Mercado Pago via OAuth para habilitar cobranças de sinal, planos de assinatura e pagamentos automáticos.</p>
+
+      <!-- Estado: não conectado -->
+      <div id="mp-disconnected">
+        <a class="btn-primary" id="mp-oauth-btn" href="/auth/mercadopago" style="display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;margin-bottom:.85rem;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          Conectar com Mercado Pago
+        </a>
+        <div style="font-size:.7rem;color:var(--muted);line-height:1.6;">
+          Você será redirecionado para o Mercado Pago para autorizar o acesso. Nenhuma senha é compartilhada com este sistema.
         </div>
       </div>
-      <div style="margin-top:1.1rem;font-size:.72rem;color:var(--muted);line-height:1.6;">
-        Acesse <strong style="color:var(--silver-l);">Mercado Pago Developers</strong> → Suas integrações → Credenciais de produção para obter as chaves.
+
+      <!-- Estado: conectado -->
+      <div id="mp-connected" style="display:none;">
+        <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.18);padding:1rem 1.2rem;margin-bottom:1rem;">
+          <div style="font-size:.72rem;color:var(--ok);font-weight:500;margin-bottom:.3rem;">✓ Conta conectada com sucesso</div>
+          <div style="font-size:.7rem;color:var(--muted);">User ID: <span id="mp-user-id" style="color:var(--silver-l);"></span></div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.15rem;">Conectado em: <span id="mp-updated-at" style="color:var(--silver-l);"></span></div>
+        </div>
+        <button class="btn-sec" style="border-color:rgba(248,113,113,.3);color:var(--danger);" onclick="disconnectMp()">Desconectar conta</button>
       </div>
     </div>
 
@@ -1525,12 +1533,49 @@ function renderReports(){
 ══════════════════════════════════════════ */
 const INT_KEY = 'mdn_integrations'
 
-function loadIntCreds(){
+async function loadIntCreds(){
+  // Mercado Pago: consulta status OAuth na API
+  await loadMpStatus()
+  // Z-API: ainda via localStorage
   try{
     const d = JSON.parse(localStorage.getItem(INT_KEY)||'{}')
-    if(d.mp_token){ document.getElementById('mp-token').value=d.mp_token; document.getElementById('mp-pubkey').value=d.mp_pubkey||''; setIntStatus('mp',true) }
     if(d.zapi_id){ document.getElementById('zapi-id').value=d.zapi_id; document.getElementById('zapi-token').value=d.zapi_token||''; setIntStatus('zapi',true) }
   }catch(e){}
+}
+
+async function loadMpStatus(){
+  try {
+    const data = await apiFetch('/mp/status')
+    if(data.connected){
+      setIntStatus('mp', true)
+      const uid = document.getElementById('mp-user-id')
+      const upd = document.getElementById('mp-updated-at')
+      if(uid) uid.textContent = data.user_id || '—'
+      if(upd) upd.textContent = data.updated_at ? data.updated_at.slice(0,16).replace('T',' ') : '—'
+      const disc = document.getElementById('mp-disconnected')
+      const conn = document.getElementById('mp-connected')
+      if(disc) disc.style.display = 'none'
+      if(conn) conn.style.display = 'block'
+    } else {
+      setIntStatus('mp', false)
+      const disc = document.getElementById('mp-disconnected')
+      const conn = document.getElementById('mp-connected')
+      if(disc) disc.style.display = 'block'
+      if(conn) conn.style.display = 'none'
+    }
+  } catch(e) {
+    setIntStatus('mp', false)
+  }
+}
+
+async function disconnectMp(){
+  if(!confirm('Deseja desconectar sua conta do Mercado Pago?')) return
+  try {
+    await apiFetch('/mp/disconnect', {method:'DELETE'})
+    await loadMpStatus()
+  } catch(e) {
+    alert('Erro ao desconectar: '+e.message)
+  }
 }
 
 function setIntStatus(key, on){
@@ -1540,25 +1585,26 @@ function setIntStatus(key, on){
   el.innerHTML = `<span class="int-status-dot"></span>${on?'Conectado':'Não conectado'}`
 }
 
-function saveMpCreds(){
-  const token = document.getElementById('mp-token').value.trim()
-  const pubkey = document.getElementById('mp-pubkey').value.trim()
-  const ok = document.getElementById('mp-ok'), err = document.getElementById('mp-err')
-  ok.style.display='none'; err.style.display='none'
-  if(!token||!pubkey){ err.textContent='Preencha o Access Token e a Public Key.'; err.style.display='block'; return }
-  const d = JSON.parse(localStorage.getItem(INT_KEY)||'{}')
-  localStorage.setItem(INT_KEY, JSON.stringify({...d, mp_token:token, mp_pubkey:pubkey}))
-  setIntStatus('mp', true)
-  ok.style.display='block'; setTimeout(()=>ok.style.display='none',2500)
-}
-function clearMpCreds(){
-  document.getElementById('mp-token').value=''
-  document.getElementById('mp-pubkey').value=''
-  const d=JSON.parse(localStorage.getItem(INT_KEY)||'{}')
-  delete d.mp_token; delete d.mp_pubkey
-  localStorage.setItem(INT_KEY,JSON.stringify(d))
-  setIntStatus('mp',false)
-}
+// Verifica retorno do OAuth na URL (?mp_oauth=success|error)
+;(function checkOAuthReturn(){
+  const params = new URLSearchParams(window.location.search)
+  const status = params.get('mp_oauth')
+  if(!status) return
+  history.replaceState(null,'', window.location.pathname)
+  if(status==='success'){
+    // Força abertura da aba de integrações após login
+    document.addEventListener('DOMContentLoaded', ()=>{
+      if(sessionStorage.getItem('mdn_admin')==='1'){
+        const item = document.querySelector('.sb-item[onclick*="integracoes"]')
+        if(item){ showPage('integracoes', item) }
+      }
+    }, {once:true})
+  } else if(status==='error'){
+    document.addEventListener('DOMContentLoaded', ()=>{
+      alert('Erro ao conectar com o Mercado Pago. Verifique as configurações e tente novamente.')
+    }, {once:true})
+  }
+})()
 
 function saveZapiCreds(){
   const id2 = document.getElementById('zapi-id').value.trim()
