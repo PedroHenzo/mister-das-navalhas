@@ -1121,12 +1121,12 @@ function slotsCount(duration_min){return Math.ceil((duration_min||50)/50)}
 
 // Filtra slots de acordo com o horário de início do barbeiro por dia da semana
 // Ter(2)→10:00 | Sáb(6)→08:00 | demais→09:00
-const _SLOT_ORDER=['08:00','08:50','09:40','10:30','11:20','12:10','13:00','13:50','14:40','15:30','16:20','17:10','18:00']
+// Filtra slots fora do horário de início do barbeiro por dia (50-min intervals)
+// Ter(2)→10:00 | Sáb(6)→08:00 | demais→09:00
 function applyScheduleFilter(slots, dateKey){
   const dow=new Date(dateKey+'T12:00:00').getDay()
-  const start=dow===2?'10:00':dow===6?'08:00':'09:00'
-  const minIdx=_SLOT_ORDER.indexOf(start)
-  return slots.filter(s=>{const i=_SLOT_ORDER.indexOf(s);return i<0||i>=minIdx})
+  const startMins=dow===2?600:dow===6?480:540
+  return slots.filter(s=>{const[h,m]=s.split(':').map(Number);return h*60+m>=startMins})
 }
 
 // Lista todos os slots bloqueados por um agendamento (incluindo consecutivos)
