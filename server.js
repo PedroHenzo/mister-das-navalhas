@@ -737,6 +737,15 @@ app.post('/api/payment/signal', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── ADMIN LOGIN ───────────────────────────────────────────────────────────
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  const adminPass = process.env.ADMIN_PASSWORD;
+  if (!adminPass) return res.status(500).json({ error: 'Senha não configurada no servidor.' });
+  if (password === adminPass) return res.json({ ok: true });
+  res.status(401).json({ error: 'Senha incorreta.' });
+});
+
 // ── PAGES ─────────────────────────────────────────────────────────────────
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/',      (_, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
