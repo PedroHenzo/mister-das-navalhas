@@ -408,11 +408,70 @@ app.get('/auth/mercadopago/callback', async (req, res) => {
         updated_at    = EXCLUDED.updated_at
     `, [data.access_token, data.refresh_token || null, String(data.user_id || ''), data.scope || '', expiresAt, nowStr()]);
     console.log('✅ OAuth MP conectado. user_id:', data.user_id);
+    // Sincroniza planos sem init_point em background
+    syncPlansWithMp().catch(e => console.warn('Sync planos MP:', e.message));
     res.redirect('/admin.html?mp_oauth=success');
   } catch (e) {
     console.error('Erro callback OAuth MP:', e.message);
     res.redirect('/admin.html?mp_oauth=error');
   }
+});
+
+// Helper: cria/atualiza planos no MP e salva init_point no banco
+async function syncPlansWithMp() {
+  const siteUrl = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
+  const { rows: plans } = await pool.query(`SELECT * FROM plans WHERE active = TRUE`);
+  for (const plan of plans) {
+    try {
+      let mp_plan_id = plan.mp_plan_id;
+      let init_point = plan.init_point;
+      if (!mp_plan_id) {
+        // Cria o plano no MP
+        const mpRes = await mpFetch('/preapproval_plan', {
+          method: 'POST',
+          body: {
+            reason: plan.name,
+            auto_recurring: {
+              frequency: 1,
+              frequency_type: 'months',
+              transaction_amount: parseFloat(plan.price),
+              currency_id: 'BRL',
+            },
+            payment_methods_allowed: { payment_types: [{ id: 'credit_card' }] },
+            back_url: siteUrl + '/?payment=success',
+          },
+        });
+        mp_plan_id = mpRes.id || null;
+        init_point = mpRes.init_point || null;
+        console.log(`✅ Plano "${plan.name}" criado no MP:`, mp_plan_id);
+      } else if (!init_point) {
+        // Plano já existe no MP, busca o init_point
+        const mpRes = await mpFetch(`/preapproval_plan/${mp_plan_id}`).catch(() => null);
+        init_point = mpRes?.init_point || null;
+      }
+      if (mp_plan_id || init_point) {
+        await pool.query(
+          `UPDATE plans SET mp_plan_id=$1, init_point=$2 WHERE id=$3`,
+          [mp_plan_id, init_point, plan.id]
+        );
+      }
+    } catch (e) {
+      console.warn(`Erro ao sincronizar plano "${plan.name}":`, e.message);
+    }
+  }
+  console.log('🔄 Sync de planos MP concluído.');
+}
+
+// POST /api/plans/sync  →  sincroniza todos os planos com o MP
+app.post('/api/plans/sync', async (req, res) => {
+  try {
+    await syncPlansWithMp();
+    const { rows } = await pool.query(`SELECT * FROM plans WHERE active=TRUE ORDER BY price ASC`);
+    res.json({
+      success: true,
+      plans: rows.map(r => ({ ...r, features: typeof r.features === 'string' ? JSON.parse(r.features) : r.features }))
+    });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // GET /api/mp/status  →  retorna status da conexão OAuth

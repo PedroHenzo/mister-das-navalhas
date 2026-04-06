@@ -662,7 +662,12 @@ tr:hover td{background:rgba(200,200,200,.02);}
           <div style="font-size:.7rem;color:var(--muted);">User ID: <span id="mp-user-id" style="color:var(--silver-l);"></span></div>
           <div style="font-size:.7rem;color:var(--muted);margin-top:.15rem;">Conectado em: <span id="mp-updated-at" style="color:var(--silver-l);"></span></div>
         </div>
-        <button class="btn-sec" style="border-color:rgba(248,113,113,.3);color:var(--danger);" onclick="disconnectMp()">Desconectar conta</button>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
+          <button class="btn-primary" id="mp-sync-btn" onclick="syncMpPlans()">↻ Sincronizar Planos</button>
+          <button class="btn-sec" style="border-color:rgba(248,113,113,.3);color:var(--danger);" onclick="disconnectMp()">Desconectar conta</button>
+        </div>
+        <div id="mp-sync-ok" style="display:none;font-size:.75rem;color:var(--ok);margin-top:.6rem;">✓ Planos sincronizados! Os links de assinatura foram atualizados no site.</div>
+        <div id="mp-sync-err" style="display:none;font-size:.75rem;color:var(--danger);margin-top:.6rem;"></div>
       </div>
     </div>
 
@@ -1578,6 +1583,23 @@ async function disconnectMp(){
   }
 }
 
+async function syncMpPlans(){
+  const btn = document.getElementById('mp-sync-btn')
+  const ok  = document.getElementById('mp-sync-ok')
+  const err = document.getElementById('mp-sync-err')
+  ok.style.display='none'; err.style.display='none'
+  if(btn){ btn.disabled=true; btn.textContent='Sincronizando...' }
+  try {
+    await apiFetch('/plans/sync', {method:'POST'})
+    ok.style.display='block'
+    setTimeout(()=>ok.style.display='none', 4000)
+  } catch(e) {
+    err.textContent='Erro: '+e.message; err.style.display='block'
+  } finally {
+    if(btn){ btn.disabled=false; btn.textContent='↻ Sincronizar Planos' }
+  }
+}
+
 function setIntStatus(key, on){
   const el = document.getElementById(key+'-status')
   if(!el) return
@@ -1592,11 +1614,12 @@ function setIntStatus(key, on){
   if(!status) return
   history.replaceState(null,'', window.location.pathname)
   if(status==='success'){
-    // Força abertura da aba de integrações após login
     document.addEventListener('DOMContentLoaded', ()=>{
       if(sessionStorage.getItem('mdn_admin')==='1'){
         const item = document.querySelector('.sb-item[onclick*="integracoes"]')
         if(item){ showPage('integracoes', item) }
+        // Sincroniza planos automaticamente após conexão
+        syncMpPlans().catch(()=>{})
       }
     }, {once:true})
   } else if(status==='error'){
