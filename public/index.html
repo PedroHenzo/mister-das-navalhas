@@ -1119,6 +1119,16 @@ function goTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth'}
 // Calcula quantos slots adicionais o serviço ocupa (além do 1o)
 function slotsCount(duration_min){return Math.ceil((duration_min||50)/50)}
 
+// Filtra slots de acordo com o horário de início do barbeiro por dia da semana
+// Ter(2)→10:00 | Sáb(6)→08:00 | demais→09:00
+const _SLOT_ORDER=['08:00','08:50','09:40','10:30','11:20','12:10','13:00','13:50','14:40','15:30','16:20','17:10','18:00']
+function applyScheduleFilter(slots, dateKey){
+  const dow=new Date(dateKey+'T12:00:00').getDay()
+  const start=dow===2?'10:00':dow===6?'08:00':'09:00'
+  const minIdx=_SLOT_ORDER.indexOf(start)
+  return slots.filter(s=>{const i=_SLOT_ORDER.indexOf(s);return i<0||i>=minIdx})
+}
+
 // Lista todos os slots bloqueados por um agendamento (incluindo consecutivos)
 function blockedSlots(slot, duration_min, allSlots){
   const idx = allSlots.indexOf(slot)
@@ -1402,7 +1412,7 @@ async function renderCal(){
     const dt=new Date(S.cy,S.cm,d); const key=fd(dt)
     const isToday=dt.getTime()===today.getTime()
     const isPast=dt<today, isSel=key===S.sel.date
-    let daySlots=S.avail[key]||[]
+    let daySlots=applyScheduleFilter(S.avail[key]||[],key)
     if(isToday&&daySlots.length>0){
       const now2=new Date(); const nowM=now2.getHours()*60+now2.getMinutes()
       daySlots=daySlots.filter(sl=>{const[h,m]=sl.split(':').map(Number);return h*60+m>nowM})
@@ -1426,12 +1436,14 @@ async function selDate(key){
   ss.style.display='block'
   sg.innerHTML=`<div class="cal-loading"><span class="ring"></span> Carregando horários...</div>`
   const rawSlots=S.avail[key]||[]
+  // Filter by barbeiro schedule per day of week
+  const schedSlots=applyScheduleFilter(rawSlots,key)
   // Filter out past slots when viewing today
   const todayKey=fd(new Date())
-  const allSlots=key===todayKey?rawSlots.filter(sl=>{
+  const allSlots=key===todayKey?schedSlots.filter(sl=>{
     const [h,m]=sl.split(':').map(Number)
     const now=new Date(); return h*60+m>now.getHours()*60+now.getMinutes()
-  }):rawSlots
+  }):schedSlots
   const sv=S.services.find(x=>x.id===S.sel.s)||{}
   const needed=slotsCount(sv.duration_min||30)
   let booked=[]
