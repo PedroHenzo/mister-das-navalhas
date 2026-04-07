@@ -3,6 +3,7 @@ FROM node:22-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
+    git \
     chromium \
     ca-certificates \
     fonts-liberation \
