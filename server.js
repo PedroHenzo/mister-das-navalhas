@@ -868,6 +868,111 @@ let waQrData = null;           // base64 data URL da imagem do QR
 let waInitAttempts = 0;
 const WA_MAX_ATTEMPTS = 3;
 
+// ── WA MESSAGE QUEUE ──────────────────────────────────────────────────────
+let waActivePhone     = null;
+let waQueue           = [];
+const waPending       = new Map(); // phone → [{phone,senderName,textMsg,msgObj}]
+let waInactivityTimer = null;
+const WA_INACTIVITY_MS = 60_000;
+
+function randBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function delay(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+function enqueueWA(phone, senderName, textMsg, msgObj) {
+  if (!waPending.has(phone)) waPending.set(phone, []);
+  waPending.get(phone).push({ phone, senderName, textMsg, msgObj });
+
+  if (waActivePhone === phone) {
+    resetWAInactivityTimer();
+    processNextWAMessage(phone);
+    return;
+  }
+
+  if (waActivePhone === null) {
+    startWAServing(phone);
+    return;
+  }
+
+  if (!waQueue.includes(phone)) {
+    waQueue.push(phone);
+    console.log(`📥 [${phone}] aguardando na fila — posição ${waQueue.length}`);
+  } else {
+    console.log(`📥 [${phone}] nova msg acumulada (já na fila)`);
+  }
+}
+
+function startWAServing(phone) {
+  waActivePhone = phone;
+  console.log(`▶️  Iniciando atendimento [${phone}]`);
+  resetWAInactivityTimer();
+  processNextWAMessage(phone);
+}
+
+function resetWAInactivityTimer() {
+  if (waInactivityTimer) clearTimeout(waInactivityTimer);
+  waInactivityTimer = setTimeout(() => {
+    console.log(`⏱️  Timeout de inatividade [${waActivePhone}] — avançando fila`);
+    advanceWAQueue();
+  }, WA_INACTIVITY_MS);
+}
+
+function advanceWAQueue() {
+  if (waInactivityTimer) { clearTimeout(waInactivityTimer); waInactivityTimer = null; }
+  waActivePhone = null;
+  if (waQueue.length === 0) {
+    console.log('✅ Fila WA vazia — aguardando novos clientes');
+    return;
+  }
+  const next = waQueue.shift();
+  console.log(`⏭️  Próximo da fila: [${next}] (restam ${waQueue.length})`);
+  startWAServing(next);
+}
+
+function processNextWAMessage(phone) {
+  if (waActivePhone !== phone) return;
+  const items = waPending.get(phone);
+  if (!items || items.length === 0) return;
+
+  const item = items.shift();
+  if (items.length === 0) waPending.delete(phone);
+
+  runWAMessageItem(item)
+    .then(() => {
+      if (waPending.has(phone) && waActivePhone === phone)
+        setTimeout(() => processNextWAMessage(phone), randBetween(500, 1200));
+    })
+    .catch(err => {
+      console.error(`❌ Erro WA [${phone}]:`, err.stack || err.message || err);
+      if (waPending.has(phone) && waActivePhone === phone)
+        setTimeout(() => processNextWAMessage(phone), randBetween(500, 1200));
+    });
+}
+
+async function runWAMessageItem({ phone, senderName, textMsg, msgObj }) {
+  await delay(randBetween(800, 2000));
+  await processWAMessage(phone, senderName, textMsg, msgObj);
+}
+
+async function waTypingAndSend(phone, text, msgObj) {
+  const ms = Math.min(randBetween(text.length * 40, text.length * 60), 7000);
+  let chat = null;
+  if (msgObj) {
+    try { chat = await msgObj.getChat(); } catch {}
+  } else if (waClient && waStatus === 'connected') {
+    try { chat = await waClient.getChatById(`${phone}@c.us`); } catch {}
+  }
+  try { if (chat) await chat.sendStateTyping(); } catch {}
+  await delay(ms);
+  try { if (chat) await chat.clearState(); } catch {}
+  await delay(randBetween(150, 350));
+  await waSend(phone, text);
+}
+
 function initWAClient() {
   if (waInitAttempts >= WA_MAX_ATTEMPTS) {
     console.warn(`⚠️ WhatsApp: máximo de ${WA_MAX_ATTEMPTS} tentativas atingido. Use o botão no painel para reconectar.`);
@@ -922,25 +1027,33 @@ function initWAClient() {
   waClient.on('disconnected', (reason) => {
     waStatus = 'disconnected';
     waQrData = null;
+    waClient = null;
+    // Limpa fila ao desconectar
+    waQueue = [];
+    waPending.clear();
+    waActivePhone = null;
+    if (waInactivityTimer) { clearTimeout(waInactivityTimer); waInactivityTimer = null; }
     console.log('⚠️ WhatsApp desconectado:', reason);
   });
 
   waClient.on('message', async (msg) => {
     try {
+      if (!waClient || waStatus !== 'connected') return;
       if (msg.fromMe) return;
-      const chat = await msg.getChat();
-      if (chat.isGroup) return;
+      if (msg.from.endsWith('@g.us') || msg.from.endsWith('@broadcast')) return;
 
       const iaAtiva = await getIaConfig('ia_ativa');
       if (iaAtiva !== 'true') return;
 
-      const phone = msg.from.replace('@c.us', '');
+      const phone = msg.from.replace('@c.us', '').replace(/\D/g, '');
+      if (!phone) return;
       const textMsg = msg.body || '';
-      if (!textMsg) return;
+      if (!textMsg.trim()) return;
       const senderName = msg._data?.notifyName || phone;
 
-      await processWAMessage(phone, senderName, textMsg);
-    } catch (e) { console.error('WA message handler:', e.message); }
+      console.log(`📩 [${phone}] "${textMsg.substring(0, 50)}"`);
+      enqueueWA(phone, senderName, textMsg, msg);
+    } catch (e) { console.error('WA message handler:', e.stack || e.message || e); }
   });
 
   waClient.initialize().catch(e => {
@@ -973,7 +1086,8 @@ async function waSend(phone, message) {
 }
 
 // Lógica compartilhada de processamento de mensagem WA (usada por ww.js e pelo webhook Z-API)
-async function processWAMessage(phone, senderName, textMsg) {
+// msgObj: objeto Message do whatsapp-web.js (opcional) — usado para typing indicator
+async function processWAMessage(phone, senderName, textMsg, msgObj) {
   const { rows } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
   let conv = rows[0];
   if (!conv) {
@@ -999,12 +1113,25 @@ async function processWAMessage(phone, senderName, textMsg) {
   const history = typeof conv.history === 'string' ? JSON.parse(conv.history) : conv.history;
   history.push({ role: 'user', content: textMsg });
 
+  // Mostra "digitando..." enquanto chama a IA
+  let chat = null;
+  if (msgObj) {
+    try { chat = await msgObj.getChat(); } catch {}
+  } else if (waClient && waStatus === 'connected') {
+    try { chat = await waClient.getChatById(`${phone}@c.us`); } catch {}
+  }
+  try { if (chat) await chat.sendStateTyping(); } catch {}
+
   const pers  = await getIaConfig('personality') || 'profissional';
   const raw   = await callMistral(history.slice(-20), pers);
+
+  try { if (chat) await chat.clearState(); } catch {}
+
   const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\{.*?\}/s, '').trim();
   history.push({ role: 'assistant', content: clean });
 
-  await waSend(phone, clean);
+  // Envia com delay simulando digitação (proporcional ao tamanho da resposta)
+  await waTypingAndSend(phone, clean, msgObj);
 
   await pool.query(
     `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3, name=$4, unread=0 WHERE phone=$5`,
@@ -1026,7 +1153,7 @@ async function processWAMessage(phone, senderName, textMsg) {
            VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed','whatsapp',$8)`,
           [apptId, brs[0].id, srs[0].id, apptData.client_name, phone, apptData.appt_date, apptData.time_slot, nowStr()]
         );
-        await waSend(phone, `✅ Agendamento confirmado!\n📅 ${apptData.appt_date} às ${apptData.time_slot}\n💈 ${apptData.service}`);
+        await waTypingAndSend(phone, `✅ Agendamento confirmado!\n📅 ${apptData.appt_date} às ${apptData.time_slot}\n💈 ${apptData.service}`, msgObj);
       }
     } catch (e) { console.warn('Auto-book:', e.message); }
   }
