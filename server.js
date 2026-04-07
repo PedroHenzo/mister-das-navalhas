@@ -154,7 +154,7 @@ async function initDb() {
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('ia_ativa','false') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('personality','profissional') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('welcome_msg','Olá! Bem-vindo à Mister das Navalhas 🪒 Como posso ajudar?') ON CONFLICT (key) DO NOTHING`);
-    await client.query(`INSERT INTO ia_config (key,value) VALUES ('auto_book','true') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('auto_book','true') ON CONFLICT (key) DO UPDATE SET value='true'`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('fora_horario','false') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('reativacao','false') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('reativ_days','30') ON CONFLICT (key) DO NOTHING`);
@@ -835,23 +835,30 @@ async function buildSystemPrompt(personality) {
   return `Você é a IA da barbearia "Mister das Navalhas", Jurujuba/Niterói-RJ. Barbeiro: ${barberName}.
 Estilo: ${persText}
 
-## SERVIÇOS
+## SERVIÇOS DISPONÍVEIS
 ${svcText}
 
-## HORÁRIOS
+## HORÁRIOS DE FUNCIONAMENTO
 - Terça: 10:00–16:30 | Quarta: 09:00–19:50 | Quinta: 09:00–17:20 | Sexta: 09:00–21:20 | Sábado: 08:00–20:30
 
-## O QUE VOCÊ PODE FAZER
-- Informar serviços, preços e horários
-- Tirar dúvidas sobre a barbearia
-- Auxiliar o cliente a agendar (colete: nome, serviço, data, horário)
-- Direcionar para o site: ${siteUrl}
+## FLUXO DE AGENDAMENTO
+Colete em ordem, uma etapa por vez:
+1. Nome do cliente
+2. Serviço desejado
+3. Data (confirme se é dia de funcionamento)
+4. Horário disponível
+5. Pagamento: pergunte se prefere pagar o *sinal de 50%* via PIX antecipado ou o *valor completo* adiantado
 
-## REGRAS
+Só confirme o agendamento quando TODOS os 5 dados estiverem coletados e o cliente confirmar.
+
+## REGRAS OBRIGATÓRIAS
+- SEMPRE escreva uma mensagem de texto para o cliente — NUNCA responda apenas com o token abaixo
 - Responda de forma curta (é WhatsApp/chat, não e-mail)
-- Nunca invente preços ou serviços fora da lista
-- Quando o cliente confirmar agendamento com todos os dados, finalize com:
-AGENDAMENTO_SOLICITADO:{"client_name":"nome","service":"serviço","appt_date":"YYYY-MM-DD","time_slot":"HH:MM"}`;
+- Nunca invente preços ou serviços fora da lista acima
+- Se o cliente quiser agendar pelo site: ${siteUrl}
+- Ao confirmar o agendamento, escreva a confirmação ao cliente E logo após adicione o token numa linha separada:
+AGENDAMENTO_SOLICITADO:{"client_name":"NOME","service":"SERVIÇO","appt_date":"YYYY-MM-DD","time_slot":"HH:MM","payment":"sinal"}
+(use "sinal" ou "completo" conforme escolha do cliente)`;
 }
 
 async function callMistral(messages, personality) {
@@ -1165,24 +1172,37 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
     [JSON.stringify(history), clean, nowStr(), senderName, phone]
   );
 
-  // Auto-book
-  const apptMatch = raw.match(/AGENDAMENTO_SOLICITADO:(\{.*?\})/s);
-  const autoBook  = await getIaConfig('auto_book');
-  if (apptMatch && autoBook === 'true') {
-    try {
-      const apptData = JSON.parse(apptMatch[1]);
-      const { rows: brs } = await pool.query(`SELECT id FROM barbers WHERE active=TRUE LIMIT 1`);
-      const { rows: srs } = await pool.query(`SELECT id FROM services WHERE name ILIKE $1 LIMIT 1`, [`%${apptData.service}%`]);
-      if (brs.length && srs.length) {
-        const apptId = uuid();
-        await pool.query(
-          `INSERT INTO appointments (id,barber_id,service_id,client_name,client_phone,appt_date,time_slot,status,source,created_at)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed','whatsapp',$8)`,
-          [apptId, brs[0].id, srs[0].id, apptData.client_name, phone, apptData.appt_date, apptData.time_slot, nowStr()]
+  // Auto-book — cria o agendamento no sistema quando IA confirma
+  const apptMatch = raw.match(/AGENDAMENTO_SOLICITADO:\s*(\{[\s\S]*?\})/);
+  if (apptMatch) {
+    const autoBook = await getIaConfig('auto_book');
+    if (autoBook !== 'true') {
+      console.log(`[${phone}] Auto-book desabilitado — token ignorado`);
+    } else {
+      try {
+        const apptData = JSON.parse(apptMatch[1]);
+        console.log(`[${phone}] Auto-book:`, apptData);
+        const { rows: brs } = await pool.query(`SELECT id FROM barbers WHERE active=TRUE LIMIT 1`);
+        // busca serviço por correspondência parcial, case-insensitive
+        const { rows: srs } = await pool.query(
+          `SELECT id, name FROM services WHERE active=TRUE AND name ILIKE $1 LIMIT 1`,
+          [`%${apptData.service || ''}%`]
         );
-        await waTypingAndSend(phone, `✅ Agendamento confirmado!\n📅 ${apptData.appt_date} às ${apptData.time_slot}\n💈 ${apptData.service}`, msgObj);
-      }
-    } catch (e) { console.warn('Auto-book:', e.message); }
+        if (!brs.length) console.warn(`[${phone}] Auto-book: nenhum barbeiro ativo`);
+        else if (!srs.length) console.warn(`[${phone}] Auto-book: serviço não encontrado: "${apptData.service}"`);
+        else {
+          const apptId = uuid();
+          await pool.query(
+            `INSERT INTO appointments (id,barber_id,service_id,client_name,client_phone,appt_date,time_slot,status,source,created_at)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed','whatsapp',$8)
+             ON CONFLICT DO NOTHING`,
+            [apptId, brs[0].id, srs[0].id, apptData.client_name || senderName,
+             phone, apptData.appt_date, apptData.time_slot, nowStr()]
+          );
+          console.log(`[${phone}] Agendamento criado: ${apptData.appt_date} ${apptData.time_slot} — ${srs[0].name}`);
+        }
+      } catch (e) { console.warn(`[${phone}] Auto-book erro:`, e.message, '| raw:', raw.slice(-200)); }
+    }
   }
 }
 
