@@ -1254,14 +1254,54 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
         else if (!srs.length) console.warn(`[${phone}] Auto-book: serviço não encontrado: "${apptData.service}"`);
         else {
           const apptId = uuid();
+          const clientName = apptData.client_name || senderName;
+          const paymentType = apptData.payment || 'sinal'; // 'sinal' ou 'completo'
+
+          // status inicial: pending_payment até o MP confirmar
           await pool.query(
             `INSERT INTO appointments (id,barber_id,service_id,client_name,client_phone,appt_date,time_slot,status,source,created_at)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed','whatsapp',$8)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,'pending_payment','whatsapp',$8)
              ON CONFLICT DO NOTHING`,
-            [apptId, brs[0].id, srs[0].id, apptData.client_name || senderName,
-             phone, apptData.appt_date, apptData.time_slot, nowStr()]
+            [apptId, brs[0].id, srs[0].id, clientName, phone, apptData.appt_date, apptData.time_slot, nowStr()]
           );
-          console.log(`[${phone}] Agendamento criado: ${apptData.appt_date} ${apptData.time_slot} — ${srs[0].name}`);
+          console.log(`[${phone}] Agendamento criado (pending_payment): ${apptData.appt_date} ${apptData.time_slot} — ${srs[0].name}`);
+
+          // Gera link de pagamento Mercado Pago
+          try {
+            const { rows: svcRows } = await pool.query(`SELECT price FROM services WHERE id=$1`, [srs[0].id]);
+            const svcPrice = parseFloat(svcRows[0]?.price || 0);
+            const amount = paymentType === 'completo' ? svcPrice : 10.00;
+            const itemTitle = paymentType === 'completo'
+              ? `${srs[0].name} — ${apptData.appt_date} ${apptData.time_slot}`
+              : `Sinal de Agendamento — ${srs[0].name} — ${apptData.appt_date} ${apptData.time_slot}`;
+
+            const siteUrl = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
+            const pref = await mpFetch('/checkout/preferences', {
+              method: 'POST',
+              body: {
+                items: [{ title: itemTitle, quantity: 1, unit_price: amount, currency_id: 'BRL' }],
+                external_reference: apptId,
+                back_urls: {
+                  success: `${siteUrl}/?payment=success&appt=${apptId}`,
+                  failure: `${siteUrl}/?payment=failure&appt=${apptId}`,
+                  pending: `${siteUrl}/?payment=pending&appt=${apptId}`,
+                },
+                auto_return: 'approved',
+                statement_descriptor: 'MISTER DAS NAVALHAS',
+              },
+            });
+
+            const payLink = pref.init_point;
+            const label = paymentType === 'completo' ? `valor completo (R$${svcPrice.toFixed(2)})` : 'sinal (R$10,00)';
+            await waTypingAndSend(phone,
+              `💳 Para confirmar seu horário, realize o pagamento do ${label} pelo link abaixo:\n\n${payLink}\n\nAssim que o pagamento for confirmado, seu agendamento estará reservado! ✅`,
+              msgObj
+            );
+          } catch (payErr) {
+            console.warn(`[${phone}] Erro ao gerar link de pagamento:`, payErr.message);
+            // Se falhar o pagamento, pelo menos avança o status
+            await pool.query(`UPDATE appointments SET status='confirmed' WHERE id=$1`, [apptId]);
+          }
         }
       } catch (e) { console.warn(`[${phone}] Auto-book erro:`, e.message, '| raw:', raw.slice(-200)); }
     }
