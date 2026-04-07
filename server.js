@@ -1,9 +1,11 @@
-const express = require('express');
-const cors    = require('cors');
-const path    = require('path');
+const express  = require('express');
+const cors     = require('cors');
+const path     = require('path');
 const { Pool } = require('pg');
 const { Client: WAClient, LocalAuth } = require('whatsapp-web.js');
-const QRCode = require('qrcode');
+const QRCode   = require('qrcode');
+const axios    = require('axios');
+const FormData = require('form-data');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -856,9 +858,28 @@ Só confirme o agendamento quando TODOS os 5 dados estiverem coletados e o clien
 - Responda de forma curta (é WhatsApp/chat, não e-mail)
 - Nunca invente preços ou serviços fora da lista acima
 - Se o cliente quiser agendar pelo site: ${siteUrl}
+- O sinal é sempre R$10,00 independente do serviço — nunca mencione porcentagem
 - Ao confirmar o agendamento, escreva a confirmação ao cliente E logo após adicione o token numa linha separada:
 AGENDAMENTO_SOLICITADO:{"client_name":"NOME","service":"SERVIÇO","appt_date":"YYYY-MM-DD","time_slot":"HH:MM","payment":"sinal"}
 (use "sinal" ou "completo" conforme escolha do cliente)`;
+}
+
+// ── TRANSCRIÇÃO DE ÁUDIO (Voxtral via Mistral) ────────────────────────────
+async function transcribeAudio(audioBase64, mimeType) {
+  const apiKey = process.env.MISTRAL_API_KEY;
+  if (!apiKey) throw new Error('MISTRAL_API_KEY não configurada');
+  mimeType = mimeType || 'audio/ogg';
+  const buffer = Buffer.from(audioBase64, 'base64');
+  const ext = mimeType.split('/')[1]?.split(';')[0] || 'ogg';
+  const form = new FormData();
+  form.append('model', 'voxtral-mini-2507');
+  form.append('file', buffer, { filename: `audio.${ext}`, contentType: mimeType });
+  const res = await axios.post(
+    'https://api.mistral.ai/v1/audio/transcriptions',
+    form,
+    { headers: { Authorization: `Bearer ${apiKey}`, ...form.getHeaders() }, maxBodyLength: Infinity }
+  );
+  return res.data.text;
 }
 
 async function callMistral(messages, personality) {
@@ -1071,11 +1092,12 @@ function initWAClient() {
 
       const phone = msg.from.replace('@c.us', '').replace(/\D/g, '');
       if (!phone) return;
+      const isAudio = msg.type === 'ptt' || msg.type === 'audio';
       const textMsg = msg.body || '';
-      if (!textMsg.trim()) return;
+      if (!isAudio && !textMsg.trim()) return;
       const senderName = msg._data?.notifyName || phone;
 
-      console.log(`📩 [${phone}] "${textMsg.substring(0, 50)}"`);
+      console.log(`📩 [${phone}] tipo=${msg.type} "${textMsg.substring(0, 50)}"`);
       enqueueWA(phone, senderName, textMsg, msg);
     } catch (e) { console.error('WA message handler:', e.stack || e.message || e); }
   });
@@ -1116,15 +1138,37 @@ async function waSend(phone, message) {
 }
 
 // Lógica compartilhada de processamento de mensagem WA (usada por ww.js e pelo webhook Z-API)
-// msgObj: objeto Message do whatsapp-web.js (opcional) — usado para typing indicator
+// msgObj: objeto Message do whatsapp-web.js (opcional) — usado para typing indicator e áudio
 async function processWAMessage(phone, senderName, textMsg, msgObj) {
+  // ── Transcrição de áudio ────────────────────────────────────────────────
+  const isAudio = msgObj && (msgObj.type === 'ptt' || msgObj.type === 'audio');
+  let clientText = textMsg;
+
+  if (isAudio) {
+    let chat = null;
+    try { chat = await msgObj.getChat(); } catch {}
+    try { if (chat) await chat.sendStateTyping(); } catch {}
+    try {
+      await waTypingAndSend(phone, '🎧 Um segundo, ouvindo seu áudio...', msgObj);
+      const media = await msgObj.downloadMedia();
+      clientText = await transcribeAudio(media.data, media.mimetype || 'audio/ogg');
+      await waTypingAndSend(phone, `_Entendi: "${clientText}"_`, msgObj);
+    } catch (audioErr) {
+      console.error(`[${phone}] Transcrição erro:`, audioErr.message);
+      await waTypingAndSend(phone, 'Não consegui ouvir o áudio 😕 Pode digitar sua mensagem?', msgObj);
+      return;
+    }
+  }
+
+  if (!clientText?.trim()) return;
+
   const { rows } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
   let conv = rows[0];
   if (!conv) {
     await pool.query(
       `INSERT INTO ia_conversations (phone,name,history,takeover,last_message,last_at,unread)
        VALUES ($1,$2,'[]',FALSE,$3,$4,1)`,
-      [phone, senderName, textMsg, nowStr()]
+      [phone, senderName, clientText, nowStr()]
     );
     const { rows: r } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
     conv = r[0];
@@ -1132,16 +1176,16 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
 
   if (conv.takeover) {
     const history = typeof conv.history === 'string' ? JSON.parse(conv.history) : conv.history;
-    history.push({ role: 'user', content: textMsg });
+    history.push({ role: 'user', content: clientText });
     await pool.query(
       `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3, unread=unread+1 WHERE phone=$4`,
-      [JSON.stringify(history), textMsg, nowStr(), phone]
+      [JSON.stringify(history), clientText, nowStr(), phone]
     );
     return;
   }
 
   const history = typeof conv.history === 'string' ? JSON.parse(conv.history) : conv.history;
-  history.push({ role: 'user', content: textMsg });
+  history.push({ role: 'user', content: clientText });
 
   // Mostra "digitando..." enquanto chama a IA
   let chat = null;
@@ -1157,7 +1201,7 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
 
   try { if (chat) await chat.clearState(); } catch {}
 
-  const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\{.*?\}/s, '').trim();
+  const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\s*\{[\s\S]*?\}/, '').trim();
   if (!clean) {
     console.warn(`[${phone}] IA retornou resposta vazia — envio ignorado`);
     return;
