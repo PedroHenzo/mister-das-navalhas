@@ -1113,12 +1113,10 @@ async function waSend(phone, message) {
   if (waClient && waStatus === 'connected') {
     const cleanPhone = phone.replace('@c.us', '').replace(/\D/g, '');
     let chatId = `${cleanPhone}@c.us`;
-    // getNumberId resolve o ID correto (incluindo contas com LID)
-    try {
-      const numberId = await waClient.getNumberId(cleanPhone);
-      if (numberId) chatId = numberId._serialized;
-    } catch (_) {}
-    await waClient.sendMessage(chatId, message);
+    // Usa chat.sendMessage() em vez de client.sendMessage() — evita erro "No LID for user"
+    // getChatById abre ou recupera o chat existente que já tem o LID resolvido
+    const chat = await waClient.getChatById(chatId);
+    await chat.sendMessage(message);
     return;
   }
   // Fallback: Z-API (se configurado)
