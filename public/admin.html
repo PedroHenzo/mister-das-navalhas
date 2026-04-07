@@ -1939,47 +1939,80 @@ async function sendIaTest(){
 async function loadWaStatus(){
   try {
     const d = await apiFetch('/wa/status')
+    // Atualiza elementos dentro do template (se aberto)
     const dot = document.getElementById('wa-status-dot')
     const lbl = document.getElementById('wa-status-label')
     const btn = document.getElementById('wa-connect-btn')
     const qrWrap = document.getElementById('wa-qr-wrap')
     const qrImg  = document.getElementById('wa-qr-img')
-    if(!dot) return
 
-    if(d.status === 'connected'){
-      dot.className = 'ia-qr-status-dot on'
-      lbl.textContent = 'WhatsApp conectado'
-      if(btn) btn.textContent = 'Desconectar WA'
-      if(qrWrap) qrWrap.style.display = 'none'
-    } else if(d.status === 'qr' && d.qr){
-      dot.className = 'ia-qr-status-dot waiting'
-      lbl.textContent = 'Aguardando QR Code…'
-      if(btn) btn.textContent = 'Novo QR Code'
+    const statusMap = {
+      connected:  { cls:'on',      text:'WhatsApp conectado',     btnTxt:'Desconectar WA' },
+      qr:         { cls:'waiting', text:'Aguardando QR Code…',    btnTxt:'Novo QR Code'   },
+      connecting: { cls:'waiting', text:'Conectando…',            btnTxt:'Conectar WA'    },
+      disconnected:{ cls:'off',    text:'WhatsApp desconectado',  btnTxt:'Conectar WA'    },
+    }
+    const s = statusMap[d.status] || statusMap.disconnected
+    if(dot) dot.className = 'ia-qr-status-dot ' + s.cls
+    if(lbl) lbl.textContent = s.text
+    if(btn) btn.textContent = s.btnTxt
+
+    if(d.status === 'qr' && d.qr){
+      // Mostra modal de QR (sempre no DOM)
+      showWaQrModal(d.qr)
       if(qrWrap){ qrWrap.style.display = 'flex' }
-      if(qrImg && d.qr){ qrImg.src = d.qr }
-    } else if(d.status === 'connecting'){
-      dot.className = 'ia-qr-status-dot waiting'
-      lbl.textContent = 'Conectando…'
-      if(qrWrap) qrWrap.style.display = 'none'
+      if(qrImg)  qrImg.src = d.qr
     } else {
-      dot.className = 'ia-qr-status-dot off'
-      lbl.textContent = 'WhatsApp desconectado'
-      if(btn) btn.textContent = 'Conectar WA'
+      closeWaQrModal()
       if(qrWrap) qrWrap.style.display = 'none'
     }
   } catch(e) {}
 }
 
+function showWaQrModal(qrDataUrl){
+  let modal = document.getElementById('wa-qr-modal')
+  if(!modal){
+    modal = document.createElement('div')
+    modal.id = 'wa-qr-modal'
+    modal.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;'
+    modal.innerHTML = `
+      <div style="background:var(--dark2);border:1px solid var(--border);padding:2rem;max-width:460px;width:90%;display:flex;gap:1.5rem;align-items:center;">
+        <img id="wa-qr-modal-img" src="${qrDataUrl}" style="width:180px;height:180px;border:4px solid #fff;background:#fff;flex-shrink:0;"/>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.05em;margin-bottom:.5rem;">Conectar WhatsApp</div>
+          <div style="font-size:.78rem;color:var(--muted);line-height:1.8;">
+            1. Abra o WhatsApp no celular<br>
+            2. Toque em <strong style="color:var(--white)">⋮ → Dispositivos conectados</strong><br>
+            3. Toque em <strong style="color:var(--white)">Conectar dispositivo</strong><br>
+            4. Aponte a câmera para o QR Code
+          </div>
+          <button class="btn-sec" style="margin-top:1rem;font-size:.7rem;" onclick="closeWaQrModal()">Fechar</button>
+        </div>
+      </div>`
+    document.body.appendChild(modal)
+  } else {
+    const img = document.getElementById('wa-qr-modal-img')
+    if(img) img.src = qrDataUrl
+    modal.style.display = 'flex'
+  }
+}
+
+function closeWaQrModal(){
+  const modal = document.getElementById('wa-qr-modal')
+  if(modal) modal.style.display = 'none'
+}
+
 async function waConnect(){
-  const btn = document.getElementById('wa-connect-btn')
-  const isConnected = document.getElementById('wa-status-label')?.textContent?.includes('conectado')
+  const lbl = document.getElementById('wa-status-label')
+  const isConnected = lbl?.textContent?.includes('conectado') && !lbl?.textContent?.includes('des')
   if(isConnected){
     if(!confirm('Desconectar o WhatsApp?')) return
     await apiFetch('/wa/disconnect', { method:'POST' }).catch(()=>{})
+    closeWaQrModal()
   } else {
     await apiFetch('/wa/connect', { method:'POST' }).catch(()=>{})
   }
-  setTimeout(loadWaStatus, 1500)
+  setTimeout(loadWaStatus, 2000)
 }
 
 // stub para compatibilidade
