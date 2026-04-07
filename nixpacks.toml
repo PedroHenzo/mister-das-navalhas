@@ -1,5 +1,36 @@
-[phases.install]
-cmds = ["npm install"]
+[phases.setup]
+nixPkgs = [
+  "chromium",
+  "nss",
+  "freetype",
+  "harfbuzz",
+  "ca-certificates",
+  "ttf-dejavu",
+  "glib",
+  "libdrm",
+  "mesa",
+  "xorg.libX11",
+  "xorg.libXcomposite",
+  "xorg.libXdamage",
+  "xorg.libXext",
+  "xorg.libXfixes",
+  "xorg.libXrandr",
+  "xorg.libxcb",
+  "xorg.libXcursor",
+  "xorg.libXi",
+  "xorg.libXrender",
+  "xorg.libXtst",
+  "atk",
+  "cups",
+  "dbus",
+  "expat",
+  "fontconfig",
+  "libcap",
+  "libxkbcommon",
+  "nspr",
+  "pango",
+  "alsa-lib"
+]
 
-[phases.build]
-cmds = ["npx puppeteer browsers install chrome"]
+[phases.install]
+cmds = ["PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install"]

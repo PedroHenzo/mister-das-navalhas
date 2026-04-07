@@ -883,20 +883,29 @@ function initWAClient() {
   waStatus = 'connecting';
   waQrData = null;
 
-  // Detecta o executável do Chrome instalado pelo puppeteer no build
-  let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+  // Detecta o executável do Chromium — ordem de prioridade:
+  // 1. Variável PUPPETEER_EXECUTABLE_PATH (define manualmente no Railway se necessário)
+  // 2. chromium instalado via nixpacks
+  // 3. puppeteer bundled
+  const { execSync } = require('child_process');
+  let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
   if (!executablePath) {
-    try {
-      const { executablePath: ep } = require('puppeteer');
-      executablePath = ep;
-    } catch (_) {}
+    try { executablePath = execSync('which chromium || which chromium-browser || which google-chrome', { encoding: 'utf8' }).trim(); } catch (_) {}
   }
+  if (!executablePath) {
+    try { executablePath = require('puppeteer').executablePath(); } catch (_) {}
+  }
+  console.log('🌐 Chromium path:', executablePath || 'auto');
 
   waClient = new WAClient({
     authStrategy: new LocalAuth({ clientId: 'mdn-bot' }),
     puppeteer: {
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--single-process'],
+      args: [
+        '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage',
+        '--disable-gpu', '--single-process', '--no-zygote',
+        '--disable-extensions', '--disable-software-rasterizer',
+      ],
       ...(executablePath ? { executablePath } : {}),
     },
   });
