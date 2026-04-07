@@ -890,7 +890,9 @@ async function callMistral(messages, personality) {
     model:       process.env.MISTRAL_MODEL || 'mistral-small-latest',
     messages:    [
       { role: 'system', content: systemPrompt },
-      ...messages.filter(m => m.content && m.content.trim()),
+      ...messages
+          .filter(m => m.content && m.content.trim())
+          .map(m => ({ role: m.role, content: m.content })),
     ],
     temperature: 0.7,
     max_tokens:  512,
