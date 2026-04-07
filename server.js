@@ -1176,7 +1176,7 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
     }
   }
 
-  if (!clientText?.trim()) return;
+  if (!clientText?.trim()) { console.warn(`[${phone}] clientText vazio — ignorado`); return; }
 
   const { rows } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
   let conv = rows[0];
@@ -1191,6 +1191,7 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
   }
 
   if (conv.takeover) {
+    console.log(`[${phone}] takeover ativo — salvando msg sem responder`);
     const history = typeof conv.history === 'string' ? JSON.parse(conv.history) : conv.history;
     history.push({ role: 'user', content: clientText });
     await pool.query(
@@ -1206,22 +1207,25 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
   // Mostra "digitando..." enquanto chama a IA — só usa msgObj.getChat() para evitar LID error
   let chat = null;
   if (msgObj) {
-    try { chat = await msgObj.getChat(); } catch {}
+    try { chat = await msgObj.getChat(); } catch (e) { console.warn(`[${phone}] getChat falhou:`, e.message); }
   }
+  console.log(`[${phone}] chat resolvido: ${chat ? 'sim' : 'não'} — chamando Mistral`);
   try { if (chat) await chat.sendStateTyping(); } catch {}
 
   const pers  = await getIaConfig('personality') || 'profissional';
   const raw   = await callMistral(history.slice(-20), pers);
+  console.log(`[${phone}] Mistral respondeu (${raw.length} chars)`);
 
   try { if (chat) await chat.clearState(); } catch {}
 
   const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\s*\{[\s\S]*?\}/, '').trim();
   if (!clean) {
-    console.warn(`[${phone}] IA retornou resposta vazia — envio ignorado`);
+    console.warn(`[${phone}] IA retornou resposta vazia — raw: ${raw.slice(0, 100)}`);
     return;
   }
   history.push({ role: 'assistant', content: clean });
 
+  console.log(`[${phone}] Enviando: "${clean.substring(0, 60)}..."`);
   // Envia com delay simulando digitação (proporcional ao tamanho da resposta)
   await waTypingAndSend(phone, clean, msgObj);
 
