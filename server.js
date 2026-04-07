@@ -2,6 +2,8 @@ const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
 const { Pool } = require('pg');
+const { Client: WAClient, LocalAuth } = require('whatsapp-web.js');
+const QRCode = require('qrcode');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -854,18 +856,157 @@ async function callMistral(messages, personality) {
   return d.choices[0].message.content;
 }
 
-async function zapiSend(phone, message) {
+// ── WHATSAPP-WEB.JS CLIENT ─────────────────────────────────────────────────
+let waClient = null;
+let waStatus = 'disconnected'; // disconnected | qr | connecting | connected
+let waQrData = null;           // base64 data URL da imagem do QR
+
+function initWAClient() {
+  if (waClient) {
+    try { waClient.destroy().catch(() => {}); } catch (_) {}
+    waClient = null;
+  }
+  waStatus = 'connecting';
+  waQrData = null;
+
+  waClient = new WAClient({
+    authStrategy: new LocalAuth({ clientId: 'mdn-bot' }),
+    puppeteer: {
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+    },
+  });
+
+  waClient.on('qr', async (qr) => {
+    waStatus = 'qr';
+    waQrData = await QRCode.toDataURL(qr).catch(() => null);
+    console.log('📱 QR Code gerado — aguardando leitura.');
+  });
+
+  waClient.on('authenticated', () => {
+    waStatus = 'connecting';
+    waQrData = null;
+    console.log('✅ WhatsApp autenticado.');
+  });
+
+  waClient.on('ready', () => {
+    waStatus = 'connected';
+    waQrData = null;
+    console.log('✅ WhatsApp conectado e pronto.');
+  });
+
+  waClient.on('disconnected', (reason) => {
+    waStatus = 'disconnected';
+    waQrData = null;
+    console.log('⚠️ WhatsApp desconectado:', reason);
+  });
+
+  waClient.on('message', async (msg) => {
+    try {
+      if (msg.fromMe) return;
+      const chat = await msg.getChat();
+      if (chat.isGroup) return;
+
+      const iaAtiva = await getIaConfig('ia_ativa');
+      if (iaAtiva !== 'true') return;
+
+      const phone = msg.from.replace('@c.us', '');
+      const textMsg = msg.body || '';
+      if (!textMsg) return;
+      const senderName = msg._data?.notifyName || phone;
+
+      await processWAMessage(phone, senderName, textMsg);
+    } catch (e) { console.error('WA message handler:', e.message); }
+  });
+
+  waClient.initialize().catch(e => {
+    waStatus = 'disconnected';
+    console.error('Erro ao inicializar WA client:', e.message);
+  });
+}
+
+async function waSend(phone, message) {
+  // Tenta whatsapp-web.js primeiro
+  if (waClient && waStatus === 'connected') {
+    const chatId = phone.includes('@c.us') ? phone : `${phone}@c.us`;
+    await waClient.sendMessage(chatId, message);
+    return;
+  }
+  // Fallback: Z-API (se configurado)
   const [inst, tok, ctok] = await Promise.all([
     getIaConfig('zapi_instance'), getIaConfig('zapi_token'), getIaConfig('zapi_client_token'),
   ]);
-  if (!inst || !tok) throw new Error('Z-API não configurado em Integrações.');
-  const r = await fetch(`https://api.z-api.io/instances/${inst}/token/${tok}/send-text`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Client-Token': ctok || '' },
-    body: JSON.stringify({ phone, message }),
-  });
-  if (!r.ok) { const t = await r.text(); throw new Error('Z-API: ' + t); }
-  return r.json();
+  if (inst && tok) {
+    const r = await fetch(`https://api.z-api.io/instances/${inst}/token/${tok}/send-text`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Client-Token': ctok || '' },
+      body: JSON.stringify({ phone, message }),
+    });
+    if (!r.ok) { const t = await r.text(); throw new Error('Z-API: ' + t); }
+    return;
+  }
+  throw new Error('WhatsApp não conectado. Leia o QR Code em IA → Conexão WhatsApp.');
+}
+
+// Lógica compartilhada de processamento de mensagem WA (usada por ww.js e pelo webhook Z-API)
+async function processWAMessage(phone, senderName, textMsg) {
+  const { rows } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
+  let conv = rows[0];
+  if (!conv) {
+    await pool.query(
+      `INSERT INTO ia_conversations (phone,name,history,takeover,last_message,last_at,unread)
+       VALUES ($1,$2,'[]',FALSE,$3,$4,1)`,
+      [phone, senderName, textMsg, nowStr()]
+    );
+    const { rows: r } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
+    conv = r[0];
+  }
+
+  if (conv.takeover) {
+    const history = typeof conv.history === 'string' ? JSON.parse(conv.history) : conv.history;
+    history.push({ role: 'user', content: textMsg });
+    await pool.query(
+      `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3, unread=unread+1 WHERE phone=$4`,
+      [JSON.stringify(history), textMsg, nowStr(), phone]
+    );
+    return;
+  }
+
+  const history = typeof conv.history === 'string' ? JSON.parse(conv.history) : conv.history;
+  history.push({ role: 'user', content: textMsg });
+
+  const pers  = await getIaConfig('personality') || 'profissional';
+  const raw   = await callMistral(history.slice(-20), pers);
+  const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\{.*?\}/s, '').trim();
+  history.push({ role: 'assistant', content: clean });
+
+  await waSend(phone, clean);
+
+  await pool.query(
+    `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3, name=$4, unread=0 WHERE phone=$5`,
+    [JSON.stringify(history), clean, nowStr(), senderName, phone]
+  );
+
+  // Auto-book
+  const apptMatch = raw.match(/AGENDAMENTO_SOLICITADO:(\{.*?\})/s);
+  const autoBook  = await getIaConfig('auto_book');
+  if (apptMatch && autoBook === 'true') {
+    try {
+      const apptData = JSON.parse(apptMatch[1]);
+      const { rows: brs } = await pool.query(`SELECT id FROM barbers WHERE active=TRUE LIMIT 1`);
+      const { rows: srs } = await pool.query(`SELECT id FROM services WHERE name ILIKE $1 LIMIT 1`, [`%${apptData.service}%`]);
+      if (brs.length && srs.length) {
+        const apptId = uuid();
+        await pool.query(
+          `INSERT INTO appointments (id,barber_id,service_id,client_name,client_phone,appt_date,time_slot,status,source,created_at)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed','whatsapp',$8)`,
+          [apptId, brs[0].id, srs[0].id, apptData.client_name, phone, apptData.appt_date, apptData.time_slot, nowStr()]
+        );
+        await waSend(phone, `✅ Agendamento confirmado!\n📅 ${apptData.appt_date} às ${apptData.time_slot}\n💈 ${apptData.service}`);
+      }
+    } catch (e) { console.warn('Auto-book:', e.message); }
+  }
 }
 
 // ── IA: CONFIG ────────────────────────────────────────────────────────────
@@ -929,7 +1070,7 @@ app.post('/api/ia/send', async (req, res) => {
   try {
     const { phone, message } = req.body;
     if (!phone || !message) return res.status(400).json({ error: 'phone e message obrigatórios' });
-    await zapiSend(phone, message);
+    await waSend(phone, message);
     const { rows } = await pool.query(`SELECT history FROM ia_conversations WHERE phone=$1`, [phone]);
     const history = typeof rows[0]?.history==='string' ? JSON.parse(rows[0].history) : (rows[0]?.history || []);
     history.push({ role: 'assistant', content: message, manual: true });
@@ -941,7 +1082,25 @@ app.post('/api/ia/send', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ── WEBHOOK: Z-API (WhatsApp incoming) ────────────────────────────────────
+// ── WHATSAPP STATUS + QR ──────────────────────────────────────────────────
+app.get('/api/wa/status', (req, res) => {
+  res.json({ status: waStatus, qr: waQrData });
+});
+
+app.post('/api/wa/connect', (req, res) => {
+  initWAClient();
+  res.json({ ok: true, status: waStatus });
+});
+
+app.post('/api/wa/disconnect', async (req, res) => {
+  try {
+    if (waClient) await waClient.logout().catch(() => {});
+    waStatus = 'disconnected'; waQrData = null; waClient = null;
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── WEBHOOK: Z-API fallback (WhatsApp incoming via Z-API) ─────────────────
 app.post('/api/webhook/zapi', async (req, res) => {
   res.json({ ok: true });
   try {
@@ -951,67 +1110,9 @@ app.post('/api/webhook/zapi', async (req, res) => {
     if (!textMsg) return;
     const phone = body.phone;
     const senderName = body.senderName || phone;
-
     const iaAtiva = await getIaConfig('ia_ativa');
     if (iaAtiva !== 'true') return;
-
-    // Upsert conversation
-    const { rows } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
-    let conv = rows[0];
-    if (!conv) {
-      await pool.query(
-        `INSERT INTO ia_conversations (phone,name,history,takeover,last_message,last_at,unread)
-         VALUES ($1,$2,'[]',FALSE,$3,$4,1)`,
-        [phone, senderName, textMsg, nowStr()]
-      );
-      const { rows: r } = await pool.query(`SELECT * FROM ia_conversations WHERE phone=$1`, [phone]);
-      conv = r[0];
-    }
-
-    if (conv.takeover) {
-      const history = typeof conv.history==='string'?JSON.parse(conv.history):conv.history;
-      history.push({ role: 'user', content: textMsg });
-      await pool.query(
-        `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3, unread=unread+1 WHERE phone=$4`,
-        [JSON.stringify(history), textMsg, nowStr(), phone]
-      );
-      return;
-    }
-
-    const history = typeof conv.history==='string'?JSON.parse(conv.history):conv.history;
-    history.push({ role: 'user', content: textMsg });
-
-    const pers = await getIaConfig('personality') || 'profissional';
-    const raw  = await callMistral(history.slice(-20), pers);
-    const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\{.*?\}/s, '').trim();
-    history.push({ role: 'assistant', content: clean });
-
-    await zapiSend(phone, clean);
-
-    await pool.query(
-      `UPDATE ia_conversations SET history=$1, last_message=$2, last_at=$3, name=$4, unread=0 WHERE phone=$5`,
-      [JSON.stringify(history), clean, nowStr(), senderName, phone]
-    );
-
-    // Auto-book if requested
-    const apptMatch = raw.match(/AGENDAMENTO_SOLICITADO:(\{.*?\})/s);
-    const autoBook  = await getIaConfig('auto_book');
-    if (apptMatch && autoBook === 'true') {
-      try {
-        const apptData = JSON.parse(apptMatch[1]);
-        const { rows: brs } = await pool.query(`SELECT id FROM barbers WHERE active=TRUE LIMIT 1`);
-        const { rows: srs } = await pool.query(`SELECT id FROM services WHERE name ILIKE $1 LIMIT 1`, [`%${apptData.service}%`]);
-        if (brs.length && srs.length) {
-          const apptId = uuid();
-          await pool.query(
-            `INSERT INTO appointments (id,barber_id,service_id,client_name,client_phone,appt_date,time_slot,status,source,created_at)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed','whatsapp',$8)`,
-            [apptId, brs[0].id, srs[0].id, apptData.client_name, phone, apptData.appt_date, apptData.time_slot, nowStr()]
-          );
-          await zapiSend(phone, `✅ Agendamento confirmado!\n📅 ${apptData.appt_date} às ${apptData.time_slot}\n💈 ${apptData.service}`);
-        }
-      } catch (e) { console.warn('Auto-book:', e.message); }
-    }
+    await processWAMessage(phone, senderName, textMsg);
   } catch (e) { console.error('Webhook Z-API:', e.message); }
 });
 
@@ -1147,6 +1248,8 @@ initDb().then(() => {
   app.listen(PORT, () =>
     console.log(`🔪 Mister das Navalhas rodando em http://localhost:${PORT}`)
   );
+  // Inicializa o WhatsApp client automaticamente
+  initWAClient();
 }).catch(err => {
   console.error('❌ Erro ao iniciar banco:', err);
   process.exit(1);
