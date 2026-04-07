@@ -826,15 +826,18 @@ async function buildSystemPrompt(personality) {
   // Busca disponibilidade real dos próximos 14 dias
   const today = new Date().toISOString().slice(0, 10);
   const future = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
-  let availText = '';
+  const diasPtBR = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  function isoToBR(iso) { const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; }
+  function diaSemana(iso) { const [y,m,d] = iso.split('-'); return diasPtBR[new Date(+y,+m-1,+d).getDay()]; }
+
+  // Estrutura: Map<iso_date, {br, diaSem, slots[]}>
+  const availMap = new Map();
   if (barbers[0]) {
     const { rows: avail } = await pool.query(
       `SELECT avail_date, time_slots FROM barber_availability
        WHERE barber_id=$1 AND avail_date>=$2 AND avail_date<=$3 ORDER BY avail_date`,
       [barbers[0].id, today, future]
     );
-    // Para cada dia com disponibilidade, remove horários já ocupados
-    const lines = [];
     for (const a of avail) {
       const slots = typeof a.time_slots === 'string' ? JSON.parse(a.time_slots) : a.time_slots;
       if (!slots.length) continue;
@@ -845,10 +848,18 @@ async function buildSystemPrompt(personality) {
       );
       const bookedSet = new Set(booked.map(b => b.time_slot));
       const free = slots.filter(s => !bookedSet.has(s));
-      if (free.length) lines.push(`• ${a.avail_date}: ${free.join(', ')}`);
+      if (free.length) availMap.set(a.avail_date, { br: isoToBR(a.avail_date), diaSem: diaSemana(a.avail_date), slots: free });
     }
-    availText = lines.length ? lines.join('\n') : 'Sem horários disponíveis nos próximos 14 dias.';
   }
+
+  const diasText = availMap.size
+    ? [...availMap.values()].map(v => `• ${v.diaSem} ${v.br}`).join('\n')
+    : 'Sem dias disponíveis nos próximos 14 dias.';
+
+  // Serializa mapa de horários por dia (para o prompt de seleção de horário)
+  const horariosJSON = JSON.stringify(
+    Object.fromEntries([...availMap.entries()].map(([iso, v]) => [`${v.diaSem} ${v.br}`, { iso, slots: v.slots }]))
+  );
 
   const persMap = {
     profissional: 'Seja objetivo, cordial e direto. Foco em agendamentos rápidos.',
@@ -867,25 +878,30 @@ Estilo: ${persText}
 ## SERVIÇOS DISPONÍVEIS
 ${svcText}
 
-## HORÁRIOS LIVRES (próximos 14 dias)
-${availText}
+## DIAS COM HORÁRIOS LIVRES (próximos 14 dias)
+${diasText}
+
+## MAPA DE HORÁRIOS POR DIA (use para responder quando o cliente escolher um dia)
+${horariosJSON}
 
 ## FLUXO DE AGENDAMENTO — siga esta ordem, uma etapa por vez:
 1. Pergunte o nome do cliente
 2. Pergunte qual serviço deseja
-3. Mostre os dias e horários livres acima e pergunte qual prefere
-4. Confirme: "Você quer agendar [serviço] no dia [data] às [horário], certo?"
-5. Após confirmação, pergunte se prefere pagar o *sinal de R$10,00* ou o *valor completo* adiantado
+3. Liste os DIAS disponíveis (formato DD/MM/AAAA com dia da semana) e pergunte qual prefere
+4. Após o cliente escolher o dia, liste apenas os HORÁRIOS livres daquele dia e pergunte qual prefere
+5. Confirme: "Você quer agendar [serviço] em [dia da semana] DD/MM/AAAA às HH:MM, certo?"
+6. Após confirmação, pergunte se prefere pagar o *sinal de R$10,00* ou o *valor completo* adiantado
 
 ## REGRAS OBRIGATÓRIAS
-- SEMPRE escreva uma mensagem de texto para o cliente — NUNCA responda apenas com o token
+- SEMPRE escreva uma mensagem de texto — NUNCA responda apenas com o token
 - Responda de forma curta (é WhatsApp/chat)
-- Use SOMENTE datas e horários da lista acima — nunca invente disponibilidade
+- Use SOMENTE dias e horários do mapa acima — nunca invente disponibilidade
 - Nunca invente serviços ou preços fora da lista
 - Se o cliente preferir agendar pelo site: ${siteUrl}
 - O sinal é sempre R$10,00 independente do serviço
+- Datas para o cliente: sempre DD/MM/AAAA. No token use o campo "iso" do mapa (YYYY-MM-DD)
 - Só emita o token após o cliente confirmar TODOS os dados
-- Ao confirmar, escreva a mensagem de confirmação ao cliente E na linha seguinte o token:
+- Ao confirmar, escreva a mensagem ao cliente E na linha seguinte o token:
 AGENDAMENTO_SOLICITADO:{"client_name":"NOME","service":"SERVIÇO","appt_date":"YYYY-MM-DD","time_slot":"HH:MM","payment":"sinal"}
 (payment = "sinal" ou "completo")`;
 }
