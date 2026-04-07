@@ -854,8 +854,21 @@ tr:hover td{background:rgba(200,200,200,.02);}
             <div><div class="ia-toggle-label">Responder fora do horário</div><div class="ia-toggle-sub">IA atende mesmo quando a barbearia está fechada</div></div>
             <label class="ia-toggle"><input type="checkbox" id="tog-fora-horario"/><span class="ia-toggle-slider"></span></label>
           </div>
+          <div class="ia-toggle-row">
+            <div><div class="ia-toggle-label">Confirmar agendamento no WhatsApp</div><div class="ia-toggle-sub">Envia mensagem de confirmação ao cliente quando um horário é marcado</div></div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-confirma-agend"/><span class="ia-toggle-slider"></span></label>
+          </div>
+          <div class="ia-toggle-row">
+            <div><div class="ia-toggle-label">Lembrete no dia do agendamento</div><div class="ia-toggle-sub">Envia lembrete ao cliente às 8h UTC no dia marcado</div></div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-confirma-dia"/><span class="ia-toggle-slider"></span></label>
+          </div>
+          <div class="ia-toggle-row">
+            <div><div class="ia-toggle-label">Reativação automática</div><div class="ia-toggle-sub">Envia mensagem para clientes sem visita no período configurado</div></div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-reativ"/><span class="ia-toggle-slider"></span></label>
+          </div>
         </div>
-        <div style="margin-top:1rem;">
+        <div style="margin-top:1rem;display:flex;flex-direction:column;gap:.75rem;">
+          <div class="fg"><label class="flabel">Intervalo de reativação (dias sem visita)</label><input class="fi" type="number" id="ia-reativ-days" min="7" max="365" placeholder="30"/></div>
           <div class="fg"><label class="flabel">Mensagem de boas-vindas (Livechat)</label><input class="fi" type="text" id="ia-welcome-msg" placeholder="Olá! Bem-vindo à Mister das Navalhas 🪒"/></div>
         </div>
         <div class="ia-save-ok" id="ia-save-ok">✓ Salvo!</div>
@@ -1765,6 +1778,10 @@ async function saveIaConfig(){
       personality:    IA_PERS,
       fora_horario:   String(document.getElementById('tog-fora-horario')?.checked || false),
       auto_book:      String(document.getElementById('tog-auto-book')?.checked || false),
+      confirma_agend: String(document.getElementById('tog-confirma-agend')?.checked || false),
+      confirma_dia:   String(document.getElementById('tog-confirma-dia')?.checked || false),
+      reativacao:     String(document.getElementById('tog-reativ')?.checked || false),
+      reativ_days:    document.getElementById('ia-reativ-days')?.value || '30',
       welcome_msg:    document.getElementById('ia-welcome-msg')?.value || '',
     }})
     const ok = document.getElementById('ia-save-ok')
@@ -1784,6 +1801,14 @@ async function loadIaConfig(){
     if(fh) fh.checked = cfg.fora_horario === 'true'
     const ab = document.getElementById('tog-auto-book')
     if(ab) ab.checked = cfg.auto_book === 'true'
+    const ca = document.getElementById('tog-confirma-agend')
+    if(ca) ca.checked = cfg.confirma_agend === 'true'
+    const cd = document.getElementById('tog-confirma-dia')
+    if(cd) cd.checked = cfg.confirma_dia === 'true'
+    const rv = document.getElementById('tog-reativ')
+    if(rv) rv.checked = cfg.reativacao === 'true'
+    const rd = document.getElementById('ia-reativ-days')
+    if(rd && cfg.reativ_days) rd.value = cfg.reativ_days
     const wm = document.getElementById('ia-welcome-msg')
     if(wm && cfg.welcome_msg) wm.value = cfg.welcome_msg
   } catch(e) {}

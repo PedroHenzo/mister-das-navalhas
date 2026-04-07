@@ -154,8 +154,12 @@ async function initDb() {
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('ia_ativa','false') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('personality','profissional') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('welcome_msg','Olá! Bem-vindo à Mister das Navalhas 🪒 Como posso ajudar?') ON CONFLICT (key) DO NOTHING`);
-    await client.query(`INSERT INTO ia_config (key,value) VALUES ('auto_book','false') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('auto_book','true') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('fora_horario','false') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('reativacao','false') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('reativ_days','30') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('confirma_agend','true') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('confirma_dia','false') ON CONFLICT (key) DO NOTHING`);
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS ia_conversations (
@@ -322,8 +326,21 @@ app.post('/api/appointments', async (req, res) => {
       [id,barber_id,service_id,client_name,client_phone,client_email||null,
        appt_date,time_slot,status,source,nowStr()]
     );
-    const { rows } = await pool.query('SELECT * FROM appointments WHERE id=$1', [id]);
-    res.status(201).json(rows[0]);
+    const { rows } = await pool.query(
+      `SELECT a.*, s.name as service_name FROM appointments a JOIN services s ON a.service_id=s.id WHERE a.id=$1`, [id]
+    );
+    const appt = rows[0];
+    res.status(201).json(appt);
+    // Envia confirmação WA se habilitado (async, não bloqueia resposta)
+    if (appt.client_phone) {
+      getIaConfig('confirma_agend').then(val => {
+        if (val === 'true') {
+          waSend(appt.client_phone,
+            `✅ Olá, ${appt.client_name}! Seu agendamento foi confirmado!\n📅 ${appt.appt_date} às ${appt.time_slot}\n💈 ${appt.service_name}\n\nAguardamos você! ✂️`
+          ).catch(e => console.warn('Confirmação WA:', e.message));
+        }
+      }).catch(() => {});
+    }
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -1065,7 +1082,13 @@ function initWAClient() {
 async function waSend(phone, message) {
   // Tenta whatsapp-web.js primeiro
   if (waClient && waStatus === 'connected') {
-    const chatId = phone.includes('@c.us') ? phone : `${phone}@c.us`;
+    const cleanPhone = phone.replace('@c.us', '').replace(/\D/g, '');
+    let chatId = `${cleanPhone}@c.us`;
+    // getNumberId resolve o ID correto (incluindo contas com LID)
+    try {
+      const numberId = await waClient.getNumberId(cleanPhone);
+      if (numberId) chatId = numberId._serialized;
+    } catch (_) {}
     await waClient.sendMessage(chatId, message);
     return;
   }
@@ -1128,6 +1151,10 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
   try { if (chat) await chat.clearState(); } catch {}
 
   const clean = raw.replace(/AGENDAMENTO_SOLICITADO:\{.*?\}/s, '').trim();
+  if (!clean) {
+    console.warn(`[${phone}] IA retornou resposta vazia — envio ignorado`);
+    return;
+  }
   history.push({ role: 'assistant', content: clean });
 
   // Envia com delay simulando digitação (proporcional ao tamanho da resposta)
@@ -1172,7 +1199,8 @@ app.get('/api/ia/config', async (req, res) => {
 app.post('/api/ia/config', async (req, res) => {
   try {
     const allowed = ['ia_ativa','personality','welcome_msg','auto_book','fora_horario',
-                     'reativacao','confirmacao','reativ_days','zapi_instance','zapi_token','zapi_client_token'];
+                     'reativacao','reativ_days','confirma_agend','confirma_dia',
+                     'zapi_instance','zapi_token','zapi_client_token'];
     for (const [k, v] of Object.entries(req.body)) {
       if (allowed.includes(k)) await setIaConfig(k, v);
     }
@@ -1390,6 +1418,72 @@ app.post('/api/admin/login', (req, res) => {
   res.status(401).json({ error: 'Senha incorreta.' });
 });
 
+// ── CRON DIÁRIO ───────────────────────────────────────────────────────────
+// Roda a cada 10 minutos; usa last_daily_run para executar 1x por dia às 8h UTC
+async function runDailyCron() {
+  try {
+    const now   = new Date();
+    const hour  = now.getUTCHours();
+    const today = now.toISOString().slice(0, 10);
+    if (hour < 8 || hour >= 9) return; // só entre 08:00–09:00 UTC
+
+    const lastRun = await getIaConfig('last_daily_run').catch(() => null);
+    if (lastRun === today) return;
+    await setIaConfig('last_daily_run', today);
+    console.log(`⏰ Cron diário — ${today}`);
+
+    // ── Lembrete no dia do agendamento ───────────────────────────────────
+    const confirmaDia = await getIaConfig('confirma_dia');
+    if (confirmaDia === 'true') {
+      const { rows: appts } = await pool.query(
+        `SELECT a.client_name, a.client_phone, a.time_slot, s.name AS service_name
+         FROM appointments a JOIN services s ON a.service_id=s.id
+         WHERE a.appt_date=$1 AND a.status='confirmed' AND a.client_phone IS NOT NULL`,
+        [today]
+      );
+      for (const a of appts) {
+        try {
+          await waSend(a.client_phone,
+            `🔔 Lembrete: seu agendamento na Mister das Navalhas é *hoje* às *${a.time_slot}*!\n💈 ${a.service_name}\n\nAté logo! ✂️`
+          );
+          await delay(2000);
+        } catch (e) { console.warn('Lembrete dia:', e.message); }
+      }
+      console.log(`📅 Lembretes enviados: ${appts.length}`);
+    }
+
+    // ── Reativação de clientes inativos ──────────────────────────────────
+    const reativAtiva = await getIaConfig('reativacao');
+    if (reativAtiva === 'true') {
+      const reativDays = parseInt(await getIaConfig('reativ_days') || '30');
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - reativDays);
+      const cutoffStr = cutoff.toISOString().slice(0, 10);
+      const siteUrl = process.env.SITE_URL || '';
+
+      const { rows: clients } = await pool.query(
+        `SELECT client_name, client_phone, MAX(appt_date) AS last_visit
+         FROM appointments
+         WHERE status='confirmed' AND client_phone IS NOT NULL
+         GROUP BY client_name, client_phone
+         HAVING MAX(appt_date) < $1`,
+        [cutoffStr]
+      );
+      for (const c of clients) {
+        try {
+          await waSend(c.client_phone,
+            `Olá, ${c.client_name}! 💈 Sentimos sua falta na Mister das Navalhas!\nQue tal agendar um horário? ${siteUrl}`
+          );
+          await delay(2500);
+        } catch (e) { console.warn('Reativação:', e.message); }
+      }
+      console.log(`🔄 Reativações enviadas: ${clients.length}`);
+    }
+  } catch (e) {
+    console.error('Cron diário erro:', e.message);
+  }
+}
+
 // ── PAGES ─────────────────────────────────────────────────────────────────
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/',      (_, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
@@ -1401,6 +1495,8 @@ initDb().then(() => {
   );
   // Inicializa o WhatsApp client automaticamente
   initWAClient();
+  // Cron diário: verifica a cada 10 minutos
+  setInterval(runDailyCron, 10 * 60 * 1000);
 }).catch(err => {
   console.error('❌ Erro ao iniciar banco:', err);
   process.exit(1);
