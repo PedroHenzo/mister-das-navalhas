@@ -1018,17 +1018,22 @@ async function runWAMessageItem({ phone, senderName, textMsg, msgObj }) {
 
 async function waTypingAndSend(phone, text, msgObj) {
   const ms = Math.min(randBetween(text.length * 40, text.length * 60), 7000);
+  // Resolve o chat uma única vez — usa msgObj.getChat() quando disponível
+  // para evitar getChatById que falha em contas com LID
   let chat = null;
   if (msgObj) {
     try { chat = await msgObj.getChat(); } catch {}
-  } else if (waClient && waStatus === 'connected') {
-    try { chat = await waClient.getChatById(`${phone}@c.us`); } catch {}
   }
   try { if (chat) await chat.sendStateTyping(); } catch {}
   await delay(ms);
   try { if (chat) await chat.clearState(); } catch {}
   await delay(randBetween(150, 350));
-  await waSend(phone, text);
+  // Envia pelo chat resolvido se possível; senão cai no waSend normal (Z-API)
+  if (chat && waClient && waStatus === 'connected') {
+    await chat.sendMessage(text);
+  } else {
+    await waSend(phone, text);
+  }
 }
 
 function initWAClient() {
@@ -1198,12 +1203,10 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
   const history = typeof conv.history === 'string' ? JSON.parse(conv.history) : conv.history;
   history.push({ role: 'user', content: clientText });
 
-  // Mostra "digitando..." enquanto chama a IA
+  // Mostra "digitando..." enquanto chama a IA — só usa msgObj.getChat() para evitar LID error
   let chat = null;
   if (msgObj) {
     try { chat = await msgObj.getChat(); } catch {}
-  } else if (waClient && waStatus === 'connected') {
-    try { chat = await waClient.getChatById(`${phone}@c.us`); } catch {}
   }
   try { if (chat) await chat.sendStateTyping(); } catch {}
 
