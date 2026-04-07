@@ -846,7 +846,11 @@ async function callMistral(messages, personality) {
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model:       process.env.MISTRAL_MODEL || 'mistral-small-latest',
-      messages:    [{ role: 'system', content: systemPrompt }, ...messages],
+      messages:    [
+        { role: 'system', content: systemPrompt },
+        // filtra mensagens com conteúdo vazio (causa erro 400 no Mistral)
+        ...messages.filter(m => m.content && m.content.trim()),
+      ],
       temperature: 0.7,
       max_tokens:  512,
     }),
