@@ -865,7 +865,17 @@ let waClient = null;
 let waStatus = 'disconnected'; // disconnected | qr | connecting | connected
 let waQrData = null;           // base64 data URL da imagem do QR
 
+let waInitAttempts = 0;
+const WA_MAX_ATTEMPTS = 3;
+
 function initWAClient() {
+  if (waInitAttempts >= WA_MAX_ATTEMPTS) {
+    console.warn(`⚠️ WhatsApp: máximo de ${WA_MAX_ATTEMPTS} tentativas atingido. Use o botão no painel para reconectar.`);
+    waStatus = 'disconnected';
+    return;
+  }
+  waInitAttempts++;
+
   if (waClient) {
     try { waClient.destroy().catch(() => {}); } catch (_) {}
     waClient = null;
@@ -873,12 +883,21 @@ function initWAClient() {
   waStatus = 'connecting';
   waQrData = null;
 
+  // Detecta o executável do Chrome instalado pelo puppeteer no build
+  let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+  if (!executablePath) {
+    try {
+      const { executablePath: ep } = require('puppeteer');
+      executablePath = ep;
+    } catch (_) {}
+  }
+
   waClient = new WAClient({
     authStrategy: new LocalAuth({ clientId: 'mdn-bot' }),
     puppeteer: {
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--single-process'],
+      ...(executablePath ? { executablePath } : {}),
     },
   });
 
@@ -1092,6 +1111,7 @@ app.get('/api/wa/status', (req, res) => {
 });
 
 app.post('/api/wa/connect', (req, res) => {
+  waInitAttempts = 0; // reset ao conectar manualmente
   initWAClient();
   res.json({ ok: true, status: waStatus });
 });
