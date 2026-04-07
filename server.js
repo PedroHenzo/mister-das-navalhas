@@ -819,9 +819,36 @@ async function setIaConfig(key, value) {
 
 async function buildSystemPrompt(personality) {
   const { rows: services } = await pool.query(`SELECT * FROM services WHERE active=TRUE ORDER BY price ASC`);
-  const { rows: barbers }  = await pool.query(`SELECT name FROM barbers WHERE active=TRUE LIMIT 1`);
+  const { rows: barbers }  = await pool.query(`SELECT id, name FROM barbers WHERE active=TRUE LIMIT 1`);
   const barberName = barbers[0]?.name || 'Wesley';
   const siteUrl = process.env.SITE_URL || 'https://mister-das-navalhas-production.up.railway.app';
+
+  // Busca disponibilidade real dos próximos 14 dias
+  const today = new Date().toISOString().slice(0, 10);
+  const future = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+  let availText = '';
+  if (barbers[0]) {
+    const { rows: avail } = await pool.query(
+      `SELECT avail_date, time_slots FROM barber_availability
+       WHERE barber_id=$1 AND avail_date>=$2 AND avail_date<=$3 ORDER BY avail_date`,
+      [barbers[0].id, today, future]
+    );
+    // Para cada dia com disponibilidade, remove horários já ocupados
+    const lines = [];
+    for (const a of avail) {
+      const slots = typeof a.time_slots === 'string' ? JSON.parse(a.time_slots) : a.time_slots;
+      if (!slots.length) continue;
+      const { rows: booked } = await pool.query(
+        `SELECT time_slot FROM appointments
+         WHERE barber_id=$1 AND appt_date=$2 AND status NOT IN ('cancelled','rejected')`,
+        [barbers[0].id, a.avail_date]
+      );
+      const bookedSet = new Set(booked.map(b => b.time_slot));
+      const free = slots.filter(s => !bookedSet.has(s));
+      if (free.length) lines.push(`• ${a.avail_date}: ${free.join(', ')}`);
+    }
+    availText = lines.length ? lines.join('\n') : 'Sem horários disponíveis nos próximos 14 dias.';
+  }
 
   const persMap = {
     profissional: 'Seja objetivo, cordial e direto. Foco em agendamentos rápidos.',
@@ -840,28 +867,27 @@ Estilo: ${persText}
 ## SERVIÇOS DISPONÍVEIS
 ${svcText}
 
-## HORÁRIOS DE FUNCIONAMENTO
-- Terça: 10:00–16:30 | Quarta: 09:00–19:50 | Quinta: 09:00–17:20 | Sexta: 09:00–21:20 | Sábado: 08:00–20:30
+## HORÁRIOS LIVRES (próximos 14 dias)
+${availText}
 
-## FLUXO DE AGENDAMENTO
-Colete em ordem, uma etapa por vez:
-1. Nome do cliente
-2. Serviço desejado
-3. Data (confirme se é dia de funcionamento)
-4. Horário disponível
-5. Pagamento: pergunte se prefere pagar o *sinal de 50%* via PIX antecipado ou o *valor completo* adiantado
-
-Só confirme o agendamento quando TODOS os 5 dados estiverem coletados e o cliente confirmar.
+## FLUXO DE AGENDAMENTO — siga esta ordem, uma etapa por vez:
+1. Pergunte o nome do cliente
+2. Pergunte qual serviço deseja
+3. Mostre os dias e horários livres acima e pergunte qual prefere
+4. Confirme: "Você quer agendar [serviço] no dia [data] às [horário], certo?"
+5. Após confirmação, pergunte se prefere pagar o *sinal de R$10,00* ou o *valor completo* adiantado
 
 ## REGRAS OBRIGATÓRIAS
-- SEMPRE escreva uma mensagem de texto para o cliente — NUNCA responda apenas com o token abaixo
-- Responda de forma curta (é WhatsApp/chat, não e-mail)
-- Nunca invente preços ou serviços fora da lista acima
-- Se o cliente quiser agendar pelo site: ${siteUrl}
-- O sinal é sempre R$10,00 independente do serviço — nunca mencione porcentagem
-- Ao confirmar o agendamento, escreva a confirmação ao cliente E logo após adicione o token numa linha separada:
+- SEMPRE escreva uma mensagem de texto para o cliente — NUNCA responda apenas com o token
+- Responda de forma curta (é WhatsApp/chat)
+- Use SOMENTE datas e horários da lista acima — nunca invente disponibilidade
+- Nunca invente serviços ou preços fora da lista
+- Se o cliente preferir agendar pelo site: ${siteUrl}
+- O sinal é sempre R$10,00 independente do serviço
+- Só emita o token após o cliente confirmar TODOS os dados
+- Ao confirmar, escreva a mensagem de confirmação ao cliente E na linha seguinte o token:
 AGENDAMENTO_SOLICITADO:{"client_name":"NOME","service":"SERVIÇO","appt_date":"YYYY-MM-DD","time_slot":"HH:MM","payment":"sinal"}
-(use "sinal" ou "completo" conforme escolha do cliente)`;
+(payment = "sinal" ou "completo")`;
 }
 
 // ── TRANSCRIÇÃO DE ÁUDIO (Voxtral via Mistral) ────────────────────────────
