@@ -1311,10 +1311,12 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
           console.log(`[${phone}] Agendamento criado (pending_payment): ${apptData.appt_date} ${apptData.time_slot} — ${srs[0].name}`);
 
           // Gera link de pagamento Mercado Pago
+          console.log(`[${phone}] Gerando link MP — tipo: ${paymentType}`);
           try {
             const { rows: svcRows } = await pool.query(`SELECT price FROM services WHERE id=$1`, [srs[0].id]);
             const svcPrice = parseFloat(svcRows[0]?.price || 0);
             const amount = paymentType === 'completo' ? svcPrice : 10.00;
+            console.log(`[${phone}] Valor: R$${amount}`);
             const itemTitle = paymentType === 'completo'
               ? `${srs[0].name} — ${apptData.appt_date} ${apptData.time_slot}`
               : `Sinal de Agendamento — ${srs[0].name} — ${apptData.appt_date} ${apptData.time_slot}`;
@@ -1342,9 +1344,13 @@ async function processWAMessage(phone, senderName, textMsg, msgObj) {
               msgObj
             );
           } catch (payErr) {
-            console.warn(`[${phone}] Erro ao gerar link de pagamento:`, payErr.message);
-            // Se falhar o pagamento, pelo menos avança o status
+            console.error(`[${phone}] Erro ao gerar link de pagamento:`, payErr.stack || payErr.message);
+            // Se falhar o pagamento, confirma mesmo assim e avisa o cliente
             await pool.query(`UPDATE appointments SET status='confirmed' WHERE id=$1`, [apptId]);
+            await waTypingAndSend(phone,
+              `✅ Agendamento registrado! Mas houve um problema ao gerar o link de pagamento. Entre em contato com a barbearia para efetuar o pagamento do sinal.`,
+              msgObj
+            ).catch(() => {});
           }
         }
       } catch (e) { console.warn(`[${phone}] Auto-book erro:`, e.message, '| raw:', raw.slice(-200)); }
