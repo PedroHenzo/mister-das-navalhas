@@ -886,23 +886,36 @@ async function callMistral(messages, personality) {
   const apiKey = process.env.MISTRAL_API_KEY;
   if (!apiKey) throw new Error('MISTRAL_API_KEY não configurada no servidor.');
   const systemPrompt = await buildSystemPrompt(personality || 'profissional');
-  const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model:       process.env.MISTRAL_MODEL || 'mistral-small-latest',
-      messages:    [
-        { role: 'system', content: systemPrompt },
-        // filtra mensagens com conteúdo vazio (causa erro 400 no Mistral)
-        ...messages.filter(m => m.content && m.content.trim()),
-      ],
-      temperature: 0.7,
-      max_tokens:  512,
-    }),
+  const body = JSON.stringify({
+    model:       process.env.MISTRAL_MODEL || 'mistral-small-latest',
+    messages:    [
+      { role: 'system', content: systemPrompt },
+      ...messages.filter(m => m.content && m.content.trim()),
+    ],
+    temperature: 0.7,
+    max_tokens:  512,
   });
-  if (!r.ok) { const t = await r.text(); throw new Error('Mistral: ' + t); }
-  const d = await r.json();
-  return d.choices[0].message.content;
+
+  // Retry com backoff exponencial para erros 429 (rate limit)
+  const MAX_RETRIES = 4;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body,
+    });
+    if (r.status === 429) {
+      const retryAfter = parseInt(r.headers.get('retry-after') || '0') * 1000;
+      const waitMs = retryAfter || (attempt * 5000); // 5s, 10s, 15s, 20s
+      console.warn(`Mistral 429 — aguardando ${waitMs}ms (tentativa ${attempt}/${MAX_RETRIES})`);
+      if (attempt === MAX_RETRIES) { const t = await r.text(); throw new Error('Mistral: ' + t); }
+      await delay(waitMs);
+      continue;
+    }
+    if (!r.ok) { const t = await r.text(); throw new Error('Mistral: ' + t); }
+    const d = await r.json();
+    return d.choices[0].message.content;
+  }
 }
 
 // ── WHATSAPP-WEB.JS CLIENT ─────────────────────────────────────────────────
