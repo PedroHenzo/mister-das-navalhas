@@ -162,6 +162,7 @@ async function initDb() {
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('reativ_days','30') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('confirma_agend','true') ON CONFLICT (key) DO NOTHING`);
     await client.query(`INSERT INTO ia_config (key,value) VALUES ('confirma_dia','false') ON CONFLICT (key) DO NOTHING`);
+    await client.query(`INSERT INTO ia_config (key,value) VALUES ('pagamento_completo','false') ON CONFLICT (key) DO NOTHING`);
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS ia_conversations (
@@ -1372,7 +1373,7 @@ app.post('/api/ia/config', async (req, res) => {
   try {
     const allowed = ['ia_ativa','personality','welcome_msg','auto_book','fora_horario',
                      'reativacao','reativ_days','confirma_agend','confirma_dia',
-                     'zapi_instance','zapi_token','zapi_client_token'];
+                     'zapi_instance','zapi_token','zapi_client_token','pagamento_completo'];
     for (const [k, v] of Object.entries(req.body)) {
       if (allowed.includes(k)) await setIaConfig(k, v);
     }
@@ -1449,6 +1450,53 @@ app.post('/api/wa/disconnect', async (req, res) => {
     waStatus = 'disconnected'; waQrData = null; waClient = null;
     res.json({ ok: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── API: CONFIG PÚBLICO (lido pelo site do cliente) ───────────────────────
+// Expõe apenas as chaves relevantes para o frontend público
+app.get('/api/config', async (req, res) => {
+  try {
+    const keys = ['pagamento_completo'];
+    const { rows } = await pool.query(
+      `SELECT key, value FROM ia_config WHERE key = ANY($1)`, [keys]
+    );
+    const cfg = {};
+    rows.forEach(r => {
+      try { cfg[r.key] = JSON.parse(r.value); } catch { cfg[r.key] = r.value; }
+    });
+    res.json(cfg);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── WHATSAPP: PAIRING CODE ────────────────────────────────────────────────
+let _pairCode = null;
+
+app.post('/api/wa/pairing-request', async (req, res) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ error: 'phone obrigatório' });
+  try {
+    // Inicializa (ou reutiliza) o client
+    if (waStatus !== 'qr' && waStatus !== 'connecting') {
+      waInitAttempts = 0;
+      initWAClient();
+    }
+    // Aguarda até o evento qr ser gerado (até 15s)
+    let waited = 0;
+    while (waStatus !== 'qr' && waited < 15000) {
+      await new Promise(r => setTimeout(r, 500));
+      waited += 500;
+    }
+    if (waStatus !== 'qr' || !waClient) {
+      return res.status(503).json({ error: 'Cliente WA não pronto para pareamento.' });
+    }
+    const cleanPhone = phone.replace(/\D/g, '');
+    _pairCode = await waClient.requestPairingCode(cleanPhone);
+    console.log('🔢 Pairing code gerado:', _pairCode);
+    res.json({ code: _pairCode });
+  } catch (e) {
+    console.error('Pairing code erro:', e.message);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ── WEBHOOK: Z-API fallback (WhatsApp incoming via Z-API) ─────────────────

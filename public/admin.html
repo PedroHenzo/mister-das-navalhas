@@ -772,6 +772,7 @@ tr:hover td{background:rgba(200,200,200,.02);}
     <div style="display:flex;gap:.75rem;align-items:center;">
       <button class="btn-sec" id="ia-toggle-btn" onclick="toggleIaAtiva()">Ligar IA</button>
       <button class="btn-sec" id="wa-connect-btn" onclick="waConnect()">Conectar WA</button>
+      <button class="btn-sec" onclick="togglePairWrap()">Código</button>
       <button class="btn-sec" onclick="loadIaConfig()">↻</button>
     </div>
   </div>
@@ -784,6 +785,21 @@ tr:hover td{background:rgba(200,200,200,.02);}
       <div style="font-size:.78rem;color:var(--muted);line-height:1.7;">1. Abra o WhatsApp no celular<br>2. Toque em <strong style="color:var(--white);">⋮ → Dispositivos conectados</strong><br>3. Toque em <strong style="color:var(--white);">Conectar dispositivo</strong><br>4. Aponte a câmera para o QR Code</div>
       <button class="btn-sec" style="margin-top:.85rem;font-size:.7rem;" onclick="waConnect()">↻ Novo QR Code</button>
     </div>
+  </div>
+
+  <!-- PAIRING CODE -->
+  <div id="wa-pair-wrap" style="display:none;flex-direction:column;background:var(--dark2);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.25rem;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;margin-bottom:.4rem;">Conectar pelo Código de Pareamento</div>
+    <div style="font-size:.78rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;">1. Abra o WhatsApp no celular<br>2. Vá em <strong style="color:var(--white);">⋮ → Dispositivos conectados → Conectar dispositivo</strong><br>3. Toque em <strong style="color:var(--white);">"Conectar com número de telefone"</strong><br>4. Digite o código abaixo quando solicitado</div>
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;">
+      <input class="fi" type="tel" id="pair-phone-inp" placeholder="Ex: 5521999990000 (com DDI)" style="flex:1;"/>
+      <button class="btn-primary" onclick="waPairingRequest()" style="white-space:nowrap;">Gerar Código</button>
+    </div>
+    <div id="pair-code-display" style="display:none;text-align:center;padding:1.25rem;background:var(--dark3);border:1px solid var(--border);">
+      <div style="font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">Seu código</div>
+      <div id="pair-code-val" style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.3em;color:var(--white);"></div>
+    </div>
+    <div id="pair-code-err" style="display:none;color:#f87171;font-size:.78rem;margin-top:.5rem;"></div>
   </div>
 
   <div class="ia-layout">
@@ -865,6 +881,10 @@ tr:hover td{background:rgba(200,200,200,.02);}
           <div class="ia-toggle-row">
             <div><div class="ia-toggle-label">Reativação automática</div><div class="ia-toggle-sub">Envia mensagem para clientes sem visita no período configurado</div></div>
             <label class="ia-toggle"><input type="checkbox" id="tog-reativ"/><span class="ia-toggle-slider"></span></label>
+          </div>
+          <div class="ia-toggle-row">
+            <div><div class="ia-toggle-label">Exibir opção de pagamento completo</div><div class="ia-toggle-sub">Quando ativo, o cliente pode pagar o valor total no site. Quando inativo, só o sinal (R$10) é cobrado online.</div></div>
+            <label class="ia-toggle"><input type="checkbox" id="tog-pagamento-completo"/><span class="ia-toggle-slider"></span></label>
           </div>
         </div>
         <div style="margin-top:1rem;display:flex;flex-direction:column;gap:.75rem;">
@@ -1780,9 +1800,10 @@ async function saveIaConfig(){
       auto_book:      String(document.getElementById('tog-auto-book')?.checked || false),
       confirma_agend: String(document.getElementById('tog-confirma-agend')?.checked || false),
       confirma_dia:   String(document.getElementById('tog-confirma-dia')?.checked || false),
-      reativacao:     String(document.getElementById('tog-reativ')?.checked || false),
-      reativ_days:    document.getElementById('ia-reativ-days')?.value || '30',
-      welcome_msg:    document.getElementById('ia-welcome-msg')?.value || '',
+      reativacao:          String(document.getElementById('tog-reativ')?.checked || false),
+      reativ_days:         document.getElementById('ia-reativ-days')?.value || '30',
+      welcome_msg:         document.getElementById('ia-welcome-msg')?.value || '',
+      pagamento_completo:  String(document.getElementById('tog-pagamento-completo')?.checked || false),
     }})
     const ok = document.getElementById('ia-save-ok')
     if(ok){ ok.style.display='block'; setTimeout(()=>ok.style.display='none',2000) }
@@ -1811,6 +1832,8 @@ async function loadIaConfig(){
     if(rd && cfg.reativ_days) rd.value = cfg.reativ_days
     const wm = document.getElementById('ia-welcome-msg')
     if(wm && cfg.welcome_msg) wm.value = cfg.welcome_msg
+    const pc = document.getElementById('tog-pagamento-completo')
+    if(pc) pc.checked = cfg.pagamento_completo === 'true'
   } catch(e) {}
   loadIaConversations()
   loadLivechatSessions()
@@ -2038,6 +2061,34 @@ async function waConnect(){
     await apiFetch('/wa/connect', { method:'POST' }).catch(()=>{})
   }
   setTimeout(loadWaStatus, 2000)
+}
+
+function togglePairWrap(){
+  const w = document.getElementById('wa-pair-wrap')
+  if(!w) return
+  w.style.display = (w.style.display === 'none' || w.style.display === '') ? 'flex' : 'none'
+}
+
+async function waPairingRequest(){
+  const phone = document.getElementById('pair-phone-inp')?.value?.trim()
+  const disp  = document.getElementById('pair-code-display')
+  const val   = document.getElementById('pair-code-val')
+  const err   = document.getElementById('pair-code-err')
+  if(!phone){ if(err){ err.textContent='Digite o número com DDI (ex: 5521999990000)'; err.style.display='block'; } return }
+  if(err) err.style.display = 'none'
+  if(disp) disp.style.display = 'none'
+  if(val) val.textContent = '...'
+  try {
+    const r = await apiFetch('/wa/pairing-request', { method:'POST', body:{ phone } })
+    if(r.code){
+      if(val) val.textContent = r.code
+      if(disp) disp.style.display = 'block'
+    } else {
+      throw new Error('Código não retornado.')
+    }
+  } catch(e) {
+    if(err){ err.textContent = 'Erro: ' + e.message; err.style.display='block'; }
+  }
 }
 
 // stub para compatibilidade
